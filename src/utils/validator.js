@@ -9,6 +9,6 @@ export const validateUser = (user) => {
       .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
     phone: Joi.string().pattern(/^[0-9]+$/, 'numbers'),
     password: Joi.string().min(5).max(255).required(),
-  })
+  });
   return schema.validate(user);
 };

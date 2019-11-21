@@ -5,7 +5,7 @@ import User from '../models/user';
 import { validateUser } from '../utils/validator';
 import { simpleUser } from '../utils/userFunc';
 
-const dg = debug('MS:controllers:users');
+// const dg = debug('MS:controllers:users');
 
 class UserController {
   /**
@@ -58,7 +58,7 @@ class UserController {
  * @param {object} next next pointer
  */
   static async show(req, res, next) {
-    let user = undefined;
+    let user;
 
     try {
       user = await User.findById(req.params.id).lean();
@@ -66,6 +66,8 @@ class UserController {
       switch (error.name) {
         case 'CastError':
           return next(createError(400, '"Id" is invalid'));
+        default:
+          return next(createError(500));
       }
     }
 
