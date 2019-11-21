@@ -12,7 +12,8 @@
   "scripts": {
     "start": "cross-env DEBUG=MS:* nodemon --exec babel-node src/index.js",
     "eslint": "eslint src/. --config .eslintrc.json",
-    "build": "babel src --out-dir dist"
+    "build": "babel src --out-dir dist",
+    "test": "cross-env NODE_ENV=test jest --forceExit"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.0",
@@ -20,12 +21,12 @@
     "@babel/node": "^7.7.0",
     "@babel/preset-env": "^7.7.1",
     "@babel/register": "^7.7.0",
-    "babel-jest": "^24.9.0",
+    "chai": "^4.2.0",
     "cross-env": "^6.0.3",
     "eslint": "^6.6.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
-    "jest": "^24.9.0",
+    "mocha": "^6.2.2",
     "nodemon": "^2.0.0",
     "supertest": "^4.0.2"
   },
