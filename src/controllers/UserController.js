@@ -48,7 +48,7 @@ class UserController {
     });
     await user.save();
 
-    return res.json({ msg: 'create user', data: simpleUser(user.toObject()) });
+    return res.status(201).json({ msg: 'create user', data: simpleUser(user.toObject()) });
   }
 
   /**

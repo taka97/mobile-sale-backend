@@ -11,9 +11,10 @@
   },
   "scripts": {
     "start": "cross-env DEBUG=MS:* nodemon --exec babel-node src/index.js",
-    "eslint": "eslint src/. --config .eslintrc.json",
     "build": "babel src --out-dir dist",
-    "test": "cross-env NODE_ENV=test jest --forceExit"
+    "test": "cross-env NODE_ENV=test yarn run mocha",
+    "eslint": "eslint src/. --config .eslintrc.json",
+    "mocha": "mocha test/. --require @babel/register --recursive --exit"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.0",
