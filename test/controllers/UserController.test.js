@@ -3,15 +3,24 @@ import { expect } from 'chai';
 import app from '../../src/app';
 import User from '../../src/models/user';
 
-const sampleUserData = [{
-  email: 'vanhoang0609@gmail.com',
-  password: 'Abc12345',
-  name: 'Ho Van Hoang',
-  phone: '0987654321'
-}]
+const sampleUserData = [
+  {
+    email: 'vanhoang0609@gmail.com',
+    password: 'Abc12345',
+    name: 'Ho Van Hoang',
+    phone: '0987654321'
+  },
+  {
+    email: 'vanhoang0609@yahoo.com',
+    password: 'Abc12345',
+    name: 'Ho Van Hoang Yahoo',
+    phone: '0987654321'
+  }
+]
 
 describe('User Controller', () => {
-  before('***Cleaning user collection', async () => {
+  before('***Cleaning user collection', async function () {
+    this.timeout(5000);
     await User.deleteMany();
   });
 
