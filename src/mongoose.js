@@ -15,5 +15,5 @@ export const init = () => {
   });
   mongoose.Promise = global.Promise;
   const db = mongoose.connection;
-  db.on('error', (err) => dg('MongoDB connection error', err));
+  db.on('error', (err) => console.log('MongoDB connection error', err));
 };
