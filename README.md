@@ -57,3 +57,7 @@ If you need to update `npm`, you can make it using `npm`! Cool right? After runn
 ## Simple build for production
 
     $ yarn build
+
+## Deploy server
+  * [Stage app](https://mobilesale-be-staging.herokuapp.com/api)
+  * [Stage doc](https://mobilesale-be-staging.herokuapp.com/apiDocs)
