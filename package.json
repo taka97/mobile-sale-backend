@@ -7,14 +7,14 @@
   "author": "Ho Van Hoang <vanhoang0609@gmail.com>",
   "license": "MIT",
   "engines": {
-    "node": ">=10"
+    "node": ">=10 <=12.13.1"
   },
   "scripts": {
     "dev": "cross-env DEBUG=MS:* nodemon --exec babel-node src/index.js",
     "eslint": "eslint src/. --config .eslintrc.json",
     "mocha": "mocha test/. --require @babel/register --recursive --exit",
     "build": "babel src config --out-dir dist",
-    "start": "cross-env node ./dist/index.js",
+    "start": "node ./dist/index.js",
     "test": "cross-env NODE_ENV=test yarn run mocha"
   },
   "devDependencies": {
