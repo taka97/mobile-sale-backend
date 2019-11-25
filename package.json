@@ -14,7 +14,7 @@
     "eslint": "eslint src/. --config .eslintrc.json",
     "mocha": "mocha test/. --require @babel/register --recursive --exit",
     "build": "babel src config --out-dir dist",
-    "start": "cross-env node ./dist/index.js",
+    "start": "node ./dist/index.js",
     "test": "cross-env NODE_ENV=test yarn run mocha"
   },
   "devDependencies": {
