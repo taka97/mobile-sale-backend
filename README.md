@@ -60,4 +60,4 @@ If you need to update `npm`, you can make it using `npm`! Cool right? After runn
 
 ## Deploy server
   * [Stage app](https://mobilesale-be-staging.herokuapp.com/api)
-  * [Stage doc](https://mobilesale-be-staging.herokuapp.com/apiDocs)
+  * [Stage doc](https://mobilesale-be-staging.herokuapp.com/api-docs)
