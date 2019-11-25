@@ -6,7 +6,9 @@ node_js:
 deploy:
   provider: heroku
   api_key: HEROKU_TOKEN
-  app: mobilesale-be
+  app:
+    master: mobilesale-be-production
+    develop: mobilesale-be-staging
 notifications:
   email: false
   slack:
