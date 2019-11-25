@@ -7,7 +7,7 @@
   "author": "Ho Van Hoang <vanhoang0609@gmail.com>",
   "license": "MIT",
   "engines": {
-    "node": ">=10 <=12.13.1"
+    "node": ">=10"
   },
   "scripts": {
     "dev": "cross-env DEBUG=MS:* nodemon --exec babel-node src/index.js",
