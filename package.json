@@ -10,11 +10,12 @@
     "node": ">=10"
   },
   "scripts": {
-    "start": "cross-env DEBUG=MS:* nodemon --exec babel-node src/index.js",
-    "build": "babel src --out-dir dist",
-    "test": "cross-env NODE_ENV=test yarn run mocha",
+    "dev": "cross-env DEBUG=MS:* nodemon --exec babel-node src/index.js",
     "eslint": "eslint src/. --config .eslintrc.json",
-    "mocha": "mocha test/. --require @babel/register --recursive --exit"
+    "mocha": "mocha test/. --require @babel/register --recursive --exit",
+    "build": "babel src config --out-dir dist",
+    "start": "cross-env node ./dist/index.js",
+    "test": "cross-env NODE_ENV=test yarn run mocha"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.0",
