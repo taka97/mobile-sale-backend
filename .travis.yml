@@ -1,13 +1,15 @@
-sudo: required
 language: node_js
 install: yarn install
 script: yarn test
 node_js:
   - node
+deploy:
+  provider: heroku
+  api_key: HEROKU_TOKEN
+  app: mobilesale-be
 notifications:
   email: false
   slack:
     if: branch = master OR branch = develop
     rooms:
-      - mhh2019-nhom19:GaOgrwiRiw9dvRdBFAlCClYp#backend-develop
-
+      - SLACK_ID:SLACK_TOKENp#backend-develop
