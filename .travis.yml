@@ -12,6 +12,6 @@ deploy:
 notifications:
   email: false
   slack:
-    if: branch = master OR branch = develop
+    if: branch IN (master, develop)
     rooms:
-      - $SLACK_ID:$SLACK_TOKENp#backend-develop
+      - $SLACK_ID:$SLACK_TOKEN#backend-develop
