@@ -2,7 +2,7 @@ import Joi from '@hapi/joi';
 
 /* eslint-disable import/prefer-default-export */
 
-export const validateUser = (user) => {
+const validateUser = (user) => {
   const schema = Joi.object({
     email: Joi.string().min(5).max(255).required()
       .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
@@ -15,4 +15,17 @@ export const validateUser = (user) => {
     address: Joi.string(),
   });
   return schema.validate(user);
+};
+
+const validateEmail = (user) => {
+  const schema = Joi.object({
+    email: Joi.string().min(5).max(255).required()
+      .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+  });
+  return schema.validate(user);
+};
+
+export {
+  validateUser,
+  validateEmail,
 };
