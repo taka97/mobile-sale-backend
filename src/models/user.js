@@ -1,5 +1,5 @@
 import { compareSync, hashSync } from 'bcryptjs';
-import { model, Schema } from 'mongoose';
+import { model, Schema, Types } from 'mongoose';
 
 const saltRounds = 10;
 
@@ -19,11 +19,40 @@ const UserSchema = new Schema(
       minlength: 5,
       maxlength: 255,
     },
-    name: {
-      type: String, required: true, minlength: 5, maxlength: 50,
+    username: {
+      type: String,
+      minlength: 5,
+      maxlength: 50,
+      unique: true,
+      trim: true,
+    },
+    fullname: {
+      type: String, required: true, minlength: 5, maxlength: 128,
     },
     phone: {
       type: String, require: true, minlength: 10, maxlength: 12,
+    },
+    birthDate: {
+      type: Date,
+    },
+    cmnd: {
+      type: String,
+    },
+    address: {
+      type: String,
+    },
+    storeId: {
+      type: Types.ObjectId,
+      ref: 'Store'
+    },
+    roles: {
+      type: String,
+      enum: ['admin', 'staff', 'customer'],
+      default: 'customer',
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   {

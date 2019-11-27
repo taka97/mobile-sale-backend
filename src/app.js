@@ -7,7 +7,7 @@ import { serve, setup } from 'swagger-ui-express';
 
 import swaggerSpecs from './services/swagger-specs';
 import * as configDB from './mongoose';
-// const passport = require('./authentication');
+import passport from './authentication';
 import apiRouter from './routes';
 
 const app = express();
@@ -17,7 +17,7 @@ configDB.init();
 app.use(helmet());
 app.use(urlencoded({ extended: false }));
 app.use(json());
-// app.use(passport.initialize());
+app.use(passport.initialize());
 app.use(compression());
 
 // api docs

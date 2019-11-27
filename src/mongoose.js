@@ -11,7 +11,7 @@ export const init = () => {
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    // useFindAndModify: false,
+    useFindAndModify: false,
   });
   mongoose.Promise = global.Promise;
   const db = mongoose.connection;

@@ -8,4 +8,6 @@ export const simpleUser = (user) => ({
   password: undefined,
   createdAt: undefined,
   updatedAt: undefined,
+  isDeleted: undefined,
+  __v: undefined,
 });
