@@ -56,7 +56,7 @@ class UserController {
     user = new User(_.merge({}, _.pick(req.body, this.defaultPick), this.data));
     await user.save();
 
-    return res.status(201).json({ data: simpleUser(user.toObject()) });
+    return res.status(201).json({ user: simpleUser(user.toObject()) });
   }
 
   /**
@@ -83,7 +83,7 @@ class UserController {
       return next(createError(404, 'Not found user'));
     }
 
-    return res.json({ data: simpleUser(user) });
+    return res.json({ user: simpleUser(user) });
   }
 
   /**
