@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import UserController from '../controllers/UserController';
+import { authenticateJWT } from '../middlewares/authenticate';
+import UserController from '../controllers/userController';
 
 const router = Router();
 
@@ -7,10 +8,10 @@ router.get('/', UserController.index);
 
 router.post('/', UserController.create);
 
-router.get('/:id', UserController.show);
+router.get('/:id', authenticateJWT, UserController.show);
 
-router.patch('/:id', UserController.update);
+router.patch('/:id', authenticateJWT, UserController.update);
 
-router.delete('/:id', UserController.destroy);
+router.delete('/:id', authenticateJWT, UserController.destroy);
 
 export default router;

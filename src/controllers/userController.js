@@ -1,5 +1,6 @@
-import debug from 'debug';
+// import debug from 'debug';
 import createError from 'http-errors';
+import _ from 'lodash';
 
 import User from '../models/user';
 import { validateUser } from '../utils/validator';
@@ -13,7 +14,7 @@ class UserController {
  * @param {object} req request
  * @param {object} res response
  */
-  static index(req, res) {
+  index(req, res) {
     res.json({ msg: 'get list of users' });
   }
 
@@ -23,7 +24,7 @@ class UserController {
    * @param {object} res response
    * @param {object} next next pointer
    */
-  static async create(req, res, next) {
+  async create(req, res, next) {
     // First Validate The Request
     const { error } = validateUser(req.body);
     if (error) {
@@ -33,19 +34,14 @@ class UserController {
     // Check if this user already exisits
     let user = await User.findOne({ email: req.body.email }).lean();
     if (user) {
-      return next(createError(403, 'That user already exisits!'));
+      return next(createError(403, 'That user already exists!'));
     }
 
-    // const verifyToken = jwtAuthSign({ email: req.body.email });
-
     // Insert the new user if they do not exist yet
-    user = new User({
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-      phone: req.body.phone,
-      // verifyToken,
-    });
+    user = new User(_.pick(req.body, 'email', 'password',
+      'username', 'fullname',
+      'phone', 'birthDate',
+      'cmnd', 'address'));
     await user.save();
 
     return res.status(201).json({ msg: 'create user', data: simpleUser(user.toObject()) });
@@ -57,7 +53,7 @@ class UserController {
  * @param {object} res response
  * @param {object} next next pointer
  */
-  static async show(req, res, next) {
+  async show(req, res, next) {
     let user;
 
     try {
@@ -84,7 +80,7 @@ class UserController {
  * @param {object} res response
  * @param {object} next next pointer
  */
-  static update(req, res) {
+  update(req, res) {
     res.json({ msg: 'update user detail', id: req.params.id });
   }
 
@@ -94,9 +90,9 @@ class UserController {
  * @param {object} res response
  * @param {object} next next pointer
  */
-  static destroy(req, res) {
+  destroy(req, res) {
     res.json({ msg: 'delete user detail', id: req.params.id });
   }
 }
 
-export default UserController;
+export default new UserController();
