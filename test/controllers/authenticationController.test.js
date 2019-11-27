@@ -562,7 +562,7 @@ describe('Authentication Controller', () => {
     });
   });
 
-  describe.only('#Sign in - Staff', () => {
+  describe('#Sign in - Staff', () => {
     describe('##Missing field', () => {
       it('Sign in with no field', async () => {
         const response = await request(app)
