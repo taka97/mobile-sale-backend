@@ -9,6 +9,22 @@ import { simpleUser } from '../utils/userFunc';
 // const dg = debug('MS:controllers:users');
 
 class UserController {
+  constructor(options) {
+    this.options = options || {};
+    this.data = this.options.data || {};
+    this.defaultPick = [
+      'email',
+      'password',
+      'username',
+      'fullname',
+      'phone',
+      'birthDate',
+      'cmnd',
+      'address',
+    ];
+
+    this.create = this.create.bind(this);
+  }
   /**
  * Controller - Get list all of User
  * @param {object} req request
@@ -36,15 +52,11 @@ class UserController {
     if (user) {
       return next(createError(403, 'That user already exists!'));
     }
-
     // Insert the new user if they do not exist yet
-    user = new User(_.pick(req.body, 'email', 'password',
-      'username', 'fullname',
-      'phone', 'birthDate',
-      'cmnd', 'address'));
+    user = new User(_.merge({}, _.pick(req.body, this.defaultPick), this.data));
     await user.save();
 
-    return res.status(201).json({ msg: 'create user', data: simpleUser(user.toObject()) });
+    return res.status(201).json({ data: simpleUser(user.toObject()) });
   }
 
   /**
@@ -96,3 +108,5 @@ class UserController {
 }
 
 export default new UserController();
+
+export { UserController };
