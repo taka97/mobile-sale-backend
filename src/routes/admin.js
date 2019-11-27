@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { authenticateJWT } from '../middlewares';
+import { authenticateJWT, restrictPermission } from '../middlewares';
 import AdminController from '../controllers/adminController';
 
 const router = Router();
 
-// router.get('/', UserController.index);
-
 router.post('/', AdminController.create);
+
+router.get('/', authenticateJWT, restrictPermission('admin'), AdminController.index);
 
 router.get('/:id', authenticateJWT, AdminController.show);
 
