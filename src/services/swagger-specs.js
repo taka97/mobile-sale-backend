@@ -23,10 +23,6 @@ const swaggerDefinition = {
       name: 'users',
       description: 'Operations abount User',
     },
-    // {
-    //   name: 'authmanagement',
-    //   description: 'Operataions for auth management',
-    // },
   ],
   schemes: [
     'https',
