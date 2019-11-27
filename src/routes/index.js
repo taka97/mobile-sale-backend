@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import authenticationRouter from './authentication';
+import customerRouter from './customer';
 import userRouter from './users';
 
 const router = Router();
@@ -37,6 +38,7 @@ const router = Router();
  */
 
 router.use('/authentication', authenticationRouter);
+router.use('/customers', customerRouter);
 router.use('/users', userRouter);
 
 export default router;
