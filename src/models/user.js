@@ -1,5 +1,5 @@
 import { compareSync, hashSync } from 'bcryptjs';
-import { model, Schema } from 'mongoose';
+import { model, Schema, Types } from 'mongoose';
 
 const saltRounds = 10;
 
@@ -40,6 +40,10 @@ const UserSchema = new Schema(
     },
     address: {
       type: String,
+    },
+    storeId: {
+      type: Types.ObjectId,
+      ref: 'Store'
     },
     roles: {
       type: String,

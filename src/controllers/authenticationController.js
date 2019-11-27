@@ -22,10 +22,16 @@ class AuthenticationController {
         return next(createError(400, info.message));
       }
 
-      const { _id: userId } = user;
+      const { _id: userId, roles, storeId } = user;
       // eslint-disable-next-line no-underscore-dangle
       const accessToken = jwtSign({ id: userId });
-      return res.status(201).send({ accessToken, userId });
+      const respData = {
+        accessToken,
+        userId,
+        storeId: roles === 'staff' ? storeId : undefined,
+      }
+
+      return res.status(201).send(respData);
     })(req, res, next);
   }
 }
