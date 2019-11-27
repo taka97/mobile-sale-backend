@@ -83,7 +83,7 @@ class UserController {
       return next(createError(404, 'Not found user'));
     }
 
-    return res.json({ msg: 'show user detail', data: simpleUser(user) });
+    return res.json({ data: simpleUser(user) });
   }
 
   /**
