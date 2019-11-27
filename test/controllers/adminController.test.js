@@ -2,6 +2,7 @@ import request from 'supertest';
 import { expect } from 'chai';
 import app from '../../src/app';
 import User from '../../src/models/user';
+import { forEachAsync } from '../../src/utils/utils';
 
 const sampleAdmin = [
   {
@@ -28,17 +29,34 @@ const sampleAdmin = [
   },
 ];
 
-const sampleAdminData = {
-  email: 'vanhoang0609@gmail.com',
-  fullname: 'Van Hoang',
-  password: 'Abc12345',
+const sampleCustomerData = {
+  email: 'customer@gmail.com',
+  fullname: 'Customer',
+  username: 'customer',
+  password: 'customer',
   birthDate: '2019/10/05',
+  roles: 'customer',
+};
+
+const sampleStaffData = {
+  email: 'staff@gmail.com',
+  fullname: 'Staff',
+  username: 'staff',
+  password: 'staff',
+  birthDate: '2019/10/05',
+  roles: 'staff',
+};
+
+const sampleAdminData = {
+  email: 'admin@gmail.com',
+  fullname: 'Admin',
+  username: 'admin',
+  password: 'admin',
+  birthDate: '2019/10/05',
+  roles: 'admin',
 };
 
 describe('Admin Controller', () => {
-  let accessToken;
-  let userId;
-
   // eslint-disable-next-line func-names
   before('***Cleaning user collection', async function () {
     this.timeout(5000);
@@ -104,7 +122,10 @@ describe('Admin Controller', () => {
   });
 
   describe('#Get a user detail', () => {
-    before(async () => {
+    let accessToken;
+    let userId;
+
+    before('Clean all user', async () => {
       await User.deleteMany();
       await User.create(sampleAdminData);
 
@@ -113,6 +134,7 @@ describe('Admin Controller', () => {
         .send({
           email: sampleAdminData.email,
           password: sampleAdminData.password,
+          strategy: 'admin',
         });
       accessToken = response.body.accessToken;
       userId = response.body.userId;
@@ -156,6 +178,59 @@ describe('Admin Controller', () => {
       expect(response.body.user).to.have.property('fullname', sampleAdminData.fullname);
       expect(response.body.user).to.have.property('email', sampleAdminData.email);
       expect(response.body.user).to.have.property('birthDate', (new Date(sampleAdminData.birthDate)).toISOString());
+    });
+  });
+
+  describe('#Get list of user (admin)', () => {
+    let accessToken = {};
+    let userId = {};
+
+    before('Create user account', async () => {
+      await User.deleteMany();
+      await User.create(sampleAdminData);
+      await User.create(sampleStaffData);
+      await User.create(sampleCustomerData);
+
+      let data = [sampleAdminData, sampleStaffData, sampleCustomerData];
+      await forEachAsync(data, async (current) => {
+        let response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: current.email,
+            password: current.password,
+            strategy: current.roles,
+          });
+        userId[current.roles] = response.body.userId;
+        accessToken[current.roles] = response.body.accessToken;
+      });
+    });
+
+    it('Admin get should return user data', async () => {
+      const response = await request(app)
+          .get('/api/admin')
+          .set('Authorization', `Bearer ${accessToken['admin']}`);
+      expect(response.status).to.equal(200);
+      expect(response.body.user).to.have.property('_id');
+      expect(response.body.user).to.not.have.property('password');
+      expect(response.body.user).to.have.property('fullname', sampleAdminData.fullname);
+      expect(response.body.user).to.have.property('email', sampleAdminData.email);
+      expect(response.body.user).to.have.property('birthDate', (new Date(sampleAdminData.birthDate)).toISOString());
+    });
+
+    it('Staff get should return don\'t have permission', async () => {
+      const response = await request(app)
+          .get('/api/admin')
+          .set('Authorization', `Bearer ${accessToken['staff']}`);
+      expect(response.status).to.equal(403);
+      expect(response.body).to.have.property('message', 'You don\'t have permission to access');
+    });
+
+    it('Customer get should return don\'t have permission', async () => {
+      const response = await request(app)
+          .get('/api/admin')
+          .set('Authorization', `Bearer ${accessToken['customer']}`);
+      expect(response.status).to.equal(403);
+      expect(response.body).to.have.property('message', 'You don\'t have permission to access');
     });
   });
 });
