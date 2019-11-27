@@ -45,6 +45,52 @@ const noExistAdmin = [
   },
 ];
 
+const sampleStaff = [
+  {
+    email: 'staff01@store.com',
+    password: 'staff01',
+    fullname: 'staff 01 - store',
+    username: 'store_staff01',
+    phone: '0987654321',
+    birthDate: '10/06/1997',
+    roles: 'staff',
+    storeId: '5ddd3d236f02f3381c484bce',
+  },
+  {
+    email: 'staff02@store.com',
+    password: 'staff02',
+    fullname: 'staff 02 - store',
+    username: 'store_staff02',
+    phone: '0987654321',
+    birthDate: '10/06/1997',
+    roles: 'staff',
+    storeId: '5ddd3d236f02f3381c484bce',
+  },
+];
+
+const noExistStaff = [
+  {
+    email: 'staff03@store.com',
+    password: 'staff03',
+    fullname: 'staff 03 - store',
+    username: 'store_staff03',
+    phone: '0987654321',
+    birthDate: '10/06/1997',
+    roles: 'staff',
+    storeId: '5ddd3d236f02f3381c484bce',
+  },
+  {
+    email: 'staff04@store.com',
+    password: 'staff04',
+    fullname: 'staff 04 - store',
+    username: 'store_staff04',
+    phone: '0987654321',
+    birthDate: '10/06/1997',
+    roles: 'staff',
+    storeId: '5ddd3d236f02f3381c484bce',
+  },
+]
+
 const sampleCustomer = [
   {
     email: 'vanhoang0609@gmail.com',
@@ -89,6 +135,7 @@ describe('Authentication Controller', () => {
     this.timeout(5000);
     await User.deleteMany();
     await User.create(sampleCustomer);
+    await User.create(sampleStaff);
     await User.create(sampleAdmin);
   });
 
@@ -514,6 +561,434 @@ describe('Authentication Controller', () => {
       });
     });
   });
+
+  describe.only('#Sign in - Staff', () => {
+    describe('##Missing field', () => {
+      it('Sign in with no field', async () => {
+        const response = await request(app)
+          .post('/api/authentication');
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Missing credentials');
+      });
+
+      it('Sign in with just email field - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({ email: sampleStaff[0].email });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Missing credentials');
+      });
+
+      it('Sign in with just email field - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({ email: sampleStaff[1].email });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Missing credentials');
+      });
+
+      it('Sign in with just username field - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({ email: sampleStaff[0].username });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Missing credentials');
+      });
+
+      it('Sign in with just username field - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({ email: sampleStaff[1].username });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Missing credentials');
+      });
+
+      it('Sign in with just password field - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({ password: sampleStaff[0].password });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Missing credentials');
+      });
+
+      it('Sign in with just password field - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({ password: sampleStaff[1].password });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Missing credentials');
+      });
+    });
+
+    describe('##Sign without strategy field', () => {
+      it('Sign in with user is not exists - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: noExistStaff[0].email,
+            password: noExistStaff[0].password,
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is not exists - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: noExistStaff[1].email,
+            password: noExistStaff[1].password,
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right email, wrong password - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaff[0].email,
+            password: sampleStaff[1].password,
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right email, wrong password - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaff[1].email,
+            password: sampleStaff[0].password,
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right username, wrong password - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaff[0].username,
+            password: sampleStaff[1].password,
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right username, wrong password - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaff[1].username,
+            password: sampleStaff[0].password,
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right both email and password - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaff[0].email,
+            password: sampleStaff[0].password,
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right both email and password - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaff[1].email,
+            password: sampleStaff[1].password,
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right both username and password - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaff[0].username,
+            password: sampleStaff[0].password,
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right both username and password - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaff[1].username,
+            password: sampleStaff[1].password,
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+    });
+
+    describe('##Sign with right strategy field', () => {
+      it('Sign in with user is not exists - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: noExistAdmin[0].email,
+            password: noExistAdmin[0].password,
+            strategy: 'staff',
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is not exists - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: noExistAdmin[1].email,
+            password: noExistAdmin[1].password,
+            strategy: 'staff',
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right email, wrong password - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaff[0].email,
+            password: sampleStaff[1].password,
+            strategy: 'staff',
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right email, wrong password - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaff[1].email,
+            password: sampleStaff[0].password,
+            strategy: 'staff',
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right username, wrong password - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaff[0].username,
+            password: sampleStaff[1].password,
+            strategy: 'staff',
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right username, wrong password - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaff[1].username,
+            password: sampleStaff[0].password,
+            strategy: 'staff',
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right both email and password - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaff[0].email,
+            password: sampleStaff[0].password,
+            strategy: 'staff',
+          });
+        expect(response.status).to.equal(201);
+        expect(response.body).to.have.property('accessToken').lengthOf(260);
+        expect(response.body).to.have.property('userId').lengthOf(24);
+        expect(response.body).to.have.property('storeId').lengthOf(24);
+      });
+
+      it('Sign in with user is right both email and password - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaff[1].email,
+            password: sampleStaff[1].password,
+            strategy: 'staff',
+          });
+        expect(response.status).to.equal(201);
+        expect(response.body).to.have.property('accessToken').lengthOf(260);
+        expect(response.body).to.have.property('userId').lengthOf(24);
+        expect(response.body).to.have.property('storeId').lengthOf(24);
+      });
+
+      it('Sign in with user is right both username and password - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaff[0].username,
+            password: sampleStaff[0].password,
+            strategy: 'staff',
+          });
+        expect(response.status).to.equal(201);
+        expect(response.body).to.have.property('accessToken').lengthOf(260);
+        expect(response.body).to.have.property('userId').lengthOf(24);
+        expect(response.body).to.have.property('storeId').lengthOf(24);
+      });
+
+      it('Sign in with user is right both username and password - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaff[1].username,
+            password: sampleStaff[1].password,
+            strategy: 'staff',
+          });
+        expect(response.status).to.equal(201);
+        expect(response.body).to.have.property('accessToken').lengthOf(260);
+        expect(response.body).to.have.property('userId').lengthOf(24);
+        expect(response.body).to.have.property('storeId').lengthOf(24);
+      });
+    });
+
+    describe('##Sign with wrong strategy field', () => {
+      it('Sign in with user is not exists - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: noExistAdmin[0].email,
+            password: noExistAdmin[0].password,
+            strategy: 'customer',
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is not exists - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: noExistAdmin[1].email,
+            password: noExistAdmin[1].password,
+            strategy: 'customer',
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right email, wrong password - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleCustomer[0].email,
+            password: sampleCustomer[1].password,
+            strategy: 'customer',
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right email, wrong password - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleCustomer[1].email,
+            password: sampleCustomer[0].password,
+            strategy: 'customer',
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right username, wrong password - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleCustomer[0].username,
+            password: sampleCustomer[1].password,
+            strategy: 'customer',
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right username, wrong password - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleCustomer[1].username,
+            password: sampleCustomer[0].password,
+            strategy: 'customer',
+          });
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', 'Incorrect email/username or password');
+      });
+
+      it('Sign in with user is right both email and password - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleCustomer[0].email,
+            password: sampleCustomer[0].password,
+            strategy: 'customer',
+          });
+        expect(response.status).to.equal(201);
+        expect(response.body).to.have.property('accessToken').lengthOf(260);
+        expect(response.body).to.have.property('userId').lengthOf(24);
+      });
+
+      it('Sign in with user is right both email and password - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleCustomer[1].email,
+            password: sampleCustomer[1].password,
+            strategy: 'customer',
+          });
+        expect(response.status).to.equal(201);
+        expect(response.body).to.have.property('accessToken').lengthOf(260);
+        expect(response.body).to.have.property('userId').lengthOf(24);
+      });
+
+      it('Sign in with user is right both username and password - 1', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleCustomer[0].username,
+            password: sampleCustomer[0].password,
+            strategy: 'customer',
+          });
+        expect(response.status).to.equal(201);
+        expect(response.body).to.have.property('accessToken').lengthOf(260);
+        expect(response.body).to.have.property('userId').lengthOf(24);
+      });
+
+      it('Sign in with user is right both username and password - 2', async () => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleCustomer[1].username,
+            password: sampleCustomer[1].password,
+            strategy: 'customer',
+          });
+        expect(response.status).to.equal(201);
+        expect(response.body).to.have.property('accessToken').lengthOf(260);
+        expect(response.body).to.have.property('userId').lengthOf(24);
+      });
+    });
+  });
+
 
   describe('#Sign in - Admin', () => {
     describe('##Missing field', () => {
