@@ -1,7 +1,7 @@
-import { authenticate } from 'passport';
+import passport from 'passport';
 
 const authenticateJWT = (req, res, next) => {
-  authenticate('jwt', { session: false }, (err, user) => {
+  passport.authenticate('jwt', { session: false }, (err, user) => {
     if (err) {
       return next(err);
     }
