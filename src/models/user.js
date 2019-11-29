@@ -23,6 +23,7 @@ const UserSchema = new Schema(
       type: String,
       minlength: 5,
       maxlength: 50,
+      sparse: true,
       unique: true,
       trim: true,
     },
@@ -33,7 +34,7 @@ const UserSchema = new Schema(
       type: String, require: true, minlength: 10, maxlength: 12,
     },
     birthDate: {
-      type: Date,
+      type: Date, required: true,
     },
     cmnd: {
       type: String,
