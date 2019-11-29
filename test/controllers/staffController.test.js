@@ -40,8 +40,7 @@ describe('Staff Controller', () => {
   let userId;
 
   // eslint-disable-next-line func-names
-  before('***Cleaning user collection', async function () {
-    this.timeout(5000);
+  before('***Cleaning user collection', async () => {
     await User.deleteMany();
   });
 
@@ -49,7 +48,7 @@ describe('Staff Controller', () => {
     describe('##Missing field', () => {
       it('shound return error missing "password"', async () => {
         const response = await request(app)
-          .post('/api/admin')
+          .post('/api/staffs')
           .send(sampleStaff[0]);
         expect(response.status).to.equal(400);
         expect(response.body.message).to.be.a('string').include('"password" is required');
@@ -57,7 +56,7 @@ describe('Staff Controller', () => {
 
       it('shound return error missing "fullname"', async () => {
         const response = await request(app)
-          .post('/api/admin')
+          .post('/api/staffs')
           .send(sampleStaff[1]);
         expect(response.status).to.equal(400);
         expect(response.body.message).to.be.a('string').include('"fullname" is required');
@@ -65,7 +64,7 @@ describe('Staff Controller', () => {
 
       it('shound return error missing "email"', async () => {
         const response = await request(app)
-          .post('/api/admin')
+          .post('/api/staffs')
           .send(sampleStaff[2]);
         expect(response.status).to.equal(400);
         expect(response.body.message).to.be.a('string').include('"email" is required');
@@ -73,7 +72,7 @@ describe('Staff Controller', () => {
 
       it('shound return error missing "birthDate"', async () => {
         const response = await request(app)
-          .post('/api/admin')
+          .post('/api/staffs')
           .send(sampleStaff[3]);
         expect(response.status).to.equal(400);
         expect(response.body.message).to.be.a('string').include('"birthDate" is required');
@@ -83,7 +82,7 @@ describe('Staff Controller', () => {
     describe('##Enough field', () => {
       it('shound return success and user data', async () => {
         const response = await request(app)
-          .post('/api/admin')
+          .post('/api/staffs')
           .send(sampleStaff[4]);
         expect(response.status).to.equal(201);
         expect(response.body.user).to.have.property('_id');
@@ -95,7 +94,7 @@ describe('Staff Controller', () => {
 
       it('shound return false with error user already exists', async () => {
         const response = await request(app)
-          .post('/api/admin')
+          .post('/api/staffs')
           .send(sampleStaff[4]);
         expect(response.status).to.equal(403);
         expect(response.body.message).to.be.a('string').include('That user already exists!');
@@ -120,7 +119,7 @@ describe('Staff Controller', () => {
 
     it('should return Id invalid with Bearer Token in Authorization header', async () => {
       const response = await request(app)
-        .get('/api/admin/abc')
+        .get('/api/staffs/abc')
         .set('Authorization', `Bearer ${accessToken}`);
       expect(response.status).to.equal(400);
       expect(response.body.message).to.be.a('string').include('"Id" is invalid');
@@ -128,7 +127,7 @@ describe('Staff Controller', () => {
 
     it('should return Id invalid with Token in Authorization header', async () => {
       const response = await request(app)
-        .get('/api/admin/abc')
+        .get('/api/staffs/abc')
         .set('Authorization', `jwt ${accessToken}`);
       expect(response.status).to.equal(400);
       expect(response.body.message).to.be.a('string').include('"Id" is invalid');
@@ -136,7 +135,7 @@ describe('Staff Controller', () => {
 
     it('should return user data with Bearer Token in Authorization header', async () => {
       const response = await request(app)
-        .get(`/api/admin/${userId}`)
+        .get(`/api/staffs/${userId}`)
         .set('Authorization', `Bearer ${accessToken}`);
       expect(response.status).to.equal(200);
       expect(response.body.user).to.have.property('_id');
@@ -148,7 +147,7 @@ describe('Staff Controller', () => {
 
     it('should return user data with Token in Authorization header', async () => {
       const response = await request(app)
-        .get(`/api/admin/${userId}`)
+        .get(`/api/staffs/${userId}`)
         .set('Authorization', `jwt ${accessToken}`);
       expect(response.status).to.equal(200);
       expect(response.body.user).to.have.property('_id');
