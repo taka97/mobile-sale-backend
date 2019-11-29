@@ -6,7 +6,6 @@ const dg = debug('MS::utils::filterSelect');
 function filterSelect(select, allowField, excludeField) {
   if (!allowField && !excludeField) return select;
   let field = _.pull(allowField, ...excludeField);
-  dg(field);
   let result = _.intersection(Array.isArray(select) ? select : [select], field);
 
   return result.length === 0 ? field : result;
