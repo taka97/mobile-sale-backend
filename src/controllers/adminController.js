@@ -1,4 +1,4 @@
-import { UserController } from './userController';
+import UserController from './userController';
 
 class AdminController extends UserController {
   constructor() {
@@ -12,5 +12,4 @@ class AdminController extends UserController {
 }
 
 export default new AdminController();
-
 export { AdminController };

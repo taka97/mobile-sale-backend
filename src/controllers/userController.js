@@ -147,7 +147,8 @@ class UserController {
 // export default new UserController();
 
 function init(options) {
-
+  return new UserController(options);
 }
 
+export default init;
 export { UserController };
