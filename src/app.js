@@ -6,13 +6,13 @@ import { urlencoded, json } from 'body-parser';
 import { serve, setup } from 'swagger-ui-express';
 
 import swaggerSpecs from './services/swagger-specs';
-import * as configDB from './mongoose';
+import configDB from './mongoose';
 import passport from './authentication';
 import apiRouter from './routes';
 
 const app = express();
 
-configDB.init();
+configDB();
 
 app.use(helmet());
 app.use(urlencoded({ extended: false }));

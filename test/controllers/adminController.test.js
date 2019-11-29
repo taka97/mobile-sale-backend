@@ -56,10 +56,8 @@ const sampleAdminData = {
   roles: 'admin',
 };
 
-describe.only('Admin Controller', () => {
-  // eslint-disable-next-line func-names
-  before('***Cleaning user collection', async function () {
-    this.timeout(5000);
+describe('Admin Controller', () => {
+  before('***Cleaning user collection', async () => {
     await User.deleteMany();
   });
 
@@ -181,7 +179,7 @@ describe.only('Admin Controller', () => {
     });
   });
 
-  describe.only('#Get list of user (admin)', () => {
+  describe('#Get list of user (admin)', () => {
     let accessToken = {};
     let userId = {};
 
