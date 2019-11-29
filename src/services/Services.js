@@ -153,7 +153,7 @@ class Services {
         reject({ code: 400, message: error.details[0].message });
       }
 
-      return model.findOne({ email: data.email }).lean()
+      return model.findOne({ $or: [{ email: data.email }, { username: data.username }] }).lean()
         .then(user => {
           // Check if this user already exisits
           if (user) {
