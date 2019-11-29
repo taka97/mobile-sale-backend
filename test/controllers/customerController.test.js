@@ -35,13 +35,12 @@ const sampleCustomerData = {
   birthDate: '2019/10/05',
 };
 
-describe.skip('Customer Controller', () => {
+describe('Customer Controller', () => {
   let accessToken;
   let userId;
 
   // eslint-disable-next-line func-names
-  before('***Cleaning user collection', async function () {
-    this.timeout(5000);
+  before('***Cleaning user collection', async () => {
     await User.deleteMany();
   });
 

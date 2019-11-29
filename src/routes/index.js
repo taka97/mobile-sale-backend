@@ -2,10 +2,10 @@ import { Router } from 'express';
 
 import authenticationRouter from './authentication';
 import adminRouter from './admin';
-import seederRouter from './seeder';
 import staffRouter from './staff';
-// import customerRouter from './customer';
+import customerRouter from './customer';
 // import userRouter from './users';
+import seederRouter from './seeder';
 
 const router = Router();
 
@@ -43,7 +43,7 @@ const router = Router();
 router.use('/authentication', authenticationRouter);
 router.use('/admin', adminRouter);
 router.use('/staffs', staffRouter);
-// router.use('/customers', customerRouter);
+router.use('/customers', customerRouter);
 // router.use('/users', userRouter);
 
 router.use('/seeder', seederRouter);

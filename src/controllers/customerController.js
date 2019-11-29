@@ -2,10 +2,10 @@ import { UserController } from './userController';
 
 class CustomerController extends UserController {
   constructor() {
+    const requiredField = { roles: 'customer' };
+
     const options = {
-      data: {
-        roles: 'customer'
-      }
+      requiredField,
     };
     super(options);
   }
