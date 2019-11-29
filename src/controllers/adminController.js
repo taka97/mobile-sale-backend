@@ -2,16 +2,14 @@ import { UserController } from './userController';
 
 class AdminController extends UserController {
   constructor() {
+    const requiredField = { roles: 'admin' };
+
     const options = {
-      data: {
-        roles: 'admin'
-      }
+      requiredField,
     };
     super(options);
   }
 }
-
-// const dg = debug('MS:controllers:users');
 
 export default new AdminController();
 
