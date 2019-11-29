@@ -85,11 +85,11 @@ describe('Staff Controller', () => {
           .post('/api/staffs')
           .send(sampleStaff[4]);
         expect(response.status).to.equal(201);
-        expect(response.body.user).to.have.property('_id');
-        expect(response.body.user).to.not.have.property('password');
-        expect(response.body.user).to.have.property('fullname', sampleStaff[4].fullname);
-        expect(response.body.user).to.have.property('email', sampleStaff[4].email);
-        expect(response.body.user).to.have.property('birthDate', (new Date(sampleStaff[4].birthDate)).toISOString());
+        expect(response.body).to.have.property('_id');
+        expect(response.body).to.not.have.property('password');
+        expect(response.body).to.have.property('fullname', sampleStaff[4].fullname);
+        expect(response.body).to.have.property('email', sampleStaff[4].email);
+        expect(response.body).to.have.property('birthDate', (new Date(sampleStaff[4].birthDate)).toISOString());
       });
 
       it('shound return false with error user already exists', async () => {
