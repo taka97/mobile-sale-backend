@@ -6,6 +6,7 @@ import { validateUser } from '../utils/validator';
 import { simpleUser } from '../utils/userFunc';
 import filterQuery from '../utils/filter-query';
 import filterSelect from '../utils/filter-select';
+import select from '../utils/select';
 
 const dg = debug('MS::services::Services');
 
@@ -143,32 +144,34 @@ class Services {
     return res.json({ user: simpleUser(user) });
   }
 
-  create(data, params = {}) {
+  create(_data, params = {}) {
     const model = this.Model;
+    const { query: { $populate } = {} } = params;
+    const isMulti = Array.isArray(_data);
+    const data = isMulti ? _data : [_data];
 
-    return new Promise((resolve, reject) => {
-      // First Validate The Request
-      const { error } = validateUser(data);
-      if (error) {
-        reject({ code: 400, message: error.details[0].message });
-      }
+    // $select with allowSelect
+    if (this.allowField) {
+      params.query.$select = filterSelect(params.query.$select, this.allowField, this.excludeField);
+    }
 
-      return model.findOne({ $or: [{ email: data.email }, { username: data.username }] }).lean()
-        .then(user => {
-          // Check if this user already exisits
-          if (user) {
-            reject({ code: 403, message: 'That user already exists!' });
-          }
+    return model.create(data, params.mongoose)
+      .then(results => {
+        if ($populate) {
+          return Promise.all(results.map(result => model.populate(result, $populate)));
+        }
 
-          // Insert the new user if they do not exist yet
-          user = new model(_.merge({}, _.pick(data, this.allowField), this.requiredField));
+        return results;
+      })
+      .then(results => {
+        if (this.lean) {
+          results = results.map(item => (item.toObject ? item.toObject() : item));
+        }
 
-          user.save()
-            .then(data => resolve({ user: simpleUser(data.toObject()) }))
-            .catch(err => reject({ code: 500, message: err }));
-        })
-        .catch(err => reject({ code: 500, message: err }));
-    });
+        return isMulti ? results : results[0];
+      })
+      .then(select(params, '_id'))
+      .catch(err => Promise.reject({ code: 500, message: err }));
   }
 
   async update(id, data, params = {}) {

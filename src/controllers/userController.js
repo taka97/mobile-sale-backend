@@ -7,6 +7,7 @@ import User from '../models/user';
 import Model from '../models/user';
 import createService from '../services/Services';
 import { simpleUser } from '../utils/userFunc';
+import { validateUser } from '../utils/validator';
 
 const dg = debug('MS:controllers:users');
 
@@ -68,7 +69,30 @@ class UserController {
    */
   async create(req, res, next) {
     try {
-      const result = await this.services.create(req.body);
+      const { query, body } = req;
+      // First Validate The Request
+      const { error } = validateUser(body);
+      if (error) {
+        return next(createError(400, error.details[0].message));
+      }
+
+      const { total } = await this.services.find({
+        query: {
+          $or: [
+            { email: body.email },
+            // body.username ? { username: body.username } : undefined,
+          ],
+          $limit: 0,
+        }
+      });
+
+      if (total !== 0) {
+        return next(createError(403, 'That user already exists!'));
+      }
+
+      const params = this.requiredField ? Object.assign({}, body, this.requiredField) : body;
+
+      const result = await this.services.create(params, { query });
       return res.status(201).send(result);
     } catch (err) {
       return next(createError(err.code, err.message));
