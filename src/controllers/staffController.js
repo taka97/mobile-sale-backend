@@ -1,18 +1,15 @@
-import { UserController } from './userController';
+import UserController from './userController';
 
 class StaffController extends UserController {
   constructor() {
+    const requiredField = { roles: 'staff' };
+
     const options = {
-      data: {
-        roles: 'staff'
-      }
+      requiredField,
     };
     super(options);
   }
 }
 
-// const dg = debug('MS:controllers:users');
-
 export default new StaffController();
-
 export { StaffController };

@@ -4,9 +4,9 @@ import StaffController from '../controllers/staffController';
 
 const router = Router();
 
-// router.get('/', UserController.index);
-
 router.post('/', StaffController.create);
+
+router.get('/', StaffController.index);
 
 router.get('/:id', authenticateJWT, StaffController.show);
 
