@@ -64,6 +64,8 @@ const UserSchema = new Schema(
   },
 );
 
+UserSchema.index({ roles: 1, isDeleted: 1 }, { background: true });
+
 // eslint-disable-next-line func-names
 UserSchema.methods.validPassword = function (password) {
   return compareSync(password, this.password);
