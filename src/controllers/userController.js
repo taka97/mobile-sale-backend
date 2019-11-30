@@ -128,7 +128,7 @@ class UserController {
       const id = params.id ? params.id : null;
 
       const result = await this.services.update(id, data, { query });
-      res.status(200).send(result);
+      return res.status(200).send(result);
     } catch (err) {
       return next(createError(err.code, err.message));
     }
