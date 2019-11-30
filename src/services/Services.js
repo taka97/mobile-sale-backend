@@ -1,10 +1,10 @@
-// import debug from 'debug';
+import debug from 'debug';
 
 import filterQuery from '../utils/filter-query';
 import filterSelect from '../utils/filter-select';
 import select from '../utils/select';
 
-// const dg = debug('MS::services::Services');
+const dg = debug('MS::services::Services');
 
 class Services {
   constructor(options) {
@@ -18,6 +18,7 @@ class Services {
     this.useEstimatedDocumentCount = !!options.useEstimatedDocumentCount;
     this.allowField = options.allowField;
     this.excludeField = options.excludeField || [];
+    this.id = options.id || '_id';
 
     // Binding method
     // this.find = this.find.bind(this);
@@ -43,6 +44,14 @@ class Services {
 
   get Model() {
     return this.options.Model;
+  }
+
+  getOrFind(id, params = {}) {
+    if (id === null) {
+      return this.find(params);
+    }
+
+    return this.get(id, params);
   }
 
   find(params = {}) {
@@ -122,7 +131,7 @@ class Services {
     const { query, filters } = this.filterQuery(params);
     const model = this.Model;
 
-    query.$and = (query.$and || []).concat([{ _id: id }]);
+    query.$and = (query.$and || []).concat([{ [this.id]: id }]);
 
     let modelQuery = model.findOne(query);
 
@@ -152,7 +161,7 @@ class Services {
       .exec()
       .then((data) => {
         if (!data) {
-          return ({ message: `No record found for id ${id}` });
+          return ({ code: 200, message: `No record found for id ${id}` });
         }
 
         return data;
@@ -197,7 +206,7 @@ class Services {
 
         return isMulti ? results : results[0];
       })
-      .then(select(params, '_id'))
+      .then(select(params, this.id))
       /* eslint-disable prefer-promise-reject-errors */
       .catch((err) => Promise.reject({ code: 500, message: err }));
   }
@@ -211,6 +220,51 @@ class Services {
   }
 
   remove(id, params = {}) {
+    const { query } = this.filterQuery(params);
+
+    if (params.collation) {
+      query.collation = params.collation;
+    }
+
+    // $select with allowSelect
+    if (this.allowField) {
+      /* eslint-disable no-param-reassign */
+      params.query.$select = filterSelect(params.query.$select, this.allowField, this.excludeField);
+    }
+
+    if (id !== null) {
+      query.$and = (query.$and || []).concat({ [this.id]: id });
+
+      return this.Model.findOneAndDelete(query)
+        .lean(this.lean)
+        .exec()
+        .then(result => {
+          if (result === null) {
+            /* eslint-disable no-throw-literal */
+            throw ({ code: 200, message: `No record found for id '${id}'` });;
+          }
+
+          return result;
+        })
+        .then(select(params, this.id))
+        .catch((err) => Promise.reject({ code: 500, message: err }));
+    }
+
+    const findParams = Object.assign({}, params, {
+      paginate: false,
+      query
+    });
+
+    // NOTE (EK): First fetch the record(s) so that we can return
+    // it/them when we delete it/them.
+    return this.getOrFind(id, findParams).then(data =>
+      this.Model.deleteMany(query)
+        .lean(this.lean)
+        .exec()
+        .then(() => data)
+        .then(select(params, this.id))
+    ).catch((err) => Promise.reject({ code: 500, message: err }));
+
     return ({ id, params });
   }
 }
