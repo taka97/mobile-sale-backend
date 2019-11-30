@@ -5,14 +5,16 @@ import UserController from '../controllers/userController';
 
 const router = Router();
 
-router.get('/', UserController.index);
+const userController = UserController();
 
-router.post('/', UserController.create);
+router.get('/', userController.index);
 
-router.get('/:id', authenticateJWT, UserController.show);
+router.post('/', userController.create);
 
-router.patch('/:id', authenticateJWT, UserController.update);
+router.get('/:id', authenticateJWT, userController.show);
 
-router.delete('/:id', authenticateJWT, UserController.destroy);
+router.patch('/:id', authenticateJWT, userController.update);
+
+router.delete('/:id', authenticateJWT, userController.destroy);
 
 export default router;

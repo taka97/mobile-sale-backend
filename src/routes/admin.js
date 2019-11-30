@@ -12,6 +12,6 @@ router.get('/:id', authenticateJWT, AdminController.show);
 
 // router.patch('/:id', authenticateJWT, UserController.update);
 
-// router.delete('/:id', authenticateJWT, UserController.destroy);
+router.delete('/:id?', authenticateJWT, AdminController.destroy);
 
 export default router;

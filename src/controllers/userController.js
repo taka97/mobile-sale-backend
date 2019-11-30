@@ -144,13 +144,25 @@ class UserController {
   }
 
   /**
- * Controller - Delete User
+ * Controller - Delete User (Carefully with using it)
  * @param {object} req request
  * @param {object} res response
  * @param {object} next next pointer
  */
-  destroy(req, res) {
-    res.json({ msg: 'delete user detail', id: req.params.id });
+  async destroy(req, res, next) {
+    const { params } = req;
+    let { query } = req;
+    if (this.requiredField) {
+      query = { ...query, ...this.requiredField };
+    }
+    const id = params.id ? params.id : null;
+
+    try {
+      const result = await this.services.remove(id, { query });
+      res.status(204).send(result);
+    } catch (err) {
+      return next(createError(err.code, err.message));
+    }
   }
 }
 

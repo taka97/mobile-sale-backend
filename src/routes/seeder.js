@@ -3,6 +3,6 @@ import SeederController from '../controllers/seederController';
 
 const router = Router();
 
-router.get('/:action', SeederController.index);
+router.get('/:action/:numberRecord?', SeederController.index);
 
 export default router;

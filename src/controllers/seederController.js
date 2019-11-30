@@ -1,62 +1,44 @@
 import User from '../models/user';
 
 class SeederController {
-  async index(req, res) {
-    const defaultAdmin = [
-      {
-        email: 'admin@gmail.com',
-        username: 'admin',
-        password: 'admin',
-        phone: '0987654321',
-        fullname: 'Hồ Văn Hoàng',
-        birthDate: '11/26/2019',
-        roles: 'admin',
-      },
-      {
-        email: 'admin1@gmail.com',
-        username: 'admin1',
-        password: 'admin1',
-        phone: '0987654321',
-        fullname: 'Hồ Văn Hoàng',
-        birthDate: '11/26/2019',
-        roles: 'admin',
-      },
-      {
-        email: 'admin2@gmail.com',
-        username: 'admin2',
-        password: 'admin2',
-        phone: '0987654321',
-        fullname: 'Hồ Văn Hoàng',
-        birthDate: '11/26/2019',
-        roles: 'admin',
-      },
-      {
-        email: 'admin3@gmail.com',
-        username: 'admin3',
-        password: 'admin3',
-        phone: '0987654321',
-        fullname: 'Hồ Văn Hoàng',
-        birthDate: '11/26/2019',
-        roles: 'admin',
-      },
-      {
-        email: 'admin4@gmail.com',
-        username: 'admin4',
-        password: 'admin4',
-        phone: '0987654321',
-        fullname: 'Hồ Văn Hoàng',
-        birthDate: '11/26/2019',
-        roles: 'admin',
-      },
-    ];
+  constructor() {
+    this.constantData = {
+      phone: '0987654321',
+      fullname: 'Hồ Văn Hoàng',
+      birthDate: '11/26/2019',
+    }
 
-    const { action } = req.params;
+    this.index = this.index.bind(this);
+  }
+
+  generatorAccount(data, numberRecord) {
+    const results = [];
+    for (let i = 0; i < numberRecord; i += 1) {
+      const tmp = {
+        ...this.constantData,
+        email: `${data}${i}@gmail.com`,
+        username: `${data}${i}@gmail.com`,
+        password: `${data}${i}`,
+        roles: `${data}`,
+      }
+      results.push(tmp);
+    }
+    return results;
+  }
+
+  async index(req, res) {
+    const { action, numberRecord = 10 } = req.params;
 
     switch (action) {
       case 'admin':
+      case 'staff':
+      case 'customer':
+        const accounts = this.generatorAccount(action, numberRecord);
+        await User.create(accounts);
+        return res.send({ status: 'Created user', account: accounts });
+      case 'removeAllUser':
         await User.deleteMany();
-        await User.create(defaultAdmin);
-        return res.send({ status: 'Created user', account: defaultAdmin });
+        return res.send({ status: 'Removed all user' });
       default:
         return res.send({ message: 'Input your content' });
     }
