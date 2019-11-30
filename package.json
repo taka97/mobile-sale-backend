@@ -15,7 +15,8 @@
     "mocha": "mocha test/.",
     "build": "babel src config --out-dir dist",
     "start": "node ./dist/index.js",
-    "test": "cross-env NODE_ENV=test yarn run mocha"
+    "test": "cross-env NODE_ENV=test yarn run mocha",
+    "coverage": "nyc yarn run test"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.0",
@@ -30,6 +31,7 @@
     "eslint-plugin-import": "^2.18.2",
     "mocha": "^6.2.2",
     "nodemon": "^2.0.0",
+    "nyc": "^14.1.1",
     "supertest": "^4.0.2"
   },
   "dependencies": {
