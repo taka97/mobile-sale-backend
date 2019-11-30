@@ -11,7 +11,7 @@
   },
   "scripts": {
     "dev": "cross-env DEBUG=MS:* nodemon --exec babel-node src/index.js",
-    "eslint": "eslint src/. --config .eslintrc.json",
+    "lint": "eslint src/. --config .eslintrc.json",
     "mocha": "mocha test/.",
     "build": "babel src config --out-dir dist",
     "start": "node ./dist/index.js",
