@@ -114,8 +114,11 @@ class Services {
     }
 
     if (paginate && paginate.default) {
-      return model.where(query)[this.useEstimatedDocumentCount ? 'estimatedDocumentCount' : 'countDocuments']()
-        .exec().then(executeQuery);
+      return model
+        .where(query)
+      [this.useEstimatedDocumentCount ? 'estimatedDocumentCount' : 'countDocuments']()
+        .exec()
+        .then(executeQuery);
     }
 
     return executeQuery().then(page => {
@@ -123,26 +126,81 @@ class Services {
     });
   }
 
-  async get(id, params = {}) {
-    let user;
+  get(id, params = {}) {
+    const { query, filters } = this.filterQuery(params);
+    const model = this.Model;
 
-    try {
-      user = await User.findById(req.params.id).lean();
-    } catch (error) {
-      switch (error.name) {
-        case 'CastError':
-          return next(createError(400, '"Id" is invalid'));
-        default:
-          return next(createError(500));
+    query.$and = (query.$and || []).concat([{ '_id': id }]);
+
+    let modelQuery = model.findOne(query);
+
+    // Handle $populate
+    if (filters.$populate) {
+      modelQuery = modelQuery.populate(filters.$populate);
+    }
+
+    // $select with allowSelect
+    if (this.allowField) {
+      filters.$select = filterSelect(filters.$select, this.allowField, this.excludeField);
+    }
+
+    // Handle $select
+    if (filters.$select && filters.$select.length) {
+      let fields = { [this.id]: 1 };
+
+      for (let key of filters.$select) {
+        fields[key] = 1;
       }
+
+      modelQuery.select(fields);
+    } else if (filters.$select && typeof filters.$select === 'object') {
+      modelQuery.select(filters.$select);
     }
 
-    if (!user) {
-      return next(createError(404, 'Not found user'));
-    }
+    return modelQuery
+      .lean(this.lean)
+      .exec()
+      .then(data => {
+        if (!data) {
+          return ({ message: `No record found for id ${id}` });
+        }
 
-    return res.json({ user: simpleUser(user) });
+        return data;
+      })
+      .catch(err => {
+        switch(err.name) {
+          case 'CastError':
+            throw ({code: 400, message: '"Id" is invalid'});
+          default:
+            throw ({ code: 500, message: err });
+        }
+      });
   }
+
+  // async get(id, params = {}) {
+
+
+
+
+  //   let user;
+
+  //   try {
+  //     user = await User.findById(req.params.id).lean();
+  //   } catch (error) {
+  //     switch (error.name) {
+  //       case 'CastError':
+  //         return next(createError(400, '"Id" is invalid'));
+  //       default:
+  //         return next(createError(500));
+  //     }
+  //   }
+
+  //   if (!user) {
+  //     return next(createError(404, 'Not found user'));
+  //   }
+
+  //   return res.json({ user: simpleUser(user) });
+  // }
 
   create(_data, params = {}) {
     const model = this.Model;

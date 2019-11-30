@@ -109,21 +109,11 @@ class UserController {
     let user;
 
     try {
-      user = await User.findById(req.params.id).lean();
-    } catch (error) {
-      switch (error.name) {
-        case 'CastError':
-          return next(createError(400, '"Id" is invalid'));
-        default:
-          return next(createError(500));
-      }
+      let user = await this.services.get(req.params.id, { query: req.query });
+      return res.status(200).send(user);
+    } catch (err) {
+      return next(createError(err.code, err.message));
     }
-
-    if (!user) {
-      return next(createError(404, 'Not found user'));
-    }
-
-    return res.json({ user: simpleUser(user) });
   }
 
   /**
