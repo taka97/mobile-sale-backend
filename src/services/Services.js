@@ -1,14 +1,10 @@
-import debug from 'debug';
-import createError from 'http-errors';
-import _ from 'lodash';
+// import debug from 'debug';
 
-import { validateUser } from '../utils/validator';
-import { simpleUser } from '../utils/userFunc';
 import filterQuery from '../utils/filter-query';
 import filterSelect from '../utils/filter-select';
 import select from '../utils/select';
 
-const dg = debug('MS::services::Services');
+// const dg = debug('MS::services::Services');
 
 class Services {
   constructor(options) {
@@ -35,13 +31,13 @@ class Services {
     const paginate = typeof params.paginate !== 'undefined'
       ? params.paginate : this.options.paginate;
     const { query = {} } = params;
-    const options = Object.assign({
+    const options = {
       operators: this.options.whitelist || [],
       filters: this.options.filters,
-      paginate
-    }, opts);
+      paginate,
+      ...opts,
+    };
     const result = filterQuery(query, options);
-
     return Object.assign(result, { paginate });
   }
 
@@ -62,7 +58,7 @@ class Services {
     // $select uses a specific find syntax, so it has to come first.
     if (Array.isArray(filters.$select)) {
       q.select(filters.$select.reduce((res, key) => Object.assign(res, {
-        [key]: 1
+        [key]: 1,
       }), {}));
     } else if (typeof filters.$select === 'string' || typeof filters.$select === 'object') {
       q.select(filters.$select);
@@ -96,41 +92,37 @@ class Services {
     let executeQuery;
 
     if (filters.$limit === 0) {
-      executeQuery = total => Promise.resolve({
+      executeQuery = (total) => Promise.resolve({
         total,
         limit: filters.$limit,
         skip: filters.$skip || 0,
-        data: []
+        data: [],
       });
     } else {
-      executeQuery = total => q.exec().then(data => {
-        return {
-          total,
-          limit: filters.$limit,
-          skip: filters.$skip || 0,
-          data
-        };
-      });
+      executeQuery = (total) => q.exec().then((data) => ({
+        total,
+        limit: filters.$limit,
+        skip: filters.$skip || 0,
+        data,
+      }));
     }
 
     if (paginate && paginate.default) {
       return model
-        .where(query)
-      [this.useEstimatedDocumentCount ? 'estimatedDocumentCount' : 'countDocuments']()
-        .exec()
-        .then(executeQuery);
+        .where(query)[this.useEstimatedDocumentCount
+          ? 'estimatedDocumentCount'
+          : 'countDocuments']()
+        .exec().then(executeQuery);
     }
 
-    return executeQuery().then(page => {
-      return page.data
-    });
+    return executeQuery().then((page) => page.data);
   }
 
   get(id, params = {}) {
     const { query, filters } = this.filterQuery(params);
     const model = this.Model;
 
-    query.$and = (query.$and || []).concat([{ '_id': id }]);
+    query.$and = (query.$and || []).concat([{ _id: id }]);
 
     let modelQuery = model.findOne(query);
 
@@ -146,11 +138,9 @@ class Services {
 
     // Handle $select
     if (filters.$select && filters.$select.length) {
-      let fields = { [this.id]: 1 };
+      const fields = { [this.id]: 1 };
 
-      for (let key of filters.$select) {
-        fields[key] = 1;
-      }
+      filters.$select.forEach((key) => { fields[key] = 1; });
 
       modelQuery.select(fields);
     } else if (filters.$select && typeof filters.$select === 'object') {
@@ -160,47 +150,24 @@ class Services {
     return modelQuery
       .lean(this.lean)
       .exec()
-      .then(data => {
+      .then((data) => {
         if (!data) {
           return ({ message: `No record found for id ${id}` });
         }
 
         return data;
       })
-      .catch(err => {
-        switch(err.name) {
+      .catch((err) => {
+        switch (err.name) {
           case 'CastError':
-            throw ({code: 400, message: '"Id" is invalid'});
+            /* eslint-disable no-throw-literal */
+            throw ({ code: 400, message: '"Id" is invalid' });
           default:
+            /* eslint-disable no-throw-literal */
             throw ({ code: 500, message: err });
         }
       });
   }
-
-  // async get(id, params = {}) {
-
-
-
-
-  //   let user;
-
-  //   try {
-  //     user = await User.findById(req.params.id).lean();
-  //   } catch (error) {
-  //     switch (error.name) {
-  //       case 'CastError':
-  //         return next(createError(400, '"Id" is invalid'));
-  //       default:
-  //         return next(createError(500));
-  //     }
-  //   }
-
-  //   if (!user) {
-  //     return next(createError(404, 'Not found user'));
-  //   }
-
-  //   return res.json({ user: simpleUser(user) });
-  // }
 
   create(_data, params = {}) {
     const model = this.Model;
@@ -210,38 +177,41 @@ class Services {
 
     // $select with allowSelect
     if (this.allowField) {
+      /* eslint-disable no-param-reassign */
       params.query.$select = filterSelect(params.query.$select, this.allowField, this.excludeField);
     }
 
     return model.create(data, params.mongoose)
-      .then(results => {
+      .then((results) => {
         if ($populate) {
-          return Promise.all(results.map(result => model.populate(result, $populate)));
+          return Promise.all(results.map((result) => model.populate(result, $populate)));
         }
 
         return results;
       })
-      .then(results => {
+      .then((results) => {
         if (this.lean) {
-          results = results.map(item => (item.toObject ? item.toObject() : item));
+          /* eslint-disable no-param-reassign */
+          results = results.map((item) => (item.toObject ? item.toObject() : item));
         }
 
         return isMulti ? results : results[0];
       })
       .then(select(params, '_id'))
-      .catch(err => Promise.reject({ code: 500, message: err }));
+      /* eslint-disable prefer-promise-reject-errors */
+      .catch((err) => Promise.reject({ code: 500, message: err }));
   }
 
-  async update(id, data, params = {}) {
-
+  update(id, data, params = {}) {
+    return ({ id, data, params });
   }
 
-  async patch(id, data, params = {}) {
-
+  patch(id, data, params = {}) {
+    return ({ id, data, params });
   }
 
-  async remove(id, params = {}) {
-
+  remove(id, params = {}) {
+    return ({ id, params });
   }
 }
 

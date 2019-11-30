@@ -1,9 +1,7 @@
 import _ from 'lodash';
 
 function parse(number) {
-  if (typeof number !== 'undefined') {
-    return Math.abs(parseInt(number, 10));
-  }
+  return typeof number !== 'undefined' ? Math.abs(parseInt(number, 10)) : number;
 }
 
 // Returns the pagination limit and will take into account the
@@ -26,6 +24,7 @@ function convertSort(sort) {
   }
 
   return Object.keys(sort).reduce((result, key) => {
+    /* eslint-disable no-param-reassign */
     result[key] = typeof sort[key] === 'object'
       ? sort[key] : parseInt(sort[key], 10);
 
@@ -44,14 +43,14 @@ function cleanQuery(query, operators, filters) {
         }
 
         if (!operators.includes(key)) {
-          throw new BadRequest(`Invalid query parameter ${key}`, query);
+          throw new Error(`Invalid query parameter ${key}`, query);
         }
       }
 
       result[key] = cleanQuery(value, operators, filters);
     });
 
-    Object.getOwnPropertySymbols(query).forEach(symbol => {
+    Object.getOwnPropertySymbols(query).forEach((symbol) => {
       result[symbol] = query[symbol];
     });
 
@@ -64,12 +63,14 @@ function cleanQuery(query, operators, filters) {
 function assignFilters(object, query, filters, options) {
   if (Array.isArray(filters)) {
     _.each(filters, (key) => {
+      /* eslint-disable no-param-reassign */
       if (query[key] !== undefined) {
         object[key] = query[key];
       }
     });
   } else {
     _.each(filters, (converter, key) => {
+      /* eslint-disable no-param-reassign */
       const converted = converter(query[key], options);
 
       if (converted !== undefined) {
@@ -93,7 +94,7 @@ const OPERATORS = ['$in', '$nin', '$lt', '$lte', '$gt', '$gte', '$ne', '$or'];
 function filterQuery(query, options = {}) {
   const {
     filters: additionalFilters = {},
-    operators: additionalOperators = []
+    operators: additionalOperators = [],
   } = options;
   const result = {};
 
@@ -103,7 +104,7 @@ function filterQuery(query, options = {}) {
   result.query = cleanQuery(query, OPERATORS.concat(additionalOperators), result.filters);
 
   return result;
-};
+}
 
 export default filterQuery;
 export { OPERATORS, FILTERS };

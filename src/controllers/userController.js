@@ -1,13 +1,10 @@
 import debug from 'debug';
 import createError from 'http-errors';
-import _ from 'lodash';
 import config from 'config';
 
-import User from '../models/user';
 import Model from '../models/user';
 import createService from '../services/Services';
-import { simpleUser } from '../utils/userFunc';
-import { validateUser } from '../utils/validator';
+import { validateUser } from '../utils';
 
 const dg = debug('MS:controllers:users');
 
@@ -29,13 +26,14 @@ class UserController {
       'updatedAt',
     ];
 
-    options = Object.assign({
+    /* eslint-disable  no-param-reassign */
+    options = {
       paginate,
       Model,
-      paginate,
       excludeField,
       allowField,
-    }, options);
+      ...options,
+    };
 
     this.requiredField = options.requiredField;
     this.services = createService(options);
@@ -46,6 +44,7 @@ class UserController {
     this.update = this.update.bind(this);
     this.destroy = this.destroy.bind(this);
   }
+
   /**
  * Controller - Get list all of User
  * @param {object} req request
@@ -54,9 +53,8 @@ class UserController {
   async index(req, res) {
     let { query } = req;
     if (this.requiredField) {
-      query = Object.assign({}, query, this.requiredField);
+      query = { ...query, ...this.requiredField };
     }
-
     const result = await this.services.find({ query });
     res.send(result);
   }
@@ -83,14 +81,14 @@ class UserController {
             // body.username ? { username: body.username } : undefined,
           ],
           $limit: 0,
-        }
+        },
       });
 
       if (total !== 0) {
         return next(createError(403, 'That user already exists!'));
       }
 
-      const params = this.requiredField ? Object.assign({}, body, this.requiredField) : body;
+      const params = this.requiredField ? ({ ...body, ...this.requiredField }) : body;
 
       const result = await this.services.create(params, { query });
       return res.status(201).send(result);
@@ -106,10 +104,8 @@ class UserController {
  * @param {object} next next pointer
  */
   async show(req, res, next) {
-    let user;
-
     try {
-      let user = await this.services.get(req.params.id, { query: req.query });
+      const user = await this.services.get(req.params.id, { query: req.query });
       return res.status(200).send(user);
     } catch (err) {
       return next(createError(err.code, err.message));
@@ -132,17 +128,17 @@ class UserController {
  * @param {Object} res response
  * @param {Object} next next pointer
  */
-  async patch(req, res, next) {
-    const query = query;
+  async patch(req, res) {
+    // const { query } = req;
     const data = req.body;
-    const writeResults = await User.updatesMany(query, data);
+    // const writeResults = await User.updatesMany(query, data);
 
-    if (this.options.writeResults) {
-      return res.send(writeResults);
-    }
+    // if (this.options.writeResults) {
+    //   return res.send(writeResults);
+    // }
 
     dg(data);
-    dg(response);
+    // dg(response);
 
     res.json({ msg: 'patch user detail', id: req.params.id });
   }
@@ -157,8 +153,6 @@ class UserController {
     res.json({ msg: 'delete user detail', id: req.params.id });
   }
 }
-
-// export default new UserController();
 
 function init(options) {
   return new UserController(options);

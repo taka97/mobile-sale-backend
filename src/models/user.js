@@ -45,7 +45,7 @@ const UserSchema = new Schema(
     },
     storeId: {
       type: Schema.Types.ObjectId,
-      ref: 'Store'
+      ref: 'Store',
     },
     roles: {
       type: String,

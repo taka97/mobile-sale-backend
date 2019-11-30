@@ -11,8 +11,5 @@ class CustomerController extends UserController {
   }
 }
 
-// const dg = debug('MS:controllers:users');
-
 export default new CustomerController();
-
-export { CustomerController };
+// export { CustomerController };
