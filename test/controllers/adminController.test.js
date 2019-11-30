@@ -159,11 +159,11 @@ describe('Admin Controller', () => {
         .get(`/api/admin/${userId}`)
         .set('Authorization', `Bearer ${accessToken}`);
       expect(response.status).to.equal(200);
-      expect(response.body.user).to.have.property('_id');
-      expect(response.body.user).to.not.have.property('password');
-      expect(response.body.user).to.have.property('fullname', sampleAdminData.fullname);
-      expect(response.body.user).to.have.property('email', sampleAdminData.email);
-      expect(response.body.user).to.have.property('birthDate', (new Date(sampleAdminData.birthDate)).toISOString());
+      expect(response.body).to.have.property('_id');
+      expect(response.body).to.not.have.property('password');
+      expect(response.body).to.have.property('fullname', sampleAdminData.fullname);
+      expect(response.body).to.have.property('email', sampleAdminData.email);
+      expect(response.body).to.have.property('birthDate', (new Date(sampleAdminData.birthDate)).toISOString());
     });
 
     it('should return user data with Token in Authorization header', async () => {
@@ -171,11 +171,11 @@ describe('Admin Controller', () => {
         .get(`/api/admin/${userId}`)
         .set('Authorization', `jwt ${accessToken}`);
       expect(response.status).to.equal(200);
-      expect(response.body.user).to.have.property('_id');
-      expect(response.body.user).to.not.have.property('password');
-      expect(response.body.user).to.have.property('fullname', sampleAdminData.fullname);
-      expect(response.body.user).to.have.property('email', sampleAdminData.email);
-      expect(response.body.user).to.have.property('birthDate', (new Date(sampleAdminData.birthDate)).toISOString());
+      expect(response.body).to.have.property('_id');
+      expect(response.body).to.not.have.property('password');
+      expect(response.body).to.have.property('fullname', sampleAdminData.fullname);
+      expect(response.body).to.have.property('email', sampleAdminData.email);
+      expect(response.body).to.have.property('birthDate', (new Date(sampleAdminData.birthDate)).toISOString());
     });
   });
 

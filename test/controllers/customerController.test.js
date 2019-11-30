@@ -138,11 +138,11 @@ describe('Customer Controller', () => {
         .get(`/api/customers/${userId}`)
         .set('Authorization', `Bearer ${accessToken}`);
       expect(response.status).to.equal(200);
-      expect(response.body.user).to.have.property('_id');
-      expect(response.body.user).to.not.have.property('password');
-      expect(response.body.user).to.have.property('fullname', sampleCustomerData.fullname);
-      expect(response.body.user).to.have.property('email', sampleCustomerData.email);
-      expect(response.body.user).to.have.property('birthDate', (new Date(sampleCustomerData.birthDate)).toISOString());
+      expect(response.body).to.have.property('_id');
+      expect(response.body).to.not.have.property('password');
+      expect(response.body).to.have.property('fullname', sampleCustomerData.fullname);
+      expect(response.body).to.have.property('email', sampleCustomerData.email);
+      expect(response.body).to.have.property('birthDate', (new Date(sampleCustomerData.birthDate)).toISOString());
     });
 
     it('should return user data with Token in Authorization header', async () => {
@@ -150,11 +150,11 @@ describe('Customer Controller', () => {
         .get(`/api/customers/${userId}`)
         .set('Authorization', `jwt ${accessToken}`);
       expect(response.status).to.equal(200);
-      expect(response.body.user).to.have.property('_id');
-      expect(response.body.user).to.not.have.property('password');
-      expect(response.body.user).to.have.property('fullname', sampleCustomerData.fullname);
-      expect(response.body.user).to.have.property('email', sampleCustomerData.email);
-      expect(response.body.user).to.have.property('birthDate', (new Date(sampleCustomerData.birthDate)).toISOString());
+      expect(response.body).to.have.property('_id');
+      expect(response.body).to.not.have.property('password');
+      expect(response.body).to.have.property('fullname', sampleCustomerData.fullname);
+      expect(response.body).to.have.property('email', sampleCustomerData.email);
+      expect(response.body).to.have.property('birthDate', (new Date(sampleCustomerData.birthDate)).toISOString());
     });
   });
 });
