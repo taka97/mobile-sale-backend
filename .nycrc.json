@@ -5,5 +5,9 @@
   ],
   "requires": [
     "@babel/register"
+  ],
+  "reporter": [
+    "html",
+    "text"
   ]
 }
