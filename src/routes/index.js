@@ -18,6 +18,10 @@ const router = Router();
  *      strategy:
  *        type: string
  *        default: customer
+ *        enum:
+ *          - customer
+ *          - staff
+ *          - admin
  *    required:
  *      - email
  *      - password
