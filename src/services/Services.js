@@ -1,10 +1,10 @@
-import debug from 'debug';
+// import debug from 'debug';
 
 import filterQuery from '../utils/filter-query';
 import filterSelect from '../utils/filter-select';
 import select from '../utils/select';
 
-const dg = debug('MS::services::Services');
+// const dg = debug('MS::services::Services');
 
 class Services {
   constructor(options) {
@@ -238,10 +238,10 @@ class Services {
       return this.Model.findOneAndDelete(query)
         .lean(this.lean)
         .exec()
-        .then(result => {
+        .then((result) => {
           if (result === null) {
             /* eslint-disable no-throw-literal */
-            throw ({ code: 200, message: `No record found for id '${id}'` });;
+            throw ({ code: 200, message: `No record found for id '${id}'` });
           }
 
           return result;
@@ -250,22 +250,19 @@ class Services {
         .catch((err) => Promise.reject({ code: 500, message: err }));
     }
 
-    const findParams = Object.assign({}, params, {
+    const findParams = {
+      ...params,
       paginate: false,
-      query
-    });
+      query,
+    };
 
     // NOTE (EK): First fetch the record(s) so that we can return
     // it/them when we delete it/them.
-    return this.getOrFind(id, findParams).then(data =>
-      this.Model.deleteMany(query)
-        .lean(this.lean)
-        .exec()
-        .then(() => data)
-        .then(select(params, this.id))
-    ).catch((err) => Promise.reject({ code: 500, message: err }));
-
-    return ({ id, params });
+    return this.getOrFind(id, findParams).then((data) => this.Model.deleteMany(query)
+      .lean(this.lean)
+      .exec()
+      .then(() => data)
+      .then(select(params, this.id))).catch((err) => Promise.reject({ code: 500, message: err }));
   }
 }
 

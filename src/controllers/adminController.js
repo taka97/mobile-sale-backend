@@ -2,7 +2,7 @@ import { UserController } from './userController';
 
 class AdminController extends UserController {
   constructor() {
-    const requiredField = { roles: 'admin' };
+    const requiredField = { roles: 'admin', isDeleted: false };
 
     const options = {
       requiredField,

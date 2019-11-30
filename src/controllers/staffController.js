@@ -2,7 +2,7 @@ import { UserController } from './userController';
 
 class StaffController extends UserController {
   constructor() {
-    const requiredField = { roles: 'staff' };
+    const requiredField = { roles: 'staff', isDeleted: false };
 
     const options = {
       requiredField,

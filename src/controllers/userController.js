@@ -159,7 +159,7 @@ class UserController {
 
     try {
       const result = await this.services.remove(id, { query });
-      res.status(204).send(result);
+      return res.status(204).send(result);
     } catch (err) {
       return next(createError(err.code, err.message));
     }
