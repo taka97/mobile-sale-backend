@@ -89,7 +89,8 @@ describe('Customer Controller', () => {
         expect(response.body).to.not.have.property('password');
         expect(response.body).to.have.property('fullname', sampleCustomer[4].fullname);
         expect(response.body).to.have.property('email', sampleCustomer[4].email);
-        expect(response.body).to.have.property('birthDate', (new Date(sampleCustomer[4].birthDate)).toISOString());
+        expect(response.body).to.have.property('birthDate',
+          (new Date(sampleCustomer[4].birthDate)).toISOString());
       });
 
       it('shound return false with error user already exists', async () => {
@@ -142,7 +143,8 @@ describe('Customer Controller', () => {
       expect(response.body).to.not.have.property('password');
       expect(response.body).to.have.property('fullname', sampleCustomerData.fullname);
       expect(response.body).to.have.property('email', sampleCustomerData.email);
-      expect(response.body).to.have.property('birthDate', (new Date(sampleCustomerData.birthDate)).toISOString());
+      expect(response.body).to.have.property('birthDate',
+        (new Date(sampleCustomerData.birthDate)).toISOString());
     });
 
     it('should return user data with Token in Authorization header', async () => {
@@ -154,7 +156,8 @@ describe('Customer Controller', () => {
       expect(response.body).to.not.have.property('password');
       expect(response.body).to.have.property('fullname', sampleCustomerData.fullname);
       expect(response.body).to.have.property('email', sampleCustomerData.email);
-      expect(response.body).to.have.property('birthDate', (new Date(sampleCustomerData.birthDate)).toISOString());
+      expect(response.body).to.have.property('birthDate',
+        (new Date(sampleCustomerData.birthDate)).toISOString());
     });
   });
 });

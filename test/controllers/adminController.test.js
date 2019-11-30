@@ -106,7 +106,8 @@ describe('Admin Controller', () => {
         expect(response.body).to.not.have.property('password');
         expect(response.body).to.have.property('fullname', sampleAdmin[4].fullname);
         expect(response.body).to.have.property('email', sampleAdmin[4].email);
-        expect(response.body).to.have.property('birthDate', (new Date(sampleAdmin[4].birthDate)).toISOString());
+        expect(response.body).to.have.property('birthDate',
+          (new Date(sampleAdmin[4].birthDate)).toISOString());
       });
 
       it('shound return false with error user already exists', async () => {
@@ -163,7 +164,8 @@ describe('Admin Controller', () => {
       expect(response.body).to.not.have.property('password');
       expect(response.body).to.have.property('fullname', sampleAdminData.fullname);
       expect(response.body).to.have.property('email', sampleAdminData.email);
-      expect(response.body).to.have.property('birthDate', (new Date(sampleAdminData.birthDate)).toISOString());
+      expect(response.body).to.have.property('birthDate',
+        (new Date(sampleAdminData.birthDate)).toISOString());
     });
 
     it('should return user data with Token in Authorization header', async () => {
@@ -175,13 +177,14 @@ describe('Admin Controller', () => {
       expect(response.body).to.not.have.property('password');
       expect(response.body).to.have.property('fullname', sampleAdminData.fullname);
       expect(response.body).to.have.property('email', sampleAdminData.email);
-      expect(response.body).to.have.property('birthDate', (new Date(sampleAdminData.birthDate)).toISOString());
+      expect(response.body).to.have.property('birthDate',
+        (new Date(sampleAdminData.birthDate)).toISOString());
     });
   });
 
   describe('#Get list of user (admin)', () => {
-    let accessToken = {};
-    let userId = {};
+    const accessToken = {};
+    const userId = {};
 
     before('Create user account', async () => {
       await User.deleteMany();
@@ -189,9 +192,9 @@ describe('Admin Controller', () => {
       await User.create(sampleStaffData);
       await User.create(sampleCustomerData);
 
-      let data = [sampleAdminData, sampleStaffData, sampleCustomerData];
+      const data = [sampleAdminData, sampleStaffData, sampleCustomerData];
       await forEachAsync(data, async (current) => {
-        let response = await request(app)
+        const response = await request(app)
           .post('/api/authentication')
           .send({
             email: current.email,
@@ -205,8 +208,8 @@ describe('Admin Controller', () => {
 
     it('Admin get should return user data', async () => {
       const response = await request(app)
-          .get('/api/admin')
-          .set('Authorization', `Bearer ${accessToken['admin']}`);
+        .get('/api/admin')
+        .set('Authorization', `Bearer ${accessToken.admin}`);
       expect(response.status).to.equal(200);
       expect(response.body.total).to.equal(1);
       expect(response.body.limit).to.equal(10);
@@ -217,21 +220,22 @@ describe('Admin Controller', () => {
       expect(response.body.data[0]).to.not.have.property('password');
       expect(response.body.data[0]).to.have.property('fullname', sampleAdminData.fullname);
       expect(response.body.data[0]).to.have.property('email', sampleAdminData.email);
-      expect(response.body.data[0]).to.have.property('birthDate', (new Date(sampleAdminData.birthDate)).toISOString());
+      expect(response.body.data[0]).to.have.property('birthDate',
+        (new Date(sampleAdminData.birthDate)).toISOString());
     });
 
     it('Staff get should return don\'t have permission', async () => {
       const response = await request(app)
-          .get('/api/admin')
-          .set('Authorization', `Bearer ${accessToken['staff']}`);
+        .get('/api/admin')
+        .set('Authorization', `Bearer ${accessToken.staff}`);
       expect(response.status).to.equal(401);
       expect(response.body).to.have.property('message', 'You don\'t have permission to access');
     });
 
     it('Customer get should return don\'t have permission', async () => {
       const response = await request(app)
-          .get('/api/admin')
-          .set('Authorization', `Bearer ${accessToken['customer']}`);
+        .get('/api/admin')
+        .set('Authorization', `Bearer ${accessToken.customer}`);
       expect(response.status).to.equal(401);
       expect(response.body).to.have.property('message', 'You don\'t have permission to access');
     });

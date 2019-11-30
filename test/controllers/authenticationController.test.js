@@ -89,7 +89,7 @@ const noExistStaff = [
     roles: 'staff',
     storeId: '5ddd3d236f02f3381c484bce',
   },
-]
+];
 
 const sampleCustomer = [
   {
