@@ -1,10 +1,11 @@
-// import debug from 'debug';
+import debug from 'debug';
+import _ from 'lodash';
 
 import filterQuery from '../utils/filter-query';
 import filterSelect from '../utils/filter-select';
 import select from '../utils/select';
 
-// const dg = debug('MS::services::Services');
+const dg = debug('MS::services::Services');
 
 class Services {
   constructor(options) {
@@ -19,13 +20,6 @@ class Services {
     this.allowField = options.allowField;
     this.excludeField = options.excludeField || [];
     this.id = options.id || '_id';
-
-    // Binding method
-    // this.find = this.find.bind(this);
-    // this.get = this.get.bind(this);
-    // this.create = this.create.bind(this);
-    // this.update = this.update.bind(this);
-    // this.remove = this.remove.bind(this);
   }
 
   filterQuery(params = {}, opts = {}) {
@@ -161,7 +155,7 @@ class Services {
       .exec()
       .then((data) => {
         if (!data) {
-          return ({ code: 200, message: `No record found for id ${id}` });
+          return Promise.resolve({ message: `No record found for id ${id}` });
         }
 
         return data;
@@ -169,11 +163,9 @@ class Services {
       .catch((err) => {
         switch (err.name) {
           case 'CastError':
-            /* eslint-disable no-throw-literal */
-            throw ({ code: 400, message: '"Id" is invalid' });
+            return Promise.reject({ code: 400, message: '"Id" is invalid' });
           default:
-            /* eslint-disable no-throw-literal */
-            throw ({ code: 500, message: err });
+            return Promise.reject({ code: 500, message: err });
         }
       });
   }
@@ -207,16 +199,151 @@ class Services {
         return isMulti ? results : results[0];
       })
       .then(select(params, this.id))
-      /* eslint-disable prefer-promise-reject-errors */
       .catch((err) => Promise.reject({ code: 500, message: err }));
   }
 
   update(id, data, params = {}) {
-    return ({ id, data, params });
+    if (id === null) {
+      return Promise.reject({
+        code: 500,
+        message: 'Not replacing multiple records. Did you mean `patch`?',
+      });
+    }
+    // Handle case where data might be a mongoose model
+    if (typeof data.toObject === 'function') {
+      data = data.toObject();
+    }
+
+    const { query, filters } = this.filterQuery(params);
+    const options = {
+      new: true,
+      overwrite: this.overwrite,
+      runValidators: true,
+      context: 'query',
+      setDefaultsOnInsert: true,
+    };
+
+    query.$and = (query.$and || []).concat({ [this.id]: id });
+
+    if (this.id === '_id') {
+      // We can not update default mongo ids
+      data = _.omit(data, this.id);
+    } else {
+      // If not using the default Mongo _id field set the id to its
+      // previous value. This prevents orphaned documents.
+      data = { ...data, [this.id]: id };
+    }
+
+    const model = this.Model;
+    let modelQuery = model.findOneAndUpdate(query, data, options);
+
+    if (filters.$populate) {
+      modelQuery = modelQuery.populate(filters.$populate);
+    }
+
+    // $select with allowSelect
+    if (this.allowField) {
+      /* eslint-disable no-param-reassign */
+      filters.$select = filterSelect(filters.$select, this.allowField, this.excludeField);
+    }
+
+    // Handle $select
+    if (filters.$select && filters.$select.length) {
+      const fields = { [this.id]: 1 };
+
+      filters.$select.forEach((key) => { fields[key] = 1; });
+
+      modelQuery.select(fields);
+    } else if (filters.$select && typeof filters.$select === 'object') {
+      modelQuery.select(filters.$select);
+    }
+
+    dg('filter: ', filters);
+    dg('query: ', query);
+
+    return modelQuery.lean(this.lean).exec()
+      .then((result) => {
+        if (result === null) {
+          return Promise.reject({ code: 200, message: `No record found for id ${id}` });
+        }
+
+        return result;
+      })
+      .catch((err) => { Promise.reject({ code: 500, message: err }); });
   }
 
   patch(id, data, params = {}) {
-    return ({ id, data, params });
+    const { query } = this.filterQuery(params);
+    const mapIds = (dataIds) => dataIds.map((current) => current[this.id]);
+
+    // By default we will just query for the one id. For multi patch
+    // we create a list of the ids of all items that will be changed
+    // to re-query them after the update
+    const ids = id === null
+      ? this.find({ ...params, paginate: false }).then(mapIds)
+      : Promise.resolve([id]);
+
+    // Handle case where data might be a mongoose model
+    if (typeof data.toObject === 'function') {
+      data = data.toObject();
+    }
+
+    // ensure we are working on a copy
+    data = { ...data };
+
+    // If we are updating multiple records
+    const options = {
+      multi: id === null,
+      runValidators: true,
+      context: 'query',
+    };
+
+    if (id !== null) {
+      query.$and = (query.$and || []).concat({ [this.id]: id });
+    }
+
+    if (this.id === '_id') {
+      // We can not update default mongo ids
+      delete data[this.id];
+    } else if (id !== null) {
+      // If not using the default Mongo _id field set the id to its
+      // previous value. This prevents orphaned documents.
+      data[this.id] = id;
+    }
+
+    // NOTE (EK): We need this shitty hack because update doesn't
+    // return a promise properly when runValidators is true. WTF!
+    try {
+      return ids
+        .then((idList) => {
+          // Create a new query that re-queries all ids that
+          // were originally changed
+          const findParams = idList.length ? ({
+            ...params,
+            paginate: false,
+            query: { [this.id]: { $in: idList }, ...params.query },
+          }) : ({ ...params, paginate: false });
+
+          // If params.query.$populate was provided, remove it
+          // from the query sent to mongoose.
+          const discriminator = query[this.discriminatorKey] || this.discriminatorKey;
+          const model = this.discriminators[discriminator] || this.Model;
+          return model
+            .updateMany(query, data, options)
+            .lean(this.lean)
+            .exec()
+            .then((writeResult) => {
+              if (options.writeResult) {
+                return writeResult;
+              }
+              return this.getOrFind(id, findParams);
+            });
+        })
+        .then(select(params, this.id))
+        .catch((err) => Promise.reject({ code: 500, message: err }));
+    } catch (e) {
+      return Promise.reject({ code: 500, message: e });
+    }
   }
 
   remove(id, params = {}) {
@@ -240,8 +367,7 @@ class Services {
         .exec()
         .then((result) => {
           if (result === null) {
-            /* eslint-disable no-throw-literal */
-            throw ({ code: 200, message: `No record found for id '${id}'` });
+            Promise.reject({ code: 200, message: `No record found for id '${id}'` });
           }
 
           return result;

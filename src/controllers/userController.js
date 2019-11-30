@@ -74,23 +74,24 @@ class UserController {
         return next(createError(400, error.details[0].message));
       }
 
-      const { total } = await this.services.find({
-        query: {
-          $or: [
-            { email: body.email },
-            // body.username ? { username: body.username } : undefined,
-          ],
-          $limit: 0,
-        },
-      });
+      const findQuery = {
+        $or: [{ email: body.email }],
+        $limit: 0,
+      };
+
+      if (body.username) {
+        findQuery.$or.push({ username: body.username });
+      }
+
+      const { total } = await this.services.find(findQuery);
 
       if (total !== 0) {
         return next(createError(403, 'That user already exists!'));
       }
 
-      const params = this.requiredField ? ({ ...body, ...this.requiredField }) : body;
+      const data = this.requiredField ? ({ ...body, ...this.requiredField }) : body;
 
-      const result = await this.services.create(params, { query });
+      const result = await this.services.create(data, { query });
       return res.status(201).send(result);
     } catch (err) {
       return next(createError(err.code, err.message));
@@ -105,7 +106,10 @@ class UserController {
  */
   async show(req, res, next) {
     try {
-      const user = await this.services.get(req.params.id, { query: req.query });
+      const { params, query } = req;
+      const id = params.id ? params.id : null;
+
+      const user = await this.services.get(id, { query });
       return res.status(200).send(user);
     } catch (err) {
       return next(createError(err.code, err.message));
@@ -118,8 +122,16 @@ class UserController {
  * @param {object} res response
  * @param {object} next next pointer
  */
-  update(req, res) {
-    res.json({ msg: 'update user detail', id: req.params.id });
+  async update(req, res, next) {
+    try {
+      const { params, query, body: data } = req;
+      const id = params.id ? params.id : null;
+
+      const result = await this.services.update(id, data, { query });
+      res.status(200).send(result);
+    } catch (err) {
+      return next(createError(err.code, err.message));
+    }
   }
 
   /**

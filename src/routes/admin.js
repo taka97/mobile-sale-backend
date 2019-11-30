@@ -10,6 +10,8 @@ router.get('/', authenticateJWT, restrictPermission('admin'), AdminController.in
 
 router.get('/:id', authenticateJWT, AdminController.show);
 
+router.put('/:id', authenticateJWT, AdminController.update);
+
 // router.patch('/:id', authenticateJWT, UserController.update);
 
 router.delete('/:id?', authenticateJWT, AdminController.destroy);
