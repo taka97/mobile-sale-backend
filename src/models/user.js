@@ -10,7 +10,8 @@ const UserSchema = new Schema(
       required: true,
       minlength: 5,
       maxlength: 255,
-      unique: true,
+      // unique: true,
+      index: true,
       trim: true,
     },
     password: {
@@ -23,8 +24,8 @@ const UserSchema = new Schema(
       type: String,
       minlength: 5,
       maxlength: 50,
-      sparse: true,
-      unique: true,
+      // unique: true,
+      index: true,
       trim: true,
     },
     fullname: {
@@ -50,10 +51,12 @@ const UserSchema = new Schema(
       type: String,
       enum: ['admin', 'staff', 'customer'],
       default: 'customer',
+      index: true,
     },
     isDeleted: {
       type: Boolean,
       default: false,
+      index: true,
     },
   },
   {
