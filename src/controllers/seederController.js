@@ -6,6 +6,7 @@ class SeederController {
       phone: '0987654321',
       fullname: 'Hồ Văn Hoàng',
       birthDate: '11/26/2019',
+      sex: 'male',
     };
 
     this.index = this.index.bind(this);
