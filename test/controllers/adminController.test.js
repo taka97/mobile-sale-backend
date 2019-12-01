@@ -56,6 +56,15 @@ const sampleAdminData = {
   roles: 'admin',
 };
 
+const newData = {
+  email: 'newadmin@gmail.com',
+  fullname: 'New Admin',
+  username: 'newadmin',
+  passsword: 'newpassword',
+  birthDate: '1997/10/06',
+  roles: 'staff',
+}
+
 describe('Admin Controller', () => {
   before('***Cleaning user collection', async () => {
     await User.deleteMany();
@@ -258,5 +267,344 @@ describe('Admin Controller', () => {
       expect(response.status).to.equal(401);
       expect(response.body).to.have.property('message', 'You don\'t have permission to access');
     });
+  });
+
+  describe.skip('#Update a user detail', () => {
+    let accessToken;
+    let userId;
+
+    before('Create user account', async () => {
+      await User.deleteMany();
+      await User.create(sampleAdminData);
+      await User.create(sampleStaffData);
+      await User.create(sampleCustomerData);
+      await User.create(sampleAdmin[4]);
+
+      const data = [sampleAdminData, sampleStaffData, sampleCustomerData];
+      const response = await request(app)
+        .post('/api/authentication')
+        .send({
+          email: sampleAdmin[4].email,
+          password: sampleAdmin[4].password,
+          strategy: 'admin',
+        });
+
+      userId['otherAdmin'] = response.body.userId;
+      accessToken['otherAdmin'] = response.body.accessToken;
+      await forEachAsync(data, async (current) => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: current.email,
+            password: current.password,
+            strategy: current.roles,
+          });
+        userId[current.roles] = response.body.userId;
+        accessToken[current.roles] = response.body.accessToken;
+      });
+    });
+
+    describe('##Check permission', () => {
+      it('should return you dont have permission - customer', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}`)
+          .set('Authorization', `Bearer ${accessToken.customer}`);
+        expect(response.status).to.equal(401);
+        expect(response.body.message).to.be.a('string').include('You don\'t have permission to access');
+      });
+
+      it('should return you dont have permission - staff', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}`)
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(401);
+        expect(response.body.message).to.be.a('string').include('You don\'t have permission to access');
+      });
+
+      it('should return You are not the owner - admin (no owner)', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}`)
+          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
+        expect(response.status).to.equal(401);
+        expect(response.body.message).to.be.a('string')
+          .include('You are not the owner, so you cannot modify this resources');
+      });
+
+      it('should return success - admin (owner)', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}`)
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(200);
+        expect(response.body.message).to.be.a('string')
+          .include('Donnot have any field is modified');
+      });
+    });
+
+    describe('##Change user info - admin owner', () => {
+      it('Change user info: email, expect fail - 1', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}`)
+          .send({
+            email: newData.email,
+          })
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(400);
+        expect(response.body.message).to.be.a('string')
+          .include('Cannot change email');
+      });
+
+      it('Change user info: email, expect fail - 2', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.otherAdmin}`)
+          .send({
+            email: newData.email,
+          })
+          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
+        expect(response.status).to.equal(400);
+        expect(response.body.message).to.be.a('string')
+          .include('Cannot change email');
+      });
+
+      it('Change user info: username, expect fail - 1', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}`)
+          .send({
+            username: newData.username,
+          })
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(400);
+        expect(response.body.message).to.be.a('string')
+          .include('Username is exist, so you cannot change username');
+      });
+
+      it('Change user info: username, expect fail - 2', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.otherAdmin}`)
+          .send({
+            username: sampleAdminData.username,
+          })
+          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
+        expect(response.status).to.equal(400);
+        expect(response.body.message).to.be.a('string')
+          .include('username is already used');
+      });
+
+
+      it('Change user info: username, expect success - 3', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.otherAdmin}`)
+          .send({
+            username: newData.username,
+          })
+          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
+        expect(response.status).to.equal(400);
+        expect(response.body.message).to.be.a('string')
+          .include('username is updated');
+      });
+
+      it('Change user info: fullname, expect fail - 1', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}`)
+          .send({
+            fullname: 'abc',
+          })
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(400);
+        expect(response.body.message).to.be.a('string')
+          .include('fullname is so short, min length is 5');
+      });
+
+      it('Change user info: fullname, expect fail - 2', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.otherAdmin}`)
+          .send({
+            fullname: 'abc',
+          })
+          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
+        expect(response.status).to.equal(400);
+        expect(response.body.message).to.be.a('string')
+          .include('fullname is so short, min length is 5');
+      });
+
+      it('Change user info: fullname, expect success - 3', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}`)
+          .send({
+            fullname: newData.fullname,
+          })
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(200);
+      });
+
+      it('Change user info: fullname, expect success - 4', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.otherAdmin}`)
+          .send({
+            fullname: newData.fullname,
+          })
+          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
+        expect(response.status).to.equal(200);
+      });
+
+      it('Change user info: phone, expect fail - 1', async () => {
+
+      });
+
+      it('Change user info: phone, expect fail - 2', async () => {
+
+      });
+
+      it('Change user info: phone, expect success - 3', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}`)
+          .send({
+            phone: newData.phone,
+          })
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(200);
+      });
+
+      it('Change user info: phone, expect success - 4', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.otherAdmin}`)
+          .send({
+            phone: newData.phone,
+          })
+          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
+        expect(response.status).to.equal(200);
+      });
+
+      it('Change user info: birthDate, expect fail - 1', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}`)
+          .send({
+            birthDate: newData.birthDate,
+          })
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(200);
+      });
+
+      it('Change user info: birthDate, expect fail - 2', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.otherAdmin}`)
+          .send({
+            birthDate: newData.birthDate,
+          })
+          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
+        expect(response.status).to.equal(200);
+      });
+
+      it('Change user info: birthDate, expect success - 3', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}`)
+          .send({
+            birthDate: newData.birthDate,
+          })
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(200);
+      });
+
+      it('Change user info: birthDate, expect success - 4', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.otherAdmin}`)
+          .send({
+            birthDate: newData.birthDate,
+          })
+          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
+        expect(response.status).to.equal(200);
+      });
+
+      it('Change user info: cmnd, expect fail - 1', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}`)
+          .send({
+            cmnd: newData.cmnd + 'a',
+          })
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(200);
+      });
+
+      it('Change user info: cmnd, expect fail - 2', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.otherAdmin}`)
+          .send({
+            cmnd: newData.cmnd + 'a',
+          })
+          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
+        expect(response.status).to.equal(200);
+      });
+
+      it('Change user info: cmnd, expect success - 3', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}`)
+          .send({
+            cmnd: newData.cmnd,
+          })
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(200);
+      });
+
+      it('Change user info: cmnd, expect success - 4', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.otherAdmin}`)
+          .send({
+            cmnd: newData.cmnd,
+          })
+          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
+        expect(response.status).to.equal(200);
+      });
+
+      it('Change user info: address, expect success - 1', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}`)
+          .send({
+            address: newData.address,
+          })
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(200);
+      });
+
+      it('Change user info: address, expect success - 2', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.otherAdmin}`)
+          .send({
+            address: newData.address,
+          })
+          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
+        expect(response.status).to.equal(200);
+      });
+
+      it('Change user info: passsword, expect fail - 1', async () => {
+        // no oldpassword
+      });
+
+      it('Change user info: passsword, expect fail - 2', async () => {
+        // no new password
+      });
+
+      it('Change user info: passsword, expect fail - 3', async () => {
+        // no renew password
+      });
+
+      it('Change user info: passsword, expect fail - 4', async () => {
+        // new password and renew password dont match
+      });
+
+      it('Change user info: passsword, expect fail - 5', async () => {
+        // new password is short
+      });
+
+      it('Change user info: passsword, expect fail - 6', async () => {
+        // new password is short
+      });
+
+      it('Change user info: passsword, expect success - 7', async () => {
+        // all field is match
+      });
+    });
+  });
+
+  describe('#Delete a user', () => {
+
   });
 });
