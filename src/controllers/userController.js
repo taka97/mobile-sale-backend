@@ -5,6 +5,13 @@ import config from 'config';
 import Model from '../models/user';
 import createService from '../services/Services';
 import { validateUser } from '../utils';
+import {
+  OK,
+  CREATED,
+  NOCONTENT,
+  BADREQUEST,
+  FORBIDDEN,
+} from '../helpers/http-error';
 
 const dg = debug('MS:controllers:users');
 
@@ -71,7 +78,7 @@ class UserController {
       // First Validate The Request
       const { error } = validateUser(body);
       if (error) {
-        return next(createError(400, error.details[0].message));
+        return next(createError(BADREQUEST, error.details[0].message));
       }
 
       const findQuery = {
@@ -86,13 +93,13 @@ class UserController {
       const { total } = await this.services.find(findQuery);
 
       if (total !== 0) {
-        return next(createError(403, 'That user already exists!'));
+        return next(createError(FORBIDDEN, 'That user already exists!'));
       }
 
       const data = this.requiredField ? ({ ...body, ...this.requiredField }) : body;
 
       const result = await this.services.create(data, { query });
-      return res.status(201).send(result);
+      return res.status(CREATED).send(result);
     } catch (err) {
       return next(createError(err.code, err.message));
     }
@@ -110,7 +117,7 @@ class UserController {
       const id = params.id ? params.id : null;
 
       const user = await this.services.get(id, { query });
-      return res.status(200).send(user);
+      return res.status(OK).send(user);
     } catch (err) {
       return next(createError(err.code, err.message));
     }
@@ -128,7 +135,7 @@ class UserController {
       const id = params.id ? params.id : null;
 
       const result = await this.services.update(id, data, { query });
-      return res.status(200).send(result);
+      return res.status(OK).send(result);
     } catch (err) {
       return next(createError(err.code, err.message));
     }
@@ -171,7 +178,7 @@ class UserController {
 
     try {
       const result = await this.services.remove(id, { query });
-      return res.status(204).send(result);
+      return res.status(NOCONTENT).send(result);
     } catch (err) {
       return next(createError(err.code, err.message));
     }

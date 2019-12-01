@@ -1,6 +1,13 @@
 import debug from 'debug';
 import _ from 'lodash';
 
+import {
+  OK,
+  BADREQUEST,
+  INTERNALSERVERERROR,
+} from '../helpers/http-error';
+
+
 import filterQuery from '../utils/filter-query';
 import filterSelect from '../utils/filter-select';
 import select from '../utils/select';
@@ -163,9 +170,9 @@ class Services {
       .catch((err) => {
         switch (err.name) {
           case 'CastError':
-            return Promise.reject({ code: 400, message: '"Id" is invalid' });
+            return Promise.reject({ code: BADREQUEST, message: '"Id" is invalid' });
           default:
-            return Promise.reject({ code: 500, message: err });
+            return Promise.reject({ code: INTERNALSERVERERROR, message: err });
         }
       });
   }
@@ -199,13 +206,13 @@ class Services {
         return isMulti ? results : results[0];
       })
       .then(select(params, this.id))
-      .catch((err) => Promise.reject({ code: 500, message: err }));
+      .catch((err) => Promise.reject({ code: INTERNALSERVERERROR, message: err }));
   }
 
   update(id, data, params = {}) {
     if (id === null) {
       return Promise.reject({
-        code: 500,
+        code: INTERNALSERVERERROR,
         message: 'Not replacing multiple records. Did you mean `patch`?',
       });
     }
@@ -264,12 +271,12 @@ class Services {
     return modelQuery.lean(this.lean).exec()
       .then((result) => {
         if (result === null) {
-          return Promise.reject({ code: 200, message: `No record found for id ${id}` });
+          return Promise.reject({ code: OK, message: `No record found for id ${id}` });
         }
 
         return result;
       })
-      .catch((err) => { Promise.reject({ code: 500, message: err }); });
+      .catch((err) => { Promise.reject({ code: INTERNALSERVERERROR, message: err }); });
   }
 
   patch(id, data, params = {}) {
@@ -340,9 +347,9 @@ class Services {
             });
         })
         .then(select(params, this.id))
-        .catch((err) => Promise.reject({ code: 500, message: err }));
+        .catch((err) => Promise.reject({ code: INTERNALSERVERERROR, message: err }));
     } catch (e) {
-      return Promise.reject({ code: 500, message: e });
+      return Promise.reject({ code: INTERNALSERVERERROR, message: e });
     }
   }
 
@@ -367,13 +374,13 @@ class Services {
         .exec()
         .then((result) => {
           if (result === null) {
-            Promise.reject({ code: 200, message: `No record found for id '${id}'` });
+            Promise.reject({ code: OK, message: `No record found for id '${id}'` });
           }
 
           return result;
         })
         .then(select(params, this.id))
-        .catch((err) => Promise.reject({ code: 500, message: err }));
+        .catch((err) => Promise.reject({ code: INTERNALSERVERERROR, message: err }));
     }
 
     const findParams = {
@@ -388,7 +395,8 @@ class Services {
       .lean(this.lean)
       .exec()
       .then(() => data)
-      .then(select(params, this.id))).catch((err) => Promise.reject({ code: 500, message: err }));
+      .then(select(params, this.id)))
+      .catch((err) => Promise.reject({ code: INTERNALSERVERERROR, message: err }));
   }
 }
 
