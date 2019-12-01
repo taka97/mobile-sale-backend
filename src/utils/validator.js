@@ -35,6 +35,9 @@ const validateChangeUserInfo = (user) => {
     cmnd: Joi.string().pattern(/^[0-9]+$/, 'numbers'),
     sex: Joi.string().lowercase().valid('male', 'female'),
     address: Joi.string(),
+    roles: Joi.any().forbidden(),
+    createdAt: Joi.any().forbidden(),
+    updatedAt: Joi.any().forbidden(),
   });
   return schema.validate(user);
 };
@@ -43,7 +46,10 @@ const validateChangePassword = (user) => {
   const schema = Joi.object({
     oldPassword: Joi.string().required().pattern(/^[0-9a-zA-z]{5,128}$/),
     newPassword: Joi.string().required().pattern(/^[0-9a-zA-z]{5,128}$/),
-    repeatPassword: Joi.ref('newPassword'),
+    repeatPassword: Joi.string().required().valid(Joi.ref('newPassword'))
+      .messages({
+        'any.only': 'repeatPassword doesnot match newPassword'
+      }),
   });
   return schema.validate(user);
 };
