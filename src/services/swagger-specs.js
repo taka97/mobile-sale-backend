@@ -20,8 +20,16 @@ const swaggerDefinition = {
       description: 'Operations for authentication',
     },
     {
-      name: 'users',
-      description: 'Operations abount User',
+      name: 'admin',
+      description: 'Operations abount Admin',
+    },
+    {
+      name: 'staff',
+      description: 'Operations abount Staff',
+    },
+    {
+      name: 'customer',
+      description: 'Operations abount Customer',
     },
   ],
   schemes: [

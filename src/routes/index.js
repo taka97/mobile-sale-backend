@@ -17,11 +17,15 @@ const router = Router();
  *    properties:
  *      email:
  *        type: string
+ *        example: 'admin@gmail.com'
  *      password:
  *        type: string
+ *        example: 'Abc12345'
  *      strategy:
  *        type: string
  *        default: customer
+ *        example: 'admin'
+ *        enum: ['customer', 'staff', 'admin']
  *    required:
  *      - email
  *      - password
@@ -38,6 +42,62 @@ const router = Router();
  *    required:
  *      - userId
  *      - accessToken
+ *  User:
+ *    type: object
+ *    properties:
+ *      email:
+ *        type: string
+ *      username:
+ *        type: string
+ *      fullname:
+ *        type: string
+ *      cmnd:
+ *        type: string
+ *      address:
+ *        type: string
+ *      phone:
+ *        type: string
+ *      birthDate:
+ *        type: string
+ *      sex:
+ *        type: string
+ *        enum: ['male', 'female']
+ *    required:
+ *      - email
+ *      - fullname
+ *      - birthDate
+ *      - sex
+ *  UserResponse:
+ *    type: object
+ *    properties:
+ *      _id:
+ *        type: string
+ *      email:
+ *        type: string
+ *      username:
+ *        type: string
+ *      fullname:
+ *        type: string
+ *      cmnd:
+ *        type: string
+ *      address:
+ *        type: string
+ *      phone:
+ *        type: string
+ *      birthDate:
+ *        type: string
+ *      sex:
+ *        type: string
+ *        enum: ['male', 'female']
+ *      roles:
+ *        type: string
+ *        enum: ['customer', 'staff', 'admin']
+ *      createdAt:
+ *        type: string
+ *      updatedAt:
+ *        type: string
+ *    required:
+ *      - _id
  */
 
 router.use('/authentication', authenticationRouter);
