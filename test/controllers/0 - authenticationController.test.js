@@ -11,6 +11,7 @@ const sampleAdmin = [
     username: 'admin01',
     phone: '0987654321',
     birthDate: '10/06/1997',
+    sex: 'male',
     roles: 'admin',
   },
   {
@@ -20,6 +21,7 @@ const sampleAdmin = [
     username: 'admin02',
     phone: '0987654321',
     birthDate: '10/06/1997',
+    sex: 'male',
     roles: 'admin',
   },
 ];
@@ -32,6 +34,7 @@ const noExistAdmin = [
     username: 'admin03',
     phone: '0987654321',
     birthDate: '10/06/1997',
+    sex: 'male',
     roles: 'admin',
   },
   {
@@ -41,6 +44,7 @@ const noExistAdmin = [
     username: 'admin04',
     phone: '0987654321',
     birthDate: '10/06/1997',
+    sex: 'male',
     roles: 'admin',
   },
 ];
@@ -54,6 +58,7 @@ const sampleStaff = [
     phone: '0987654321',
     birthDate: '10/06/1997',
     roles: 'staff',
+    sex: 'male',
     storeId: '5ddd3d236f02f3381c484bce',
   },
   {
@@ -64,6 +69,7 @@ const sampleStaff = [
     phone: '0987654321',
     birthDate: '10/06/1997',
     roles: 'staff',
+    sex: 'male',
     storeId: '5ddd3d236f02f3381c484bce',
   },
 ];
@@ -77,6 +83,7 @@ const noExistStaff = [
     phone: '0987654321',
     birthDate: '10/06/1997',
     roles: 'staff',
+    sex: 'male',
     storeId: '5ddd3d236f02f3381c484bce',
   },
   {
@@ -87,6 +94,7 @@ const noExistStaff = [
     phone: '0987654321',
     birthDate: '10/06/1997',
     roles: 'staff',
+    sex: 'male',
     storeId: '5ddd3d236f02f3381c484bce',
   },
 ];
@@ -98,6 +106,7 @@ const sampleCustomer = [
     fullname: 'Ho Van Hoang Gmail',
     username: 'gmailtaka',
     phone: '0987654321',
+    sex: 'male',
     birthDate: '10/06/1997',
   },
   {
@@ -106,6 +115,7 @@ const sampleCustomer = [
     username: 'yahootaka',
     fullname: 'Ho Van Hoang Yahoo',
     phone: '0987654321',
+    sex: 'male',
     birthDate: '10/06/1997',
   },
 ];
@@ -117,6 +127,7 @@ const noExistCustomer = [
     fullname: 'Ho Van Hoang Hotmail',
     username: 'hotmailtaka',
     phone: '0987654321',
+    sex: 'male',
     birthDate: '10/06/1997',
   },
   {
@@ -125,6 +136,7 @@ const noExistCustomer = [
     fullname: 'Ho Van Hoang Yahoo.com',
     username: 'yahoocomtaka',
     phone: '0987654321',
+    sex: 'male',
     birthDate: '10/06/1997',
   },
 ];
