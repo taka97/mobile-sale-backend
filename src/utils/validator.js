@@ -6,7 +6,7 @@ const validateUser = (user) => {
   const schema = Joi.object({
     email: Joi.string().min(5).max(255).required()
       .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
-    password: Joi.string().min(5).max(255).required(),
+    password: Joi.string().required().pattern(/^[0-9a-zA-z]{5,128}$/),
     username: Joi.string().min(5).max(50),
     fullname: Joi.string().min(5).max(128).required(),
     phone: Joi.string().pattern(/^[0-9]+$/, 'numbers'),
