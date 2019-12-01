@@ -27,6 +27,13 @@ const sampleAdmin = [
     password: 'Abc12345',
     birthDate: '2019/10/05',
   },
+  {
+    email: 'vanhoang0609@gmail.com',
+    fullname: 'Van Hoang',
+    password: 'Abc12345',
+    birthDate: '2019/10/05',
+    sex: 'male',
+  },
 ];
 
 const sampleCustomerData = {
@@ -35,6 +42,7 @@ const sampleCustomerData = {
   username: 'customer',
   password: 'customer',
   birthDate: '2019/10/05',
+  sex: 'male',
   roles: 'customer',
 };
 
@@ -44,6 +52,7 @@ const sampleStaffData = {
   username: 'staff',
   password: 'staff',
   birthDate: '2019/10/05',
+  sex: 'male',
   roles: 'staff',
 };
 
@@ -53,6 +62,7 @@ const sampleAdminData = {
   username: 'admin',
   password: 'admin',
   birthDate: '2019/10/05',
+  sex: 'male',
   roles: 'admin',
 };
 
@@ -62,6 +72,7 @@ const newData = {
   username: 'newadmin',
   passsword: 'newpassword',
   birthDate: '1997/10/06',
+  sex: 'male',
   roles: 'staff',
 }
 
@@ -103,26 +114,34 @@ describe('Admin Controller', () => {
         expect(response.status).to.equal(400);
         expect(response.body.message).to.be.a('string').include('"birthDate" is required');
       });
+
+      it('shound return error missing "sex"', async () => {
+        const response = await request(app)
+          .post('/api/admin')
+          .send(sampleAdmin[4]);
+        expect(response.status).to.equal(400);
+        expect(response.body.message).to.be.a('string').include('"sex" is required');
+      });
     });
 
     describe('##Enough field', () => {
       it('shound return success and user data', async () => {
         const response = await request(app)
           .post('/api/admin')
-          .send(sampleAdmin[4]);
+          .send(sampleAdmin[5]);
         expect(response.status).to.equal(201);
         expect(response.body).to.have.property('_id');
         expect(response.body).to.not.have.property('password');
-        expect(response.body).to.have.property('fullname', sampleAdmin[4].fullname);
-        expect(response.body).to.have.property('email', sampleAdmin[4].email);
+        expect(response.body).to.have.property('fullname', sampleAdmin[5].fullname);
+        expect(response.body).to.have.property('email', sampleAdmin[5].email);
         expect(response.body).to.have.property('birthDate',
-          (new Date(sampleAdmin[4].birthDate)).toISOString());
+          (new Date(sampleAdmin[5].birthDate)).toISOString());
       });
 
       it('shound return false with error user already exists', async () => {
         const response = await request(app)
           .post('/api/admin')
-          .send(sampleAdmin[4]);
+          .send(sampleAdmin[5]);
         expect(response.status).to.equal(403);
         expect(response.body.message).to.be.a('string').include('That user already exists!');
       });
@@ -278,14 +297,14 @@ describe('Admin Controller', () => {
       await User.create(sampleAdminData);
       await User.create(sampleStaffData);
       await User.create(sampleCustomerData);
-      await User.create(sampleAdmin[4]);
+      await User.create(sampleAdmin[5]);
 
       const data = [sampleAdminData, sampleStaffData, sampleCustomerData];
       const response = await request(app)
         .post('/api/authentication')
         .send({
-          email: sampleAdmin[4].email,
-          password: sampleAdmin[4].password,
+          email: sampleAdmin[5].email,
+          password: sampleAdmin[5].password,
           strategy: 'admin',
         });
 
