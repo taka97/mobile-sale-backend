@@ -10,7 +10,7 @@ const validateUser = (user) => {
     username: Joi.string().min(5).max(50),
     fullname: Joi.string().min(5).max(128).required(),
     phone: Joi.string().pattern(/^[0-9]+$/, 'numbers'),
-    birthDate: Joi.date().required(),
+    birthDate: Joi.date().min('1-1-1974').max('now').required(),
     cmnd: Joi.string().pattern(/^[0-9]+$/, 'numbers'),
     address: Joi.string(),
   });
@@ -28,9 +28,9 @@ const validateEmail = (user) => {
 const validateChangeUserInfo = (user) => {
   const schema = Joi.object({
     email: Joi.any().forbidden(),
-    fullname: Joi.string().min(5).max(128).required(),
+    fullname: Joi.string().min(5).max(128),
     phone: Joi.string().pattern(/^[0-9]+$/, 'numbers'),
-    birthDate: Joi.date().required(),
+    birthDate: Joi.date().min('1-1-1974').max('now'),
     cmnd: Joi.string().pattern(/^[0-9]+$/, 'numbers'),
     address: Joi.string(),
   });
@@ -39,9 +39,9 @@ const validateChangeUserInfo = (user) => {
 
 const validateChangePassword = (user) => {
   const schema = Joi.object({
-    oldpassword: Joi.string().required().pattern(/^[0-9a-zA-z]{5,128}$/),
-    newpassword: Joi.string().required().pattern(/^[0-9a-zA-z]{5,128}$/),
-    repeatpassword: Joi.ref('newpassword'),
+    oldPassword: Joi.string().required().pattern(/^[0-9a-zA-z]{5,128}$/),
+    newPassword: Joi.string().required().pattern(/^[0-9a-zA-z]{5,128}$/),
+    repeatPassword: Joi.ref('newPassword'),
   });
   return schema.validate(user);
 };
