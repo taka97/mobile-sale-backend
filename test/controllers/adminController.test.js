@@ -574,32 +574,86 @@ describe('Admin Controller', () => {
         expect(response.status).to.equal(200);
       });
 
+      // no oldpassword
       it('Change user info: passsword, expect fail - 1', async () => {
-        // no oldpassword
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}/password`)
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(400);
       });
 
+      // no new password
       it('Change user info: passsword, expect fail - 2', async () => {
-        // no new password
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}/password`)
+          .send({
+            oldpassword: sampleAdminData.password,
+          })
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(400);
       });
 
+      // no repeat password
       it('Change user info: passsword, expect fail - 3', async () => {
-        // no renew password
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}/password`)
+          .send({
+            oldpassword: sampleAdminData.password,
+            newpassword: newData.passsword,
+          })
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(400);
       });
 
+      // new password and repeat password donnt match
       it('Change user info: passsword, expect fail - 4', async () => {
-        // new password and renew password dont match
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}/password`)
+          .send({
+            oldpassword: sampleAdminData.password,
+            newpassword: newData.passsword,
+            repeatpassword: newData.passsword + 'a',
+          })
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(400);
       });
 
+      // old password donnt match
       it('Change user info: passsword, expect fail - 5', async () => {
-        // new password is short
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}/password`)
+          .send({
+            oldpassword: sampleAdminData.password + 'a',
+            newpassword: newData.passsword,
+            repeatpassword: newData.passsword,
+          })
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(400);
       });
 
+      // new password is so short
       it('Change user info: passsword, expect fail - 6', async () => {
-        // new password is short
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}/password`)
+          .send({
+            oldpassword: sampleAdminData.password + 'a',
+            newpassword: 'a',
+            repeatpassword: 'a' + 'a',
+          })
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(400);
       });
 
       it('Change user info: passsword, expect success - 7', async () => {
-        // all field is match
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}/password`)
+          .send({
+            oldpassword: sampleAdminData.password,
+            newpassword: newData.passsword,
+            repeatpassword: newData.passsword,
+          })
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(400);
       });
     });
   });
