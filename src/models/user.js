@@ -43,6 +43,11 @@ const UserSchema = new Schema(
     address: {
       type: String,
     },
+    sex: {
+      type: String,
+      enum: ['male', 'female'],
+      required: true,
+    },
     storeId: {
       type: Schema.Types.ObjectId,
       ref: 'Store',

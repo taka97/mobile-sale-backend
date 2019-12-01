@@ -11,6 +11,7 @@ const validateUser = (user) => {
     fullname: Joi.string().min(5).max(128).required(),
     phone: Joi.string().pattern(/^[0-9]+$/, 'numbers'),
     birthDate: Joi.date().min('1-1-1974').max('now').required(),
+    sex: Joi.string().lowercase().valid('male', 'female').required(),
     cmnd: Joi.string().pattern(/^[0-9]+$/, 'numbers'),
     address: Joi.string(),
   });
@@ -32,6 +33,7 @@ const validateChangeUserInfo = (user) => {
     phone: Joi.string().pattern(/^[0-9]+$/, 'numbers'),
     birthDate: Joi.date().min('1-1-1974').max('now'),
     cmnd: Joi.string().pattern(/^[0-9]+$/, 'numbers'),
+    sex: Joi.string().lowercase().valid('male', 'female'),
     address: Joi.string(),
   });
   return schema.validate(user);
