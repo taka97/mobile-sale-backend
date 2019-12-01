@@ -107,6 +107,7 @@ describe('Staff Controller', () => {
         expect(response.body).to.have.property('email', sampleStaff[5].email);
         expect(response.body).to.have.property('birthDate',
           (new Date(sampleStaff[5].birthDate)).toISOString());
+        expect(response.body).to.have.property('sex', sampleStaff[5].sex);
       });
 
       it('shound return false with error user already exists', async () => {
@@ -161,6 +162,7 @@ describe('Staff Controller', () => {
       expect(response.body).to.have.property('email', sampleStaffData.email);
       expect(response.body).to.have.property('birthDate',
         (new Date(sampleStaffData.birthDate)).toISOString());
+      expect(response.body).to.have.property('sex', sampleStaff[5].sex);
     });
 
     it('should return user data with Token in Authorization header', async () => {
@@ -174,6 +176,7 @@ describe('Staff Controller', () => {
       expect(response.body).to.have.property('email', sampleStaffData.email);
       expect(response.body).to.have.property('birthDate',
         (new Date(sampleStaffData.birthDate)).toISOString());
+      expect(response.body).to.have.property('sex', sampleStaff[5].sex);
     });
   });
 });

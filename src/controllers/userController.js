@@ -26,6 +26,7 @@ class UserController {
       'fullname',
       'phone',
       'birthDate',
+      'sex',
       'cmnd',
       'address',
       'roles',
