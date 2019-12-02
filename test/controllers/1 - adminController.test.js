@@ -33,7 +33,6 @@ const sampleAdmin = [
     password: 'Abc12345',
     birthDate: '2019/10/05',
     sex: 'male',
-    roles: 'admin',
   },
 ];
 
@@ -296,7 +295,7 @@ describe('Admin Controller', () => {
     });
   });
 
-  describe.only('#Update a user detail', () => {
+  describe('#Update a user detail', () => {
     const accessToken = {};
     const userId = {};
 
@@ -305,7 +304,7 @@ describe('Admin Controller', () => {
       await User.create(sampleAdminData);
       await User.create(sampleStaffData);
       await User.create(sampleCustomerData);
-      await User.create(sampleAdmin[5]);
+      await User.create({ ...sampleAdmin[5], roles: 'admin' });
 
       const data = [sampleAdminData, sampleStaffData, sampleCustomerData];
       const responseo = await request(app)
@@ -369,7 +368,7 @@ describe('Admin Controller', () => {
       });
     });
 
-    describe.only('##Change user info - admin owner', () => {
+    describe('##Change user info - admin owner', () => {
       it('Change user info: email, expect fail', async () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}`)
