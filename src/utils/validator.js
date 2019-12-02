@@ -38,6 +38,7 @@ const validateChangeUserInfo = (user) => {
     roles: Joi.any().forbidden(),
     createdAt: Joi.any().forbidden(),
     updatedAt: Joi.any().forbidden(),
+    password: Joi.any().forbidden(),
   });
   return schema.validate(user);
 };
