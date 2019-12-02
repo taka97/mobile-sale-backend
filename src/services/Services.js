@@ -265,9 +265,6 @@ class Services {
       modelQuery.select(filters.$select);
     }
 
-    dg('filter: ', filters);
-    dg('query: ', query);
-
     return modelQuery.lean(this.lean).exec()
       .then((result) => {
         if (result === null) {
@@ -333,8 +330,7 @@ class Services {
 
           // If params.query.$populate was provided, remove it
           // from the query sent to mongoose.
-          const discriminator = query[this.discriminatorKey] || this.discriminatorKey;
-          const model = this.discriminators[discriminator] || this.Model;
+          const model = this.Model;
           return model
             .updateMany(query, data, options)
             .lean(this.lean)
