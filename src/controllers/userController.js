@@ -4,7 +4,9 @@ import config from 'config';
 
 import Model from '../models/user';
 import createService from '../services/Services';
-import { validateUser } from '../utils';
+import {
+  validateUser,
+} from '../utils';
 import {
   OK,
   CREATED,
@@ -50,6 +52,7 @@ class UserController {
     this.create = this.create.bind(this);
     this.show = this.show.bind(this);
     this.update = this.update.bind(this);
+    this.patch = this.patch.bind(this);
     this.destroy = this.destroy.bind(this);
   }
 
@@ -148,27 +151,43 @@ class UserController {
  * @param {Object} res response
  * @param {Object} next next pointer
  */
-  async patch(req, res) {
-    // const { query } = req;
-    const data = req.body;
-    // const writeResults = await User.updatesMany(query, data);
+  async patch(req, res, next) {
+    const { params, query, body, isChangePassword, user } = req;
+    const id = params.id ? params.id : null;
 
-    // if (this.options.writeResults) {
-    //   return res.send(writeResults);
-    // }
+    try {
+      if (isChangePassword) {
+        const { oldPassword, newPassword } = body;
+        dg(oldPassword);
+        dg(newPassword);
 
-    dg(data);
-    // dg(response);
+        if (!user.validPassword(oldPassword)) {
+          // throw new createError.BadRequest('password donn\'t match');
+          throw ({ code: BADREQUEST, message: 'old password donn\'t match' });
+        }
+        const data = {
+          password: newPassword,
+        };
 
-    res.json({ msg: 'patch user detail', id: req.params.id });
+        const result = await this.services.patch(id, data, { query });
+        return res.send(result);
+      } else {
+
+      }
+      const result = undefined;
+      // const result = await this.services.patch(id, data, { query });
+      return res.send(result);
+    } catch (err) {
+      return next(err);
+    }
   }
 
   /**
- * Controller - Delete User (Carefully with using it)
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next pointer
- */
+  * Controller - Delete User (Carefully with using it)
+  * @param {object} req request
+  * @param {object} res response
+  * @param {object} next next pointer
+  */
   async destroy(req, res, next) {
     const { params } = req;
     let { query } = req;

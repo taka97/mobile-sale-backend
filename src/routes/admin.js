@@ -1,6 +1,15 @@
 import { Router } from 'express';
-import { authenticateJWT, restrictPermission } from '../middlewares';
+
 import AdminController from '../controllers/adminController';
+import {
+  authenticateJWT,
+  restrictPermission,
+  validatorData
+} from '../middlewares';
+import {
+  validateChangeUserInfo as changeInfo,
+  validateChangePassword as changePassword,
+} from '../utils';
 
 const router = Router();
 
@@ -45,7 +54,11 @@ router.get('/:id', authenticateJWT, AdminController.show);
 
 router.put('/:id', authenticateJWT, AdminController.update);
 
-// router.patch('/:id', authenticateJWT, UserController.update);
+router.patch('/:id', authenticateJWT, validatorData(changeInfo), AdminController.patch);
+router.patch('/:id/password',
+  authenticateJWT,
+  validatorData(changePassword, 'isChangePassword'),
+  AdminController.patch);
 
 router.delete('/:id?', authenticateJWT, AdminController.destroy);
 
