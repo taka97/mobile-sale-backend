@@ -88,7 +88,7 @@ class UserController {
         findQuery.$or.push({ username: body.username });
       }
 
-      const { total } = await this.services.find(findQuery);
+      const { total } = await this.services.find({ query: findQuery });
 
       if (total !== 0) {
         throw new Forbidden('That user already exists!');
@@ -153,6 +153,10 @@ class UserController {
 
     try {
       const { username } = body;
+      if (Object.keys(body).length === 0) {
+        throw new BadRequest('Donnot have any field is modified');
+      }
+
       if (username) {
         if (user.username !== undefined) {
           throw new BadRequest('Cannot change your username');

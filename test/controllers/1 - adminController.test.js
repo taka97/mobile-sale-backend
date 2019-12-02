@@ -33,6 +33,7 @@ const sampleAdmin = [
     password: 'Abc12345',
     birthDate: '2019/10/05',
     sex: 'male',
+    roles: 'admin',
   },
 ];
 
@@ -74,7 +75,10 @@ const newData = {
   birthDate: '1997/10/06',
   sex: 'male',
   roles: 'staff',
-}
+  phone: '0123456789',
+  cmnd: '215416497',
+  address: 'my address',
+};
 
 describe('Admin Controller', () => {
   before('***Cleaning user collection', async () => {
@@ -292,9 +296,9 @@ describe('Admin Controller', () => {
     });
   });
 
-  describe.skip('#Update a user detail', () => {
-    let accessToken;
-    let userId;
+  describe.only('#Update a user detail', () => {
+    const accessToken = {};
+    const userId = {};
 
     before('Create user account', async () => {
       await User.deleteMany();
@@ -304,7 +308,7 @@ describe('Admin Controller', () => {
       await User.create(sampleAdmin[5]);
 
       const data = [sampleAdminData, sampleStaffData, sampleCustomerData];
-      const response = await request(app)
+      const responseo = await request(app)
         .post('/api/authentication')
         .send({
           email: sampleAdmin[5].email,
@@ -312,8 +316,8 @@ describe('Admin Controller', () => {
           strategy: 'admin',
         });
 
-      userId['otherAdmin'] = response.body.userId;
-      accessToken['otherAdmin'] = response.body.accessToken;
+      userId.otherAdmin = responseo.body.userId;
+      accessToken.otherAdmin = responseo.body.accessToken;
       await forEachAsync(data, async (current) => {
         const response = await request(app)
           .post('/api/authentication')
@@ -328,43 +332,45 @@ describe('Admin Controller', () => {
     });
 
     describe('##Check permission', () => {
-      it('should return you dont have permission - customer', async () => {
+      it('should return Dont have permission - customer', async () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}`)
           .set('Authorization', `Bearer ${accessToken.customer}`);
         expect(response.status).to.equal(401);
-        expect(response.body.message).to.be.a('string').include('You don\'t have permission to access');
+        expect(response.body.message).to.be.a('string')
+          .include('You don\'t have permission to access');
       });
 
-      it('should return you dont have permission - staff', async () => {
+      it('should return Dont have permission - staff', async () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}`)
           .set('Authorization', `Bearer ${accessToken.staff}`);
         expect(response.status).to.equal(401);
-        expect(response.body.message).to.be.a('string').include('You don\'t have permission to access');
+        expect(response.body.message).to.be.a('string')
+          .include('You don\'t have permission to access');
       });
 
-      it('should return You are not the owner - admin (no owner)', async () => {
+      it('should return Dont have permission - admin (no owner)', async () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}`)
           .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
         expect(response.status).to.equal(401);
         expect(response.body.message).to.be.a('string')
-          .include('You are not the owner, so you cannot modify this resources');
+          .include('You don\'t have permission to modify');
       });
 
-      it('should return success - admin (owner)', async () => {
+      it('should return fail - admin (owner)', async () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}`)
           .set('Authorization', `Bearer ${accessToken.admin}`);
-        expect(response.status).to.equal(200);
+        expect(response.status).to.equal(400);
         expect(response.body.message).to.be.a('string')
           .include('Donnot have any field is modified');
       });
     });
 
-    describe('##Change user info - admin owner', () => {
-      it('Change user info: email, expect fail - 1', async () => {
+    describe.only('##Change user info - admin owner', () => {
+      it('Change user info: email, expect fail', async () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}`)
           .send({
@@ -373,19 +379,7 @@ describe('Admin Controller', () => {
           .set('Authorization', `Bearer ${accessToken.admin}`);
         expect(response.status).to.equal(400);
         expect(response.body.message).to.be.a('string')
-          .include('Cannot change email');
-      });
-
-      it('Change user info: email, expect fail - 2', async () => {
-        const response = await request(app)
-          .patch(`/api/admin/${userId.otherAdmin}`)
-          .send({
-            email: newData.email,
-          })
-          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
-        expect(response.status).to.equal(400);
-        expect(response.body.message).to.be.a('string')
-          .include('Cannot change email');
+          .include('"email" is not allowed');
       });
 
       it('Change user info: username, expect fail - 1', async () => {
@@ -397,7 +391,7 @@ describe('Admin Controller', () => {
           .set('Authorization', `Bearer ${accessToken.admin}`);
         expect(response.status).to.equal(400);
         expect(response.body.message).to.be.a('string')
-          .include('Username is exist, so you cannot change username');
+          .include('Cannot change your username');
       });
 
       it('Change user info: username, expect fail - 2', async () => {
@@ -409,7 +403,7 @@ describe('Admin Controller', () => {
           .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
         expect(response.status).to.equal(400);
         expect(response.body.message).to.be.a('string')
-          .include('username is already used');
+          .include('username is existed!!');
       });
 
 
@@ -420,12 +414,18 @@ describe('Admin Controller', () => {
             username: newData.username,
           })
           .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
-        expect(response.status).to.equal(400);
-        expect(response.body.message).to.be.a('string')
-          .include('username is updated');
+        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('_id');
+        expect(response.body).to.not.have.property('password');
+        expect(response.body).to.have.property('username', newData.username);
+        expect(response.body).to.have.property('fullname', sampleAdmin[5].fullname);
+        expect(response.body).to.have.property('email', sampleAdmin[5].email);
+        expect(response.body).to.have.property('birthDate',
+          (new Date(sampleAdmin[5].birthDate)).toISOString());
+        expect(response.body).to.have.property('sex', sampleAdmin[5].sex);
       });
 
-      it('Change user info: fullname, expect fail - 1', async () => {
+      it('Change user info: fullname, expect fail', async () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}`)
           .send({
@@ -434,50 +434,40 @@ describe('Admin Controller', () => {
           .set('Authorization', `Bearer ${accessToken.admin}`);
         expect(response.status).to.equal(400);
         expect(response.body.message).to.be.a('string')
-          .include('fullname is so short, min length is 5');
+          .include('"fullname" length must be at least 5 characters long');
       });
 
-      it('Change user info: fullname, expect fail - 2', async () => {
+      it('Change user info: fullname, expect success', async () => {
         const response = await request(app)
-          .patch(`/api/admin/${userId.otherAdmin}`)
+          .patch(`/api/admin/${userId.admin}`)
           .send({
-            fullname: 'abc',
+            fullname: newData.fullname,
           })
-          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('_id');
+        expect(response.body).to.not.have.property('password');
+        expect(response.body).to.have.property('username', sampleAdminData.username);
+        expect(response.body).to.have.property('fullname', newData.fullname);
+        expect(response.body).to.have.property('email', sampleAdminData.email);
+        expect(response.body).to.have.property('birthDate',
+          (new Date(sampleAdminData.birthDate)).toISOString());
+        expect(response.body).to.have.property('sex', sampleAdminData.sex);
+      });
+
+      it('Change user info: phone, expect fail', async () => {
+        const response = await request(app)
+          .patch(`/api/admin/${userId.admin}`)
+          .send({
+            phone: 'abc',
+          })
+          .set('Authorization', `Bearer ${accessToken.admin}`);
         expect(response.status).to.equal(400);
-        expect(response.body.message).to.be.a('string')
-          .include('fullname is so short, min length is 5');
+        expect(response.body).to.have
+          .property('message', '"phone" with value "abc" fails to match the numbers pattern');
       });
 
-      it('Change user info: fullname, expect success - 3', async () => {
-        const response = await request(app)
-          .patch(`/api/admin/${userId.admin}`)
-          .send({
-            fullname: newData.fullname,
-          })
-          .set('Authorization', `Bearer ${accessToken.admin}`);
-        expect(response.status).to.equal(200);
-      });
-
-      it('Change user info: fullname, expect success - 4', async () => {
-        const response = await request(app)
-          .patch(`/api/admin/${userId.otherAdmin}`)
-          .send({
-            fullname: newData.fullname,
-          })
-          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
-        expect(response.status).to.equal(200);
-      });
-
-      it('Change user info: phone, expect fail - 1', async () => {
-
-      });
-
-      it('Change user info: phone, expect fail - 2', async () => {
-
-      });
-
-      it('Change user info: phone, expect success - 3', async () => {
+      it('Change user info: phone, expect success', async () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}`)
           .send({
@@ -485,19 +475,29 @@ describe('Admin Controller', () => {
           })
           .set('Authorization', `Bearer ${accessToken.admin}`);
         expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('_id');
+        expect(response.body).to.not.have.property('password');
+        expect(response.body).to.have.property('username', sampleAdminData.username);
+        expect(response.body).to.have.property('fullname', newData.fullname);
+        expect(response.body).to.have.property('email', sampleAdminData.email);
+        expect(response.body).to.have.property('birthDate',
+          (new Date(sampleAdminData.birthDate)).toISOString());
+        expect(response.body).to.have.property('sex', sampleAdminData.sex);
+        expect(response.body).to.have.property('phone', newData.phone);
       });
 
-      it('Change user info: phone, expect success - 4', async () => {
+      it('Change user info: birthDate, expect fail', async () => {
         const response = await request(app)
-          .patch(`/api/admin/${userId.otherAdmin}`)
+          .patch(`/api/admin/${userId.admin}`)
           .send({
-            phone: newData.phone,
+            birthDate: 'abc',
           })
-          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
-        expect(response.status).to.equal(200);
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', '"birthDate" must be a valid date');
       });
 
-      it('Change user info: birthDate, expect fail - 1', async () => {
+      it('Change user info: birthDate, expect success', async () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}`)
           .send({
@@ -505,59 +505,31 @@ describe('Admin Controller', () => {
           })
           .set('Authorization', `Bearer ${accessToken.admin}`);
         expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('_id');
+        expect(response.body).to.not.have.property('password');
+        expect(response.body).to.have.property('username', sampleAdminData.username);
+        expect(response.body).to.have.property('fullname', newData.fullname);
+        expect(response.body).to.have.property('email', sampleAdminData.email);
+        expect(response.body).to.have.property('birthDate',
+          (new Date(newData.birthDate)).toISOString());
+        expect(response.body).to.have.property('sex', sampleAdminData.sex);
+        expect(response.body).to.have.property('phone', newData.phone);
       });
 
-      it('Change user info: birthDate, expect fail - 2', async () => {
-        const response = await request(app)
-          .patch(`/api/admin/${userId.otherAdmin}`)
-          .send({
-            birthDate: newData.birthDate,
-          })
-          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
-        expect(response.status).to.equal(200);
-      });
-
-      it('Change user info: birthDate, expect success - 3', async () => {
-        const response = await request(app)
-          .patch(`/api/admin/${userId.admin}`)
-          .send({
-            birthDate: newData.birthDate,
-          })
-          .set('Authorization', `Bearer ${accessToken.admin}`);
-        expect(response.status).to.equal(200);
-      });
-
-      it('Change user info: birthDate, expect success - 4', async () => {
-        const response = await request(app)
-          .patch(`/api/admin/${userId.otherAdmin}`)
-          .send({
-            birthDate: newData.birthDate,
-          })
-          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
-        expect(response.status).to.equal(200);
-      });
-
-      it('Change user info: cmnd, expect fail - 1', async () => {
+      it('Change user info: cmnd, expect fail', async () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}`)
           .send({
-            cmnd: newData.cmnd + 'a',
+            cmnd: `${newData.cmnd}a`,
           })
           .set('Authorization', `Bearer ${accessToken.admin}`);
-        expect(response.status).to.equal(200);
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have
+          .property('message',
+            `"cmnd" with value "${`${newData.cmnd}a`}" fails to match the numbers pattern`);
       });
 
-      it('Change user info: cmnd, expect fail - 2', async () => {
-        const response = await request(app)
-          .patch(`/api/admin/${userId.otherAdmin}`)
-          .send({
-            cmnd: newData.cmnd + 'a',
-          })
-          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
-        expect(response.status).to.equal(200);
-      });
-
-      it('Change user info: cmnd, expect success - 3', async () => {
+      it('Change user info: cmnd, expect success', async () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}`)
           .send({
@@ -565,19 +537,19 @@ describe('Admin Controller', () => {
           })
           .set('Authorization', `Bearer ${accessToken.admin}`);
         expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('_id');
+        expect(response.body).to.not.have.property('password');
+        expect(response.body).to.have.property('username', sampleAdminData.username);
+        expect(response.body).to.have.property('fullname', newData.fullname);
+        expect(response.body).to.have.property('email', sampleAdminData.email);
+        expect(response.body).to.have.property('birthDate',
+          (new Date(newData.birthDate)).toISOString());
+        expect(response.body).to.have.property('cmnd', newData.cmnd);
+        expect(response.body).to.have.property('sex', sampleAdminData.sex);
+        expect(response.body).to.have.property('phone', newData.phone);
       });
 
-      it('Change user info: cmnd, expect success - 4', async () => {
-        const response = await request(app)
-          .patch(`/api/admin/${userId.otherAdmin}`)
-          .send({
-            cmnd: newData.cmnd,
-          })
-          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
-        expect(response.status).to.equal(200);
-      });
-
-      it('Change user info: address, expect success - 1', async () => {
+      it('Change user info: address, expect success', async () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}`)
           .send({
@@ -585,16 +557,17 @@ describe('Admin Controller', () => {
           })
           .set('Authorization', `Bearer ${accessToken.admin}`);
         expect(response.status).to.equal(200);
-      });
-
-      it('Change user info: address, expect success - 2', async () => {
-        const response = await request(app)
-          .patch(`/api/admin/${userId.otherAdmin}`)
-          .send({
-            address: newData.address,
-          })
-          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
-        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('_id');
+        expect(response.body).to.not.have.property('password');
+        expect(response.body).to.have.property('username', sampleAdminData.username);
+        expect(response.body).to.have.property('fullname', newData.fullname);
+        expect(response.body).to.have.property('email', sampleAdminData.email);
+        expect(response.body).to.have.property('birthDate',
+          (new Date(newData.birthDate)).toISOString());
+        expect(response.body).to.have.property('cmnd', newData.cmnd);
+        expect(response.body).to.have.property('sex', sampleAdminData.sex);
+        expect(response.body).to.have.property('phone', newData.phone);
+        expect(response.body).to.have.property('address', newData.address);
       });
 
       // no oldpassword
@@ -603,6 +576,8 @@ describe('Admin Controller', () => {
           .patch(`/api/admin/${userId.admin}/password`)
           .set('Authorization', `Bearer ${accessToken.admin}`);
         expect(response.status).to.equal(400);
+        expect(response.body).to.have
+          .property('message', '"oldPassword" is required');
       });
 
       // no new password
@@ -610,10 +585,12 @@ describe('Admin Controller', () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}/password`)
           .send({
-            oldpassword: sampleAdminData.password,
+            oldPassword: sampleAdminData.password,
           })
           .set('Authorization', `Bearer ${accessToken.admin}`);
         expect(response.status).to.equal(400);
+        expect(response.body).to.have
+          .property('message', '"newPassword" is required');
       });
 
       // no repeat password
@@ -621,11 +598,13 @@ describe('Admin Controller', () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}/password`)
           .send({
-            oldpassword: sampleAdminData.password,
-            newpassword: newData.passsword,
+            oldPassword: sampleAdminData.password,
+            newPassword: newData.passsword,
           })
           .set('Authorization', `Bearer ${accessToken.admin}`);
         expect(response.status).to.equal(400);
+        expect(response.body).to.have
+          .property('message', '"repeatPassword" is required');
       });
 
       // new password and repeat password donnt match
@@ -633,12 +612,14 @@ describe('Admin Controller', () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}/password`)
           .send({
-            oldpassword: sampleAdminData.password,
-            newpassword: newData.passsword,
-            repeatpassword: newData.passsword + 'a',
+            oldPassword: sampleAdminData.password,
+            newPassword: newData.passsword,
+            repeatPassword: `${newData.passsword}a`,
           })
           .set('Authorization', `Bearer ${accessToken.admin}`);
         expect(response.status).to.equal(400);
+        expect(response.body).to.have
+          .property('message', 'repeatPassword donnot match newPassword');
       });
 
       // old password donnt match
@@ -646,12 +627,14 @@ describe('Admin Controller', () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}/password`)
           .send({
-            oldpassword: sampleAdminData.password + 'a',
-            newpassword: newData.passsword,
-            repeatpassword: newData.passsword,
+            oldPassword: `${sampleAdminData.password}a`,
+            newPassword: newData.passsword,
+            repeatPassword: newData.passsword,
           })
           .set('Authorization', `Bearer ${accessToken.admin}`);
         expect(response.status).to.equal(400);
+        expect(response.body).to.have
+          .property('message', 'old password donn\'t match');
       });
 
       // new password is so short
@@ -659,24 +642,47 @@ describe('Admin Controller', () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}/password`)
           .send({
-            oldpassword: sampleAdminData.password + 'a',
-            newpassword: 'a',
-            repeatpassword: 'a' + 'a',
+            oldPassword: sampleAdminData.password,
+            newPassword: 'a',
+            repeatPassword: 'aa',
           })
           .set('Authorization', `Bearer ${accessToken.admin}`);
         expect(response.status).to.equal(400);
+        /* eslint-disable max-len */
+        expect(response.body).to.have.property('message',
+          '"newPassword" with value "a" fails to match the required pattern: /^[0-9a-zA-z]{5,128}$/');
       });
 
       it('Change user info: passsword, expect success - 7', async () => {
         const response = await request(app)
           .patch(`/api/admin/${userId.admin}/password`)
           .send({
-            oldpassword: sampleAdminData.password,
-            newpassword: newData.passsword,
-            repeatpassword: newData.passsword,
+            oldPassword: sampleAdminData.password,
+            newPassword: newData.passsword,
+            repeatPassword: newData.passsword,
           })
           .set('Authorization', `Bearer ${accessToken.admin}`);
-        expect(response.status).to.equal(400);
+        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('_id');
+        expect(response.body).to.not.have.property('password');
+        expect(response.body).to.have.property('username', sampleAdminData.username);
+        expect(response.body).to.have.property('fullname', newData.fullname);
+        expect(response.body).to.have.property('email', sampleAdminData.email);
+        expect(response.body).to.have.property('birthDate',
+          (new Date(newData.birthDate)).toISOString());
+        expect(response.body).to.have.property('cmnd', newData.cmnd);
+        expect(response.body).to.have.property('sex', sampleAdminData.sex);
+        expect(response.body).to.have.property('phone', newData.phone);
+        expect(response.body).to.have.property('address', newData.address);
+
+        const { body } = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleAdminData.email,
+            password: newData.passsword,
+            strategy: 'admin',
+          });
+        expect(body.userId).to.equal(userId.admin);
       });
     });
   });

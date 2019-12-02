@@ -18,7 +18,7 @@ class SeederController {
       const tmp = {
         ...this.constantData,
         email: `${data}${i}@gmail.com`,
-        username: `${data}${i}@gmail.com`,
+        username: `${data}${i}`,
         password: `${data}${i}`,
         roles: `${data}`,
       };

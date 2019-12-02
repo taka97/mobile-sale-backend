@@ -1,7 +1,6 @@
 import { expect } from 'chai';
-import httpCode from '../../src/helpers/http-code';
-import * as code from '../../src/helpers/http-code';
-
+import httpCode, * as code from '../../src/helpers/http-code';
+/* eslint-disable import/no-named-as-default-member */
 describe('#Http code', () => {
   it('via default', () => {
     expect(httpCode.Ok).to.equal(200);
