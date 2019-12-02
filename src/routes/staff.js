@@ -1,6 +1,11 @@
 import { Router } from 'express';
-import { authenticateJWT } from '../middlewares';
 import StaffController from '../controllers/staffController';
+
+import {
+  authenticateJWT,
+  validatorData,
+} from '../middlewares';
+import { validateUser } from '../utils';
 
 const router = Router();
 
@@ -37,7 +42,7 @@ const router = Router();
  *      403:
  *        description: That user already exists!
  */
-router.post('/', StaffController.create);
+router.post('/', validatorData(validateUser), StaffController.create);
 
 router.get('/', StaffController.index);
 

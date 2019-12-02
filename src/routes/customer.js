@@ -1,6 +1,11 @@
 import { Router } from 'express';
-import { authenticateJWT } from '../middlewares';
 import CustomerController from '../controllers/customerController';
+
+import {
+  authenticateJWT,
+  validatorData,
+} from '../middlewares';
+import { validateUser } from '../utils';
 
 const router = Router();
 
@@ -37,7 +42,7 @@ const router = Router();
  *      403:
  *        description: That user already exists!
  */
-router.post('/', CustomerController.create);
+router.post('/', validatorData(validateUser), CustomerController.create);
 
 // router.get('/', UserController.index);
 

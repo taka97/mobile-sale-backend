@@ -1,6 +1,6 @@
 import passport from 'passport';
-import createError from 'http-errors';
-import { UNAUTHORIZED } from '../helpers/http-error';
+import { Unauthorized } from 'http-errors';
+
 
 const authenticateJWT = (req, res, next) => {
   passport.authenticate('jwt', { session: false }, (err, user) => {
@@ -8,7 +8,7 @@ const authenticateJWT = (req, res, next) => {
       return next(err);
     }
     if (!user) {
-      return next(createError(UNAUTHORIZED));
+      return next(new Unauthorized());
     }
     req.user = user;
     return next();

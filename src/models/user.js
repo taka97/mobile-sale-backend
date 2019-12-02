@@ -76,8 +76,10 @@ UserSchema.methods.validPassword = function (password) {
   return compareSync(password, this.password);
 };
 
+// eslint-disable-next-line func-names
 UserSchema.pre('updateMany', function (next) {
-  this._update.password = hashSync(this._update.password, saltRounds);
+  const update = this.getUpdate();
+  update.password = hashSync(update.password, saltRounds);
   next();
 });
 

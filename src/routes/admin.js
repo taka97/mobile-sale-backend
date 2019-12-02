@@ -4,14 +4,17 @@ import AdminController from '../controllers/adminController';
 import {
   authenticateJWT,
   restrictPermission,
-  validatorData
+  validatorData,
 } from '../middlewares';
 import {
+  validateUser,
   validateChangeUserInfo as changeInfo,
   validateChangePassword as changePassword,
 } from '../utils';
 
 const router = Router();
+
+router.get('/', authenticateJWT, restrictPermission('admin'), AdminController.index);
 
 /**
  * @swagger
@@ -46,19 +49,17 @@ const router = Router();
  *      403:
  *        description: That user already exists!
  */
-router.post('/', AdminController.create);
-
-router.get('/', authenticateJWT, restrictPermission('admin'), AdminController.index);
+router.post('/', validatorData(validateUser), AdminController.create);
 
 router.get('/:id', authenticateJWT, AdminController.show);
 
-router.put('/:id', authenticateJWT, AdminController.update);
+// router.put('/:id', authenticateJWT, AdminController.update);
 
-router.patch('/:id', authenticateJWT, validatorData(changeInfo), AdminController.patch);
+router.patch('/:id', authenticateJWT, validatorData(changeInfo), AdminController.patchUserInfo);
 router.patch('/:id/password',
   authenticateJWT,
-  validatorData(changePassword, 'isChangePassword'),
-  AdminController.patch);
+  validatorData(changePassword),
+  AdminController.patchPassword);
 
 router.delete('/:id?', authenticateJWT, AdminController.destroy);
 

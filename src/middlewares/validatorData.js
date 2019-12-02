@@ -1,5 +1,4 @@
-import createError from 'http-errors';
-import { BADREQUEST } from '../helpers/http-error';
+import { BadRequest } from 'http-errors';
 
 /**
  * Middleware for validate data
@@ -18,14 +17,14 @@ function validatorData(validator, setField) {
   return (req, res, next) => {
     const { error } = validator(req.body);
     if (error) {
-      return next(createError(BADREQUEST, error.details[0].message));
+      return next(new BadRequest(error.details[0].message));
     }
     if (setField) {
       req[setField] = true;
     }
-    next();
+    return next();
   };
 }
 
 /* eslint-disable import/prefer-default-export */
-export { validatorData }
+export { validatorData };

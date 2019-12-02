@@ -1,18 +1,16 @@
-import debug from 'debug';
+// import debug from 'debug';
 import _ from 'lodash';
 
 import {
-  OK,
-  BADREQUEST,
-  INTERNALSERVERERROR,
-} from '../helpers/http-error';
-
+  BadRequest,
+  InternalServerError,
+} from 'http-errors';
 
 import filterQuery from '../utils/filter-query';
 import filterSelect from '../utils/filter-select';
 import select from '../utils/select';
 
-const dg = debug('MS::services::Services');
+// const dg = debug('MS::services::Services');
 
 class Services {
   constructor(options) {
@@ -170,9 +168,9 @@ class Services {
       .catch((err) => {
         switch (err.name) {
           case 'CastError':
-            return Promise.reject({ code: BADREQUEST, message: '"Id" is invalid' });
+            return Promise.reject(new BadRequest('"Id" is invalid'));
           default:
-            return Promise.reject({ code: INTERNALSERVERERROR, message: err });
+            return Promise.reject(new InternalServerError(err));
         }
       });
   }
@@ -206,15 +204,16 @@ class Services {
         return isMulti ? results : results[0];
       })
       .then(select(params, this.id))
-      .catch((err) => Promise.reject({ code: INTERNALSERVERERROR, message: err }));
+      .catch((err) => Promise.reject(new InternalServerError(err)));
   }
 
   update(id, data, params = {}) {
     if (id === null) {
-      return Promise.reject({
-        code: INTERNALSERVERERROR,
-        message: 'Not replacing multiple records. Did you mean `patch`?',
-      });
+      return Promise.reject(
+        new InternalServerError(
+          'Not replacing multiple records. Did you mean `patch`?',
+        ),
+      );
     }
     // Handle case where data might be a mongoose model
     if (typeof data.toObject === 'function') {
@@ -268,12 +267,12 @@ class Services {
     return modelQuery.lean(this.lean).exec()
       .then((result) => {
         if (result === null) {
-          return Promise.reject({ code: OK, message: `No record found for id ${id}` });
+          return Promise.resolve({ message: `No record found for id ${id}` });
         }
 
         return result;
       })
-      .catch((err) => { Promise.reject({ code: INTERNALSERVERERROR, message: err }); });
+      .catch((err) => { Promise.reject(new InternalServerError(err)); });
   }
 
   patch(id, data, params = {}) {
@@ -343,9 +342,9 @@ class Services {
             });
         })
         .then(select(params, this.id))
-        .catch((err) => Promise.reject({ code: INTERNALSERVERERROR, message: err }));
+        .catch((err) => Promise.reject(new InternalServerError(err)));
     } catch (e) {
-      return Promise.reject({ code: INTERNALSERVERERROR, message: e });
+      return Promise.reject(new InternalServerError(e));
     }
   }
 
@@ -370,13 +369,13 @@ class Services {
         .exec()
         .then((result) => {
           if (result === null) {
-            Promise.reject({ code: OK, message: `No record found for id '${id}'` });
+            Promise.resolve({ message: `No record found for id '${id}'` });
           }
 
           return result;
         })
         .then(select(params, this.id))
-        .catch((err) => Promise.reject({ code: INTERNALSERVERERROR, message: err }));
+        .catch((err) => Promise.reject(new InternalServerError(err)));
     }
 
     const findParams = {
@@ -392,7 +391,7 @@ class Services {
       .exec()
       .then(() => data)
       .then(select(params, this.id)))
-      .catch((err) => Promise.reject({ code: INTERNALSERVERERROR, message: err }));
+      .catch((err) => Promise.reject(new InternalServerError(err)));
   }
 }
 

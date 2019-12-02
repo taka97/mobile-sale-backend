@@ -28,6 +28,7 @@ const validateEmail = (user) => {
 
 const validateChangeUserInfo = (user) => {
   const schema = Joi.object({
+    username: Joi.string().min(5),
     email: Joi.any().forbidden(),
     fullname: Joi.string().min(5).max(128),
     phone: Joi.string().pattern(/^[0-9]+$/, 'numbers'),
@@ -49,7 +50,7 @@ const validateChangePassword = (user) => {
     newPassword: Joi.string().required().pattern(/^[0-9a-zA-z]{5,128}$/),
     repeatPassword: Joi.string().required().valid(Joi.ref('newPassword'))
       .messages({
-        'any.only': 'repeatPassword doesnot match newPassword'
+        'any.only': 'repeatPassword donnot match newPassword',
       }),
   });
   return schema.validate(user);

@@ -1,21 +1,19 @@
-import debug from 'debug';
-import createError from 'http-errors';
+// import debug from 'debug';
 import config from 'config';
+import {
+  BadRequest,
+  Forbidden,
+} from 'http-errors';
 
 import Model from '../models/user';
 import createService from '../services/Services';
 import {
-  validateUser,
-} from '../utils';
-import {
-  OK,
-  CREATED,
-  NOCONTENT,
-  BADREQUEST,
-  FORBIDDEN,
-} from '../helpers/http-error';
+  Ok,
+  Created,
+  NoContent,
+} from '../helpers/http-code';
 
-const dg = debug('MS:controllers:users');
+// const dg = debug('MS:controllers:users');
 
 class UserController {
   constructor(options = {}) {
@@ -52,7 +50,8 @@ class UserController {
     this.create = this.create.bind(this);
     this.show = this.show.bind(this);
     this.update = this.update.bind(this);
-    this.patch = this.patch.bind(this);
+    this.patchUserInfo = this.patchUserInfo.bind(this);
+    this.patchPassword = this.patchPassword.bind(this);
     this.destroy = this.destroy.bind(this);
   }
 
@@ -79,11 +78,6 @@ class UserController {
   async create(req, res, next) {
     try {
       const { query, body } = req;
-      // First Validate The Request
-      const { error } = validateUser(body);
-      if (error) {
-        return next(createError(BADREQUEST, error.details[0].message));
-      }
 
       const findQuery = {
         $or: [{ email: body.email }],
@@ -97,15 +91,15 @@ class UserController {
       const { total } = await this.services.find(findQuery);
 
       if (total !== 0) {
-        return next(createError(FORBIDDEN, 'That user already exists!'));
+        throw new Forbidden('That user already exists!');
       }
 
       const data = this.requiredField ? ({ ...body, ...this.requiredField }) : body;
 
       const result = await this.services.create(data, { query });
-      return res.status(CREATED).send(result);
+      return res.status(Created).send(result);
     } catch (err) {
-      return next(createError(err.code, err.message));
+      return next(err);
     }
   }
 
@@ -121,9 +115,9 @@ class UserController {
       const id = params.id ? params.id : null;
 
       const user = await this.services.get(id, { query });
-      return res.status(OK).send(user);
+      return res.status(Ok).send(user);
     } catch (err) {
-      return next(createError(err.code, err.message));
+      return next(err);
     }
   }
 
@@ -139,48 +133,72 @@ class UserController {
       const id = params.id ? params.id : null;
 
       const result = await this.services.update(id, data, { query });
-      return res.status(OK).send(result);
+      return res.status(Ok).send(result);
     } catch (err) {
-      return next(createError(err.code, err.message));
+      return next(err);
     }
   }
 
   /**
- * Controller - Patch User
+ * Controller - Patch User Info
  * @param {Object} req request
  * @param {Object} res response
  * @param {Object} next next pointer
  */
-  async patch(req, res, next) {
-    const { params, query, body, isChangePassword, user } = req;
+  async patchUserInfo(req, res, next) {
+    const {
+      params, query, body, user,
+    } = req;
     const id = params.id ? params.id : null;
 
     try {
-      if (isChangePassword) {
-        const { oldPassword, newPassword } = body;
-        dg(oldPassword);
-        dg(newPassword);
-
-        if (!user.validPassword(oldPassword)) {
-          // throw new createError.BadRequest('password donn\'t match');
-          throw ({ code: BADREQUEST, message: 'old password donn\'t match' });
+      const { username } = body;
+      if (username) {
+        if (user.username !== undefined) {
+          throw new BadRequest('Cannot change your username');
         }
-        const data = {
-          password: newPassword,
-        };
-
-        const result = await this.services.patch(id, data, { query });
-        return res.send(result);
-      } else {
-
+        const { total } = await this.services.find({ query: { username, $limit: 0 } });
+        if (total !== 0) {
+          throw new BadRequest('username is existed!!');
+        }
       }
-      const result = undefined;
-      // const result = await this.services.patch(id, data, { query });
+
+      const data = { ...(user.toObject()), ...body };
+
+      const result = await this.services.update(id, data, { query });
       return res.send(result);
     } catch (err) {
       return next(err);
     }
   }
+
+  /**
+   * Controller - Patch User Password
+   * @param {Object} req request
+   * @param {Object} res response
+   * @param {Object} next next pointer
+   */
+  async patchPassword(req, res, next) {
+    const {
+      params, query, body, user,
+    } = req;
+    const { oldPassword, newPassword } = body;
+    const { id } = params;
+
+    try {
+      if (!user.validPassword(oldPassword)) {
+        throw new BadRequest('old password donn\'t match');
+      }
+      const data = {
+        password: newPassword,
+      };
+      const result = await this.services.patch(id, data, { query });
+      return res.send(result);
+    } catch (err) {
+      return next(err);
+    }
+  }
+
 
   /**
   * Controller - Delete User (Carefully with using it)
@@ -198,9 +216,9 @@ class UserController {
 
     try {
       const result = await this.services.remove(id, { query });
-      return res.status(NOCONTENT).send(result);
+      return res.status(NoContent).send(result);
     } catch (err) {
-      return next(createError(err.code, err.message));
+      return next(err);
     }
   }
 }
