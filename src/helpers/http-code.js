@@ -4,7 +4,7 @@ const Accepted = 202;
 const NoAuthoritativeInformation = 203;
 const NoContent = 204;
 
-const httpCode = {
+export default {
   Ok,
   Created,
   Accepted,
@@ -12,7 +12,6 @@ const httpCode = {
   NoContent,
 };
 
-export default httpCode;
 export {
   Ok,
   Created,
