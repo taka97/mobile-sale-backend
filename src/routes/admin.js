@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import AdminController from '../controllers/adminController';
 import {
+  authenticate,
   authenticateJWT,
   restrictPermission,
   restrictToOwner,
@@ -70,7 +71,7 @@ const router = Router();
 router.post('/', middlewareForCreate, AdminController.create);
 
 // all router below must authanticate with jwt
-router.use(authenticateJWT);
+router.use(authenticate('jwt'));
 
 router.get('/', middlewareForIndex, AdminController.index);
 
