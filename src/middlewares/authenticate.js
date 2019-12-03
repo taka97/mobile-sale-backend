@@ -9,7 +9,6 @@ const authenticate = (strategy) => {
   }
 
   const strategies = config.get('authentication.strategies');
-  console.log(strategies);
   if (!strategies.includes(strategy)) {
     throw new Error('"Strategy must be a valid strategy (authenticaion)');
   }
