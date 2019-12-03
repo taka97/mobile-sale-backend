@@ -24,8 +24,8 @@ const authenticate = (strategy) => {
       req.user = user;
       return next();
     })(req, res, next);
-  }
-}
+  };
+};
 
 const authenticateJWT = (req, res, next) => {
   passport.authenticate('jwt', { session: false }, (err, user) => {

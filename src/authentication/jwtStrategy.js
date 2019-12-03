@@ -19,7 +19,7 @@ const init = () => {
   };
 
   return new JwtStrategy(jwtOptions,
-    (jwtPayload, done) => User.findOne({ '_id': jwtPayload.id, isDeleted: false },
+    (jwtPayload, done) => User.findOne({ _id: jwtPayload.id, isDeleted: false },
       (err, user) => {
         if (err) {
           return done(err);
