@@ -42,6 +42,19 @@ const router = Router();
  *    required:
  *      - userId
  *      - accessToken
+ *  PasswordChange:
+ *    type: object
+ *    properties:
+ *      oldPassword:
+ *        type: string
+ *      newPassword:
+ *        type: string
+ *      repeatPassword:
+ *        type: string
+ *    required:
+ *      - oldPassword
+ *      - newPassword
+ *      - repeatPassword
  *  User:
  *    type: object
  *    properties:
