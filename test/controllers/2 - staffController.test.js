@@ -121,6 +121,8 @@ describe('Staff Controller', () => {
   });
 
   describe('#Get a user detail', () => {
+    const noExistId = '5de25b1504da0435c8e714ad';
+
     before(async () => {
       await User.deleteMany();
       await User.create(sampleStaffData);
@@ -149,6 +151,24 @@ describe('Staff Controller', () => {
         .set('Authorization', `jwt ${accessToken}`);
       expect(response.status).to.equal(400);
       expect(response.body.message).to.be.a('string').include('"Id" is invalid');
+    });
+
+    it('should return No record with Bearer Token in Authorization header', async () => {
+      const response = await request(app)
+        .get(`/api/staffs/${noExistId}`)
+        .set('Authorization', `Bearer ${accessToken}`);
+      expect(response.status).to.equal(404);
+      expect(response.body.message).to.be.a('string')
+        .include(`No record found for id '${noExistId}'`);
+    });
+
+    it('should return No record with Token in Authorization header', async () => {
+      const response = await request(app)
+        .get(`/api/staffs/${noExistId}`)
+        .set('Authorization', `jwt ${accessToken}`);
+      expect(response.status).to.equal(404);
+      expect(response.body.message).to.be.a('string')
+        .include(`No record found for id '${noExistId}'`);
     });
 
     it('should return user data with Bearer Token in Authorization header', async () => {

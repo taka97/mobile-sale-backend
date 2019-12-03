@@ -3,6 +3,7 @@ import _ from 'lodash';
 
 import {
   BadRequest,
+  NotFound,
   InternalServerError,
 } from 'http-errors';
 
@@ -160,7 +161,7 @@ class Services {
       .exec()
       .then((data) => {
         if (!data) {
-          return Promise.resolve({ message: `No record found for id ${id}` });
+          return Promise.reject(new NotFound());
         }
 
         return data;
@@ -169,6 +170,8 @@ class Services {
         switch (err.name) {
           case 'CastError':
             return Promise.reject(new BadRequest('"Id" is invalid'));
+          case 'NotFoundError':
+            return Promise.reject(new NotFound(`No record found for id '${id}'`));
           default:
             return Promise.reject(new InternalServerError(err));
         }
@@ -267,12 +270,12 @@ class Services {
     return modelQuery.lean(this.lean).exec()
       .then((result) => {
         if (result === null) {
-          return Promise.resolve({ message: `No record found for id ${id}` });
+          return Promise.reject(new NotFound(`No record found for id '${id}'`));
         }
 
         return result;
       })
-      .catch((err) => { Promise.reject(new InternalServerError(err)); });
+      .catch((err) => Promise.reject(new InternalServerError(err)));
   }
 
   patch(id, data, params = {}) {
@@ -369,7 +372,7 @@ class Services {
         .exec()
         .then((result) => {
           if (result === null) {
-            Promise.resolve({ message: `No record found for id '${id}'` });
+            return Promise.reject(new NotFound(`No record found for id '${id}'`));
           }
 
           return result;

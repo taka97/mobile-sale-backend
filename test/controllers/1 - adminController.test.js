@@ -192,18 +192,18 @@ describe('Admin Controller', () => {
       const response = await request(app)
         .get(`/api/admin/${noExistId}`)
         .set('Authorization', `Bearer ${accessToken}`);
-      expect(response.status).to.equal(200);
+      expect(response.status).to.equal(404);
       expect(response.body.message).to.be.a('string')
-        .include(`No record found for id ${noExistId}`);
+        .include(`No record found for id '${noExistId}'`);
     });
 
     it('should return No record with Token in Authorization header', async () => {
       const response = await request(app)
         .get(`/api/admin/${noExistId}`)
         .set('Authorization', `jwt ${accessToken}`);
-      expect(response.status).to.equal(200);
+      expect(response.status).to.equal(404);
       expect(response.body.message).to.be.a('string')
-        .include(`No record found for id ${noExistId}`);
+        .include(`No record found for id '${noExistId}'`);
     });
 
     it('should return user data with Bearer Token in Authorization header', async () => {
