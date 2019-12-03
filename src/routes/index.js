@@ -98,6 +98,19 @@ const router = Router();
  *        type: string
  *    required:
  *      - _id
+ *  QueryResponse:
+ *    type: object
+ *    properties:
+ *      total:
+ *        type: integer
+ *      limit:
+ *        type: integer
+ *      skip:
+ *        type: integer
+ *      data:
+ *        type: array
+ *        items:
+ *          type: object
  */
 
 router.use('/authentication', authenticationRouter);

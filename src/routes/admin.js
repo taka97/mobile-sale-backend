@@ -70,9 +70,27 @@ const router = Router();
  */
 router.post('/', middlewareForCreate, AdminController.create);
 
-// all router below must authanticate with jwt
+// all router below must authenticate with jwt
 router.use(authenticate('jwt'));
 
+/**
+ * @swagger
+ * /admin:
+ *  get:
+ *    tags:
+ *      - 'admin'
+ *    summary: 'Get list all of admin'
+ *    description: ''
+ *    produces:
+ *      - 'application/json'
+ *    responses:
+ *      200:
+ *        description: List all of admin
+ *        schema:
+ *          $ref: '#/definitions/QueryResponse'
+ *      401:
+ *        description: You donn't have permission to access
+ */
 router.get('/', middlewareForIndex, AdminController.index);
 
 router.get('/:id', middlewareForShow, AdminController.show);
