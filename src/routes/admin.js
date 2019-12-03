@@ -15,7 +15,7 @@ import {
 
 const middlewareForCreate = [validatorData(validateUser)];
 const middlewareForIndex = [restrictPermission('admin')];
-const middlewareForShow = [];
+const middlewareForShow = [restrictPermission('admin')];
 // const middlewareForPut = [];
 const middlewareForPatchUserInfo = [
   restrictPermission('admin'),
@@ -27,7 +27,10 @@ const middlewareForPatchPassword = [
   restrictToOwner,
   validatorData(changePassword),
 ];
-const middlewareForDetroy = [];
+const middlewareForDetroy = [
+  restrictPermission('admin'),
+  restrictToOwner,
+];
 
 const router = Router();
 

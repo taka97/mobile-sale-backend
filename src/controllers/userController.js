@@ -82,6 +82,7 @@ class UserController {
       const findQuery = {
         $or: [{ email: body.email }],
         $limit: 0,
+        isDeleted: false,
       };
 
       if (body.username) {
@@ -161,7 +162,12 @@ class UserController {
         if (user.username !== undefined) {
           throw new BadRequest('Cannot change your username');
         }
-        const { total } = await this.services.find({ query: { username, $limit: 0 } });
+        const findQuery = {
+          username,
+          $limit: 0,
+          isDeleted: false,
+        };
+        const { total } = await this.services.find({ query: findQuery });
         if (total !== 0) {
           throw new BadRequest('username is existed!!');
         }
@@ -203,7 +209,6 @@ class UserController {
     }
   }
 
-
   /**
   * Controller - Delete User (Carefully with using it)
   * @param {object} req request
@@ -212,14 +217,13 @@ class UserController {
   */
   async destroy(req, res, next) {
     const { params } = req;
-    let { query } = req;
-    if (this.requiredField) {
-      query = { ...query, ...this.requiredField };
-    }
     const id = params.id ? params.id : null;
+    const data = {
+      isDeleted: true,
+    };
 
     try {
-      const result = await this.services.remove(id, { query });
+      const result = await this.services.patch(id, data);
       return res.status(NoContent).send(result);
     } catch (err) {
       return next(err);
