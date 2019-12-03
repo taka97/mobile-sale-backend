@@ -79,6 +79,6 @@ router.patch('/:id', middlewareForPatchUserInfo, AdminController.patchUserInfo);
 
 router.patch('/:id/password', middlewareForPatchPassword, AdminController.patchPassword);
 
-router.delete('/:id?', middlewareForDetroy, AdminController.destroy);
+router.delete('/:id', middlewareForDetroy, AdminController.destroy);
 
 export default router;
