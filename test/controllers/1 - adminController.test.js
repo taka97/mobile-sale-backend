@@ -687,6 +687,91 @@ describe('Admin Controller', () => {
   });
 
   describe('#Delete a user', () => {
+    const accessToken = {};
+    const userId = {};
 
+    before('Create user account', async () => {
+      await User.deleteMany();
+      await User.create(sampleAdminData);
+      await User.create(sampleStaffData);
+      await User.create(sampleCustomerData);
+      await User.create({ ...sampleAdmin[5], roles: 'admin' });
+
+      const data = [sampleAdminData, sampleStaffData, sampleCustomerData];
+      const responseo = await request(app)
+        .post('/api/authentication')
+        .send({
+          email: sampleAdmin[5].email,
+          password: sampleAdmin[5].password,
+          strategy: 'admin',
+        });
+
+      userId.otherAdmin = responseo.body.userId;
+      accessToken.otherAdmin = responseo.body.accessToken;
+      await forEachAsync(data, async (current) => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: current.email,
+            password: current.password,
+            strategy: current.roles,
+          });
+        userId[current.roles] = response.body.userId;
+        accessToken[current.roles] = response.body.accessToken;
+      });
+    });
+
+    describe('##Without owner', () => {
+      it('should return Dont have permission - customer', async () => {
+        const response = await request(app)
+          .delete(`/api/admin/${userId.admin}`)
+          .set('Authorization', `Bearer ${accessToken.customer}`);
+        expect(response.status).to.equal(401);
+        expect(response.body.message).to.be.a('string')
+          .include('You don\'t have permission to access');
+      });
+
+      it('should return Dont have permission - staff', async () => {
+        const response = await request(app)
+          .delete(`/api/admin/${userId.admin}`)
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(401);
+        expect(response.body.message).to.be.a('string')
+          .include('You don\'t have permission to access');
+      });
+
+      it('should return Dont have permission - admin (no owner)', async () => {
+        const response = await request(app)
+          .delete(`/api/admin/${userId.admin}`)
+          .set('Authorization', `Bearer ${accessToken.otherAdmin}`);
+        expect(response.status).to.equal(401);
+        expect(response.body.message).to.be.a('string')
+          .include('You don\'t have permission to modify');
+      });
+    });
+
+    describe('##Owner', () => {
+      it('shound return done', async () => {
+        const response = await request(app)
+          .delete(`/api/admin/${userId.admin}`)
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(204);
+        expect(response.body).to.be.empty;
+        const authentication = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleAdminData.email,
+            password: sampleAdminData.password,
+            strategy: 'admin'
+          });
+        expect(authentication.status).to.equal(400);
+        expect(authentication.body).to.have.property('message', 'Incorrect email/username or password');
+        const getDetail = await request(app)
+          .get(`/api/admin/${userId.admin}`)
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(getDetail.status).to.equal(401);
+        expect(getDetail.body).to.have.property('message', 'Unauthorized');
+      });
+    });
   });
 });
