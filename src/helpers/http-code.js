@@ -1,13 +1,5 @@
-const Ok = 200;
-const Created = 201;
-const Accepted = 202;
-const NoAuthoritativeInformation = 203;
-const NoContent = 204;
-
-export {
-  Ok,
-  Created,
-  Accepted,
-  NoAuthoritativeInformation,
-  NoContent,
-};
+export const Ok = 200;
+export const Created = 201;
+export const Accepted = 202;
+export const NoAuthoritativeInformation = 203;
+export const NoContent = 204;

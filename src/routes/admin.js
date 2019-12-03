@@ -3,7 +3,6 @@ import { Router } from 'express';
 import AdminController from '../controllers/adminController';
 import {
   authenticate,
-  authenticateJWT,
   restrictPermission,
   restrictToOwner,
   validatorData,
