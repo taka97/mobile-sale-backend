@@ -13,9 +13,23 @@ import {
   validateChangePassword as changePassword,
 } from '../utils';
 
-const router = Router();
+const middlewareForCreate = [validatorData(validateUser)];
+const middlewareForIndex = [restrictPermission('admin')];
+const middlewareForShow = [];
+// const middlewareForPut = [];
+const middlewareForPatchUserInfo = [
+  restrictPermission('admin'),
+  restrictToOwner,
+  validatorData(changeInfo),
+];
+const middlewareForPatchPassword = [
+  restrictPermission('admin'),
+  restrictToOwner,
+  validatorData(changePassword),
+];
+const middlewareForDetroy = [];
 
-router.get('/', authenticateJWT, restrictPermission('admin'), AdminController.index);
+const router = Router();
 
 /**
  * @swagger
@@ -50,26 +64,21 @@ router.get('/', authenticateJWT, restrictPermission('admin'), AdminController.in
  *      403:
  *        description: That user already exists!
  */
-router.post('/', validatorData(validateUser), AdminController.create);
+router.post('/', middlewareForCreate, AdminController.create);
 
-router.get('/:id', authenticateJWT, AdminController.show);
+// all router below must authanticate with jwt
+router.use(authenticateJWT);
 
-// router.put('/:id', authenticateJWT, AdminController.update);
+router.get('/', middlewareForIndex, AdminController.index);
 
-router.patch('/:id',
-  authenticateJWT,
-  restrictPermission('admin'),
-  restrictToOwner,
-  validatorData(changeInfo),
-  AdminController.patchUserInfo);
+router.get('/:id', middlewareForShow, AdminController.show);
 
-router.patch('/:id/password',
-  authenticateJWT,
-  restrictPermission('admin'),
-  restrictToOwner,
-  validatorData(changePassword),
-  AdminController.patchPassword);
+// router.put('/:id', middlewareForPut, AdminController.update);
 
-router.delete('/:id?', authenticateJWT, AdminController.destroy);
+router.patch('/:id', middlewareForPatchUserInfo, AdminController.patchUserInfo);
+
+router.patch('/:id/password', middlewareForPatchPassword, AdminController.patchPassword);
+
+router.delete('/:id?', middlewareForDetroy, AdminController.destroy);
 
 export default router;
