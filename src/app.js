@@ -1,5 +1,6 @@
 import createError from 'http-errors';
 import helmet from 'helmet';
+import cors from 'cors';
 import express from 'express';
 import compression from 'compression';
 import { urlencoded, json } from 'body-parser';
@@ -15,6 +16,7 @@ const app = express();
 configDB();
 
 app.use(helmet());
+app.use(cors());
 app.use(urlencoded({ extended: false }));
 app.use(json());
 app.use(passport.initialize());
