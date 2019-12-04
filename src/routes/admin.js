@@ -41,7 +41,8 @@ const router = Router();
  *    tags:
  *      - 'admin'
  *    summary: 'Create new admin'
- *    description: ''
+ *    description: >
+ *      * Just for admin (later)
  *    produces:
  *      - 'application/json'
  *    parameters:
@@ -79,7 +80,8 @@ router.use(authenticate('jwt'));
  *    tags:
  *      - 'admin'
  *    summary: 'Get list all of admin'
- *    description: ''
+ *    description: >
+ *      * Just for admin
  *    produces:
  *      - 'application/json'
  *    responses:
@@ -99,7 +101,8 @@ router.get('/', middlewareForIndex, AdminController.index);
  *    tags:
  *      - 'admin'
  *    summary: 'Get detail of admin'
- *    description: ''
+ *    description: >
+ *      * Just for admin
  *    produces:
  *      - 'application/json'
  *    parameters:
@@ -130,7 +133,8 @@ router.get('/:id', middlewareForShow, AdminController.show);
  *    tags:
  *      - 'admin'
  *    summary: 'Change detail of admin'
- *    description: ''
+ *    description: >
+ *      * Just for admin (owner)
  *    produces:
  *      - 'application/json'
  *    parameters:
@@ -183,7 +187,8 @@ router.patch('/:id', middlewareForPatchUserInfo, AdminController.patchUserInfo);
  *    tags:
  *      - 'admin'
  *    summary: 'Change password of admin'
- *    description: ''
+ *    description: >
+ *      * Just for admin (owner)
  *    produces:
  *      - 'application/json'
  *    parameters:
@@ -220,7 +225,8 @@ router.patch('/:id/password', middlewareForPatchPassword, AdminController.patchP
  *    tags:
  *      - 'admin'
  *    summary: 'Delete admin account'
- *    description: ''
+ *    description: >
+ *      * Just for admin (owner)
  *    produces:
  *      - 'application/json'
  *    parameters:
