@@ -47,76 +47,71 @@ describe('Customer Controller', () => {
   let accessToken;
   let userId;
 
-  // eslint-disable-next-line func-names
   before('***Cleaning user collection', async () => {
     await User.deleteMany();
   });
 
   describe('#Create user', () => {
-    describe('##Missing field', () => {
-      it('shound return error missing "password"', async () => {
-        const response = await request(app)
-          .post('/api/customers')
-          .send(sampleCustomer[0]);
-        expect(response.status).to.equal(400);
-        expect(response.body.message).to.be.a('string').include('"password" is required');
-      });
-
-      it('shound return error missing "fullname"', async () => {
-        const response = await request(app)
-          .post('/api/customers')
-          .send(sampleCustomer[1]);
-        expect(response.status).to.equal(400);
-        expect(response.body.message).to.be.a('string').include('"fullname" is required');
-      });
-
-      it('shound return error missing "email"', async () => {
-        const response = await request(app)
-          .post('/api/customers')
-          .send(sampleCustomer[2]);
-        expect(response.status).to.equal(400);
-        expect(response.body.message).to.be.a('string').include('"email" is required');
-      });
-
-      it('shound return error missing "birthDate"', async () => {
-        const response = await request(app)
-          .post('/api/customers')
-          .send(sampleCustomer[3]);
-        expect(response.status).to.equal(400);
-        expect(response.body.message).to.be.a('string').include('"birthDate" is required');
-      });
-
-      it('shound return error missing "sex"', async () => {
-        const response = await request(app)
-          .post('/api/customers')
-          .send(sampleCustomer[4]);
-        expect(response.status).to.equal(400);
-        expect(response.body.message).to.be.a('string').include('"sex" is required');
-      });
+    it('shound return error missing "password"', async () => {
+      const response = await request(app)
+        .post('/api/customers')
+        .send(sampleCustomer[0]);
+      expect(response.status).to.equal(400);
+      expect(response.body.message).to.be.a('string').include('"password" is required');
     });
 
-    describe('##Enough field', () => {
-      it('shound return success and user data', async () => {
-        const response = await request(app)
-          .post('/api/customers')
-          .send(sampleCustomer[5]);
-        expect(response.status).to.equal(201);
-        expect(response.body).to.have.property('_id');
-        expect(response.body).to.not.have.property('password');
-        expect(response.body).to.have.property('fullname', sampleCustomer[5].fullname);
-        expect(response.body).to.have.property('email', sampleCustomer[5].email);
-        expect(response.body).to.have.property('birthDate',
-          (new Date(sampleCustomer[5].birthDate)).toISOString());
-        expect(response.body).to.have.property('sex', sampleCustomer[5].sex);
-      });
+    it('shound return error missing "fullname"', async () => {
+      const response = await request(app)
+        .post('/api/customers')
+        .send(sampleCustomer[1]);
+      expect(response.status).to.equal(400);
+      expect(response.body.message).to.be.a('string').include('"fullname" is required');
+    });
 
-      it('shound return false with error user already exists', async () => {
-        const response = await request(app)
-          .post('/api/customers')
-          .send(sampleCustomer[5]);
-        expect(response.status).to.equal(403);
-        expect(response.body.message).to.be.a('string').include('That user already exists!');
-      });
+    it('shound return error missing "email"', async () => {
+      const response = await request(app)
+        .post('/api/customers')
+        .send(sampleCustomer[2]);
+      expect(response.status).to.equal(400);
+      expect(response.body.message).to.be.a('string').include('"email" is required');
+    });
+
+    it('shound return error missing "birthDate"', async () => {
+      const response = await request(app)
+        .post('/api/customers')
+        .send(sampleCustomer[3]);
+      expect(response.status).to.equal(400);
+      expect(response.body.message).to.be.a('string').include('"birthDate" is required');
+    });
+
+    it('shound return error missing "sex"', async () => {
+      const response = await request(app)
+        .post('/api/customers')
+        .send(sampleCustomer[4]);
+      expect(response.status).to.equal(400);
+      expect(response.body.message).to.be.a('string').include('"sex" is required');
+    });
+
+    it('shound return success and user data', async () => {
+      const response = await request(app)
+        .post('/api/customers')
+        .send(sampleCustomer[5]);
+      expect(response.status).to.equal(201);
+      expect(response.body).to.have.property('_id');
+      expect(response.body).to.not.have.property('password');
+      expect(response.body).to.have.property('fullname', sampleCustomer[5].fullname);
+      expect(response.body).to.have.property('email', sampleCustomer[5].email);
+      expect(response.body).to.have.property('birthDate',
+        (new Date(sampleCustomer[5].birthDate)).toISOString());
+      expect(response.body).to.have.property('sex', sampleCustomer[5].sex);
+    });
+
+    it('shound return false with error user already exists', async () => {
+      const response = await request(app)
+        .post('/api/customers')
+        .send(sampleCustomer[5]);
+      expect(response.status).to.equal(403);
+      expect(response.body.message).to.be.a('string').include('That user already exists!');
     });
   });
 
