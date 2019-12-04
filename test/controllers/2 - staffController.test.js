@@ -33,7 +33,6 @@ const sampleStaff = [
     password: 'Abc12345',
     birthDate: '2019/10/05',
     sex: 'male',
-    storeId: '507f1f77bcf86cd799439011',
   },
   {
     email: 'vanhoang0609@yahoo.com',
@@ -41,7 +40,6 @@ const sampleStaff = [
     password: 'Abc12345',
     birthDate: '2019/10/05',
     sex: 'male',
-    storeId: '507f1f77bcf86cd799439011',
   },
 ];
 
@@ -63,7 +61,6 @@ const sampleStaffData = {
   birthDate: '2019/10/05',
   sex: 'male',
   roles: 'staff',
-  storeId: '507f1f77bcf86cd799439010',
 };
 
 const sampleAdminData = {
@@ -95,74 +92,70 @@ describe('Staff Controller', () => {
   });
 
   describe('#Create user', () => {
-    describe('##Missing field', () => {
-      it('shound return error missing "password"', async () => {
-        const response = await request(app)
-          .post('/api/staffs')
-          .send(sampleStaff[0]);
-        expect(response.status).to.equal(400);
-        expect(response.body.message).to.be.a('string').include('"password" is required');
-      });
-
-      it('shound return error missing "fullname"', async () => {
-        const response = await request(app)
-          .post('/api/staffs')
-          .send(sampleStaff[1]);
-        expect(response.status).to.equal(400);
-        expect(response.body.message).to.be.a('string').include('"fullname" is required');
-      });
-
-      it('shound return error missing "email"', async () => {
-        const response = await request(app)
-          .post('/api/staffs')
-          .send(sampleStaff[2]);
-        expect(response.status).to.equal(400);
-        expect(response.body.message).to.be.a('string').include('"email" is required');
-      });
-
-      it('shound return error missing "birthDate"', async () => {
-        const response = await request(app)
-          .post('/api/staffs')
-          .send(sampleStaff[3]);
-        expect(response.status).to.equal(400);
-        expect(response.body.message).to.be.a('string').include('"birthDate" is required');
-      });
-
-      it('shound return error missing "sex"', async () => {
-        const response = await request(app)
-          .post('/api/staffs')
-          .send(sampleStaff[4]);
-        expect(response.status).to.equal(400);
-        expect(response.body.message).to.be.a('string').include('"sex" is required');
-      });
+    it('shound return error missing "password"', async () => {
+      const response = await request(app)
+        .post('/api/staffs')
+        .send(sampleStaff[0]);
+      expect(response.status).to.equal(400);
+      expect(response.body.message).to.be.a('string').include('"password" is required');
     });
 
-    describe('##Enough field', () => {
-      it('shound return success and user data', async () => {
-        const response = await request(app)
-          .post('/api/staffs')
-          .send(sampleStaff[5]);
-        expect(response.status).to.equal(201);
-        expect(response.body).to.have.property('_id');
-        expect(response.body).to.not.have.property('password');
-        expect(response.body).to.have.property('fullname', sampleStaff[5].fullname);
-        expect(response.body).to.have.property('email', sampleStaff[5].email);
-        expect(response.body).to.have.property('birthDate',
-          (new Date(sampleStaff[5].birthDate)).toISOString());
-        expect(response.body).to.have.property('sex', sampleStaff[5].sex);
-      });
+    it('shound return error missing "fullname"', async () => {
+      const response = await request(app)
+        .post('/api/staffs')
+        .send(sampleStaff[1]);
+      expect(response.status).to.equal(400);
+      expect(response.body.message).to.be.a('string').include('"fullname" is required');
+    });
 
-      it('shound return false with error user already exists', async () => {
-        const response = await request(app)
-          .post('/api/staffs')
-          .send(sampleStaff[5]);
-        expect(response.status).to.equal(403);
-        expect(response.body.message).to.be.a('string').include('That user already exists!');
-      });
+    it('shound return error missing "email"', async () => {
+      const response = await request(app)
+        .post('/api/staffs')
+        .send(sampleStaff[2]);
+      expect(response.status).to.equal(400);
+      expect(response.body.message).to.be.a('string').include('"email" is required');
+    });
+
+    it('shound return error missing "birthDate"', async () => {
+      const response = await request(app)
+        .post('/api/staffs')
+        .send(sampleStaff[3]);
+      expect(response.status).to.equal(400);
+      expect(response.body.message).to.be.a('string').include('"birthDate" is required');
+    });
+
+    it('shound return error missing "sex"', async () => {
+      const response = await request(app)
+        .post('/api/staffs')
+        .send(sampleStaff[4]);
+      expect(response.status).to.equal(400);
+      expect(response.body.message).to.be.a('string').include('"sex" is required');
+    });
+
+    it('shound return success and user data', async () => {
+      const response = await request(app)
+        .post('/api/staffs')
+        .send(sampleStaff[5]);
+      expect(response.status).to.equal(201);
+      expect(response.body).to.have.property('_id');
+      expect(response.body).to.not.have.property('password');
+      expect(response.body).to.have.property('fullname', sampleStaff[5].fullname);
+      expect(response.body).to.have.property('email', sampleStaff[5].email);
+      expect(response.body).to.have.property('birthDate',
+        (new Date(sampleStaff[5].birthDate)).toISOString());
+      expect(response.body).to.have.property('sex', sampleStaff[5].sex);
+    });
+
+    it('shound return false with error user already exists', async () => {
+      const response = await request(app)
+        .post('/api/staffs')
+        .send(sampleStaff[5]);
+      expect(response.status).to.equal(403);
+      expect(response.body.message).to.be.a('string').include('That user already exists!');
     });
   });
 
-  describe.only('#Get a user detail', () => {
+  describe('#Get a user detail', () => {
     const noExistId = '5de25b1504da0435c8e714ad';
     const accessToken = {};
     const userId = {};
@@ -172,10 +165,18 @@ describe('Staff Controller', () => {
       await User.deleteMany();
       await User.deleteMany();
       await User.create(sampleAdminData);
-      await User.create(sampleStaffData);
+      await User.create({ ...sampleStaffData, storeId: '507f1f77bcf86cd799439010', });
       await User.create(sampleCustomerData);
-      await User.create({ ...sampleStaff[5], roles: 'staff' });
-      await User.create({ ...sampleStaff[6], roles: 'staff' });
+      await User.create({
+        ...sampleStaff[5],
+        roles: 'staff',
+        storeId: '507f1f77bcf86cd799439011',
+      });
+      await User.create({
+        ...sampleStaff[6],
+        roles: 'staff',
+        storeId: '507f1f77bcf86cd799439011',
+      });
 
       data = [sampleStaff[5], sampleStaff[6]];
       await forEachAsync(data, async (current, index) => {
@@ -266,15 +267,15 @@ describe('Staff Controller', () => {
       expect(response.body).to.have.property('sex', sampleStaffData.sex);
     });
 
-    it.skip('should return not authentication with user as customer', async () => {
+    it('should return not authentication with user as customer', async () => {
       const response = await request(app)
         .get(`/api/staffs/${userId.customer}`)
         .set('Authorization', `jwt ${accessToken.customer}`);
       expect(response.status).to.equal(401);
-      expect(response.body).to.have.property('message', 'Unauthorized');
+      expect(response.body).to.have.property('message', 'You don\'t have permission to access');
     });
 
-    it.skip('should return success with user as admin', async () => {
+    it('should return success with user as admin', async () => {
       const response = await request(app)
         .get(`/api/staffs/${userId.admin}`)
         .set('Authorization', `jwt ${accessToken.admin}`);
@@ -288,26 +289,27 @@ describe('Staff Controller', () => {
       expect(response.body).to.have.property('sex', sampleAdminData.sex);
     });
 
-    it.skip('shound return success with owner as staff same at store', async () => {
+    it('shound return success with owner as staff same at store', async () => {
       const response = await request(app)
-        .get(`/api/staffs/${userId.admin}`)
-        .set('Authorization', `jwt ${accessToken.admin}`);
+        .get(`/api/staffs/${userId.Staff00}`)
+        .set('Authorization', `jwt ${accessToken.Staff01}`);
       expect(response.status).to.equal(200);
       expect(response.body).to.have.property('_id');
       expect(response.body).to.not.have.property('password');
-      expect(response.body).to.have.property('fullname', sampleAdminData.fullname);
-      expect(response.body).to.have.property('email', sampleAdminData.email);
+      expect(response.body).to.have.property('fullname', sampleStaff[5].fullname);
+      expect(response.body).to.have.property('email', sampleStaff[5].email);
       expect(response.body).to.have.property('birthDate',
-        (new Date(sampleAdminData.birthDate)).toISOString());
-      expect(response.body).to.have.property('sex', sampleAdminData.sex);
+        (new Date(sampleStaff[5].birthDate)).toISOString());
+      expect(response.body).to.have.property('sex', sampleStaff[5].sex);
     });
 
-    it.skip('shound return not found with staff diff store', async () => {
+    it('shound return not found with staff diff store', async () => {
       const response = await request(app)
-        .get(`/api/staffs/${userId.customer}`)
-        .set('Authorization', `jwt ${accessToken.customer}`);
+        .get(`/api/staffs/${userId.Staff00}`)
+        .set('Authorization', `jwt ${accessToken.staff}`);
       expect(response.status).to.equal(404);
-      expect(response.body).to.have.property('message', 'Not found');
+      expect(response.body).to.have
+        .property('message', `No record found for id '${userId.Staff00}'`);
     });
   });
 });
