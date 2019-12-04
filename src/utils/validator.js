@@ -1,8 +1,9 @@
 import Joi from '@hapi/joi';
+import joiObjectId from 'joi-objectid';
 
-/* eslint-disable import/prefer-default-export */
+Joi.objectId = joiObjectId(Joi);
 
-const validateUser = (user) => {
+export const validateUser = (user) => {
   const schema = Joi.object({
     email: Joi.string().min(5).max(255).required()
       .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
@@ -14,11 +15,12 @@ const validateUser = (user) => {
     sex: Joi.string().lowercase().valid('male', 'female').required(),
     cmnd: Joi.string().pattern(/^[0-9]+$/, 'numbers'),
     address: Joi.string(),
+    storeId: Joi.objectId(),
   });
   return schema.validate(user);
 };
 
-const validateEmail = (user) => {
+export const validateEmail = (user) => {
   const schema = Joi.object({
     email: Joi.string().min(5).max(255).required()
       .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
@@ -26,7 +28,7 @@ const validateEmail = (user) => {
   return schema.validate(user);
 };
 
-const validateChangeUserInfo = (user) => {
+export const validateChangeUserInfo = (user) => {
   const schema = Joi.object({
     username: Joi.string().min(5),
     email: Joi.any().forbidden(),
@@ -40,11 +42,12 @@ const validateChangeUserInfo = (user) => {
     createdAt: Joi.any().forbidden(),
     updatedAt: Joi.any().forbidden(),
     password: Joi.any().forbidden(),
+    storeId: Joi.any().forbidden(),
   });
   return schema.validate(user);
 };
 
-const validateChangePassword = (user) => {
+export const validateChangePassword = (user) => {
   const schema = Joi.object({
     oldPassword: Joi.string().required().pattern(/^[0-9a-zA-z]{5,128}$/),
     newPassword: Joi.string().required().pattern(/^[0-9a-zA-z]{5,128}$/),
@@ -54,11 +57,4 @@ const validateChangePassword = (user) => {
       }),
   });
   return schema.validate(user);
-};
-
-export {
-  validateUser,
-  validateEmail,
-  validateChangeUserInfo,
-  validateChangePassword,
 };

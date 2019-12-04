@@ -31,12 +31,12 @@ const middlewareForShow = [
 ];
 // const middlewareForPut = [];
 const middlewareForPatchUserInfo = [
-  restrictPermission('admin'),
+  restrictPermission('admin', 'staff'),
   restrictToOwner,
   validatorData(changeInfo),
 ];
 const middlewareForPatchPassword = [
-  restrictPermission('admin'),
+  restrictPermission('admin', 'staff'),
   restrictToOwner,
   validatorData(changePassword),
 ];
@@ -89,8 +89,10 @@ router.get('/', middlewareForIndex, StaffController.index);
 
 router.get('/:id', middlewareForShow, StaffController.show);
 
-// router.patch('/:id', authenticateJWT, UserController.update);
+router.patch('/:id', middlewareForPatchUserInfo, StaffController.patchUserInfo);
 
-// router.delete('/:id', authenticateJWT, UserController.destroy);
+router.patch('/:id/password', middlewareForPatchPassword, StaffController.patchPassword);
+
+router.delete('/:id', middlewareForDetroy, StaffController.destroy);
 
 export default router;
