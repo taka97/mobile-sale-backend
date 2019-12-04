@@ -2,10 +2,40 @@ import { Router } from 'express';
 import CustomerController from '../controllers/customerController';
 
 import {
-  authenticateJWT,
+  authenticate,
+  restrictPermission,
+  setField,
+  restrictToOwner,
   validatorData,
 } from '../middlewares';
-import { validateUser } from '../utils';
+import {
+  validateUser,
+  validateChangeUserInfo as changeInfo,
+  validateChangePassword as changePassword,
+} from '../utils';
+
+const middlewareForCreate = [validatorData(validateUser)];
+const middlewareForIndex = [
+  restrictPermission('admin'),
+];
+const middlewareForShow = [
+  restrictPermission('admin', 'customer'),
+];
+// const middlewareForPut = [];
+const middlewareForPatchUserInfo = [
+  restrictPermission('admin', 'customer'),
+  restrictToOwner,
+  validatorData(changeInfo),
+];
+const middlewareForPatchPassword = [
+  restrictPermission('admin', 'customer'),
+  restrictToOwner,
+  validatorData(changePassword),
+];
+const middlewareForDetroy = [
+  restrictPermission('admin', 'customer'),
+  restrictToOwner,
+];
 
 const router = Router();
 
@@ -42,14 +72,19 @@ const router = Router();
  *      403:
  *        description: That user already exists!
  */
-router.post('/', validatorData(validateUser), CustomerController.create);
+router.post('/', middlewareForCreate, CustomerController.create);
 
-// router.get('/', UserController.index);
+// all router below must authenticate with jwt
+router.use(authenticate('jwt'));
 
-router.get('/:id', authenticateJWT, CustomerController.show);
+router.get('/', middlewareForIndex, CustomerController.index);
 
-// router.patch('/:id', authenticateJWT, UserController.update);
+router.get('/:id', middlewareForShow, CustomerController.show);
 
-// router.delete('/:id', authenticateJWT, UserController.destroy);
+router.patch('/:id', middlewareForPatchUserInfo, CustomerController.patchUserInfo);
+
+router.patch('/:id/password', middlewareForPatchPassword, CustomerController.patchPassword);
+
+router.delete('/:id', middlewareForDetroy, CustomerController.destroy);
 
 export default router;
