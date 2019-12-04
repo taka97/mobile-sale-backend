@@ -1,11 +1,49 @@
 import { Router } from 'express';
-import StaffController from '../controllers/staffController';
 
+import StaffController from '../controllers/staffController';
 import {
-  authenticateJWT,
+  authenticate,
+  restrictPermission,
+  setField,
+  restrictToOwner,
   validatorData,
 } from '../middlewares';
-import { validateUser } from '../utils';
+import {
+  validateUser,
+  validateChangeUserInfo as changeInfo,
+  validateChangePassword as changePassword,
+} from '../utils';
+
+const setStoreIdField = setField({
+  as: 'query.storeId',
+  from: 'user.storeId',
+  allowUndefined: true
+});
+
+const middlewareForCreate = [validatorData(validateUser)];
+const middlewareForIndex = [
+  restrictPermission('admin', 'staff'),
+  setStoreIdField,
+];
+const middlewareForShow = [
+  restrictPermission('admin', 'staff'),
+  setStoreIdField,
+];
+// const middlewareForPut = [];
+const middlewareForPatchUserInfo = [
+  restrictPermission('admin'),
+  restrictToOwner,
+  validatorData(changeInfo),
+];
+const middlewareForPatchPassword = [
+  restrictPermission('admin'),
+  restrictToOwner,
+  validatorData(changePassword),
+];
+const middlewareForDetroy = [
+  restrictPermission('admin', 'staff'),
+  restrictToOwner,
+];
 
 const router = Router();
 
@@ -42,11 +80,14 @@ const router = Router();
  *      403:
  *        description: That user already exists!
  */
-router.post('/', validatorData(validateUser), StaffController.create);
+router.post('/', middlewareForCreate, StaffController.create);
 
-router.get('/', StaffController.index);
+// all router below must authenticate with jwt
+router.use(authenticate('jwt'));
 
-router.get('/:id', authenticateJWT, StaffController.show);
+router.get('/', middlewareForIndex, StaffController.index);
+
+router.get('/:id', middlewareForShow, StaffController.show);
 
 // router.patch('/:id', authenticateJWT, UserController.update);
 
