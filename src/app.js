@@ -1,20 +1,22 @@
 import createError from 'http-errors';
 import helmet from 'helmet';
+import cors from 'cors';
 import express from 'express';
 import compression from 'compression';
 import { urlencoded, json } from 'body-parser';
 import { serve, setup } from 'swagger-ui-express';
 
 import swaggerSpecs from './services/swagger-specs';
-import * as configDB from './mongoose';
+import configDB from './mongoose';
 import passport from './authentication';
 import apiRouter from './routes';
 
 const app = express();
 
-configDB.init();
+configDB();
 
 app.use(helmet());
+app.use(cors());
 app.use(urlencoded({ extended: false }));
 app.use(json());
 app.use(passport.initialize());

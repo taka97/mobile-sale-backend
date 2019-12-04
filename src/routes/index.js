@@ -1,7 +1,11 @@
 import { Router } from 'express';
 
 import authenticationRouter from './authentication';
-import userRouter from './users';
+import adminRouter from './admin';
+import staffRouter from './staff';
+import customerRouter from './customer';
+// import userRouter from './users';
+import seederRouter from './seeder';
 
 const router = Router();
 
@@ -13,15 +17,15 @@ const router = Router();
  *    properties:
  *      email:
  *        type: string
+ *        example: 'admin@gmail.com'
  *      password:
  *        type: string
+ *        example: 'Abc12345'
  *      strategy:
  *        type: string
  *        default: customer
- *        enum:
- *          - customer
- *          - staff
- *          - admin
+ *        example: 'admin'
+ *        enum: ['customer', 'staff', 'admin']
  *    required:
  *      - email
  *      - password
@@ -38,9 +42,96 @@ const router = Router();
  *    required:
  *      - userId
  *      - accessToken
+ *  PasswordChange:
+ *    type: object
+ *    properties:
+ *      oldPassword:
+ *        type: string
+ *      newPassword:
+ *        type: string
+ *      repeatPassword:
+ *        type: string
+ *    required:
+ *      - oldPassword
+ *      - newPassword
+ *      - repeatPassword
+ *  User:
+ *    type: object
+ *    properties:
+ *      email:
+ *        type: string
+ *      username:
+ *        type: string
+ *      fullname:
+ *        type: string
+ *      cmnd:
+ *        type: string
+ *      address:
+ *        type: string
+ *      phone:
+ *        type: string
+ *      birthDate:
+ *        type: string
+ *      sex:
+ *        type: string
+ *        enum: ['male', 'female']
+ *    required:
+ *      - email
+ *      - fullname
+ *      - birthDate
+ *      - sex
+ *  UserResponse:
+ *    type: object
+ *    properties:
+ *      _id:
+ *        type: string
+ *      email:
+ *        type: string
+ *      username:
+ *        type: string
+ *      fullname:
+ *        type: string
+ *      cmnd:
+ *        type: string
+ *      address:
+ *        type: string
+ *      phone:
+ *        type: string
+ *      birthDate:
+ *        type: string
+ *      sex:
+ *        type: string
+ *        enum: ['male', 'female']
+ *      roles:
+ *        type: string
+ *        enum: ['customer', 'staff', 'admin']
+ *      createdAt:
+ *        type: string
+ *      updatedAt:
+ *        type: string
+ *    required:
+ *      - _id
+ *  QueryResponse:
+ *    type: object
+ *    properties:
+ *      total:
+ *        type: integer
+ *      limit:
+ *        type: integer
+ *      skip:
+ *        type: integer
+ *      data:
+ *        type: array
+ *        items:
+ *          type: object
  */
 
 router.use('/authentication', authenticationRouter);
-router.use('/users', userRouter);
+router.use('/admin', adminRouter);
+router.use('/staffs', staffRouter);
+router.use('/customers', customerRouter);
+// router.use('/users', userRouter);
+
+router.use('/seeder', seederRouter);
 
 export default router;

@@ -1,5 +1,5 @@
+import { model, Schema } from 'mongoose';
 import { compareSync, hashSync } from 'bcryptjs';
-import { model, Schema, Types } from 'mongoose';
 
 const saltRounds = 10;
 
@@ -10,7 +10,8 @@ const UserSchema = new Schema(
       required: true,
       minlength: 5,
       maxlength: 255,
-      unique: true,
+      // unique: true,
+      index: true,
       trim: true,
     },
     password: {
@@ -23,7 +24,8 @@ const UserSchema = new Schema(
       type: String,
       minlength: 5,
       maxlength: 50,
-      unique: true,
+      // unique: true,
+      index: true,
       trim: true,
     },
     fullname: {
@@ -33,7 +35,7 @@ const UserSchema = new Schema(
       type: String, require: true, minlength: 10, maxlength: 12,
     },
     birthDate: {
-      type: Date,
+      type: Date, required: true,
     },
     cmnd: {
       type: String,
@@ -41,18 +43,25 @@ const UserSchema = new Schema(
     address: {
       type: String,
     },
+    sex: {
+      type: String,
+      enum: ['male', 'female'],
+      required: true,
+    },
     storeId: {
-      type: Types.ObjectId,
-      ref: 'Store'
+      type: Schema.Types.ObjectId,
+      ref: 'Store',
     },
     roles: {
       type: String,
       enum: ['admin', 'staff', 'customer'],
       default: 'customer',
+      index: true,
     },
     isDeleted: {
       type: Boolean,
       default: false,
+      index: true,
     },
   },
   {
@@ -60,10 +69,22 @@ const UserSchema = new Schema(
   },
 );
 
+UserSchema.index({ roles: 1, isDeleted: 1 }, { background: true });
+
 // eslint-disable-next-line func-names
 UserSchema.methods.validPassword = function (password) {
   return compareSync(password, this.password);
 };
+
+// eslint-disable-next-line func-names
+UserSchema.pre('updateMany', function (next) {
+  const update = this.getUpdate();
+  if (update.password) {
+    update.password = hashSync(update.password, saltRounds);
+  }
+
+  next();
+});
 
 // eslint-disable-next-line func-names
 UserSchema.pre('save', function (next) {
