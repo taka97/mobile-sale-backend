@@ -4,9 +4,7 @@ import mongoose from 'mongoose';
 
 const dg = debug('DC:mongoose');
 
-/* eslint-disable import/prefer-default-export */
-
-export const init = () => {
+const init = () => {
   mongoose.connect(config.get('mongodb'), {
     useCreateIndex: true,
     useNewUrlParser: true,
@@ -17,3 +15,5 @@ export const init = () => {
   const db = mongoose.connection;
   db.on('error', (err) => dg('MongoDB connection error', err));
 };
+
+export default init;

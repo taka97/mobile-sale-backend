@@ -29,7 +29,7 @@ class AuthenticationController {
         accessToken,
         userId,
         storeId: roles === 'staff' ? storeId : undefined,
-      }
+      };
 
       return res.status(201).send(respData);
     })(req, res, next);

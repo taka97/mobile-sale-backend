@@ -1,21 +1,72 @@
 // import debug from 'debug';
-import createError from 'http-errors';
-import _ from 'lodash';
+import config from 'config';
+import {
+  BadRequest,
+  Forbidden,
+} from 'http-errors';
 
-import User from '../models/user';
-import { validateUser } from '../utils/validator';
-import { simpleUser } from '../utils/userFunc';
+import Model from '../models/user';
+import createService from '../services/Services';
+import {
+  Ok,
+  Created,
+  NoContent,
+} from '../helpers/http-code';
 
 // const dg = debug('MS:controllers:users');
 
 class UserController {
+  constructor(options = {}) {
+    const paginate = config.get('paginate');
+    const excludeField = ['password'];
+    const allowField = [
+      'email',
+      'username',
+      'password',
+      'fullname',
+      'phone',
+      'birthDate',
+      'sex',
+      'cmnd',
+      'address',
+      'roles',
+      'createdAt',
+      'updatedAt',
+    ];
+
+    /* eslint-disable  no-param-reassign */
+    options = {
+      paginate,
+      Model,
+      excludeField,
+      allowField,
+      ...options,
+    };
+
+    this.requiredField = options.requiredField;
+    this.services = createService(options);
+
+    this.index = this.index.bind(this);
+    this.create = this.create.bind(this);
+    this.show = this.show.bind(this);
+    this.update = this.update.bind(this);
+    this.patchUserInfo = this.patchUserInfo.bind(this);
+    this.patchPassword = this.patchPassword.bind(this);
+    this.destroy = this.destroy.bind(this);
+  }
+
   /**
  * Controller - Get list all of User
  * @param {object} req request
  * @param {object} res response
  */
-  index(req, res) {
-    res.json({ msg: 'get list of users' });
+  async index(req, res) {
+    let { query } = req;
+    if (this.requiredField) {
+      query = { ...query, ...this.requiredField };
+    }
+    const result = await this.services.find({ query });
+    res.send(result);
   }
 
   /**
@@ -25,26 +76,32 @@ class UserController {
    * @param {object} next next pointer
    */
   async create(req, res, next) {
-    // First Validate The Request
-    const { error } = validateUser(req.body);
-    if (error) {
-      return next(createError(400, error.details[0].message));
+    try {
+      const { query, body } = req;
+
+      const findQuery = {
+        $or: [{ email: body.email }],
+        $limit: 0,
+        isDeleted: false,
+      };
+
+      if (body.username) {
+        findQuery.$or.push({ username: body.username });
+      }
+
+      const { total } = await this.services.find({ query: findQuery });
+
+      if (total !== 0) {
+        throw new Forbidden('That user already exists!');
+      }
+
+      const data = this.requiredField ? ({ ...body, ...this.requiredField }) : body;
+
+      const result = await this.services.create(data, { query });
+      return res.status(Created).send(result);
+    } catch (err) {
+      return next(err);
     }
-
-    // Check if this user already exisits
-    let user = await User.findOne({ email: req.body.email }).lean();
-    if (user) {
-      return next(createError(403, 'That user already exists!'));
-    }
-
-    // Insert the new user if they do not exist yet
-    user = new User(_.pick(req.body, 'email', 'password',
-      'username', 'fullname',
-      'phone', 'birthDate',
-      'cmnd', 'address'));
-    await user.save();
-
-    return res.status(201).json({ msg: 'create user', data: simpleUser(user.toObject()) });
   }
 
   /**
@@ -54,24 +111,15 @@ class UserController {
  * @param {object} next next pointer
  */
   async show(req, res, next) {
-    let user;
-
     try {
-      user = await User.findById(req.params.id).lean();
-    } catch (error) {
-      switch (error.name) {
-        case 'CastError':
-          return next(createError(400, '"Id" is invalid'));
-        default:
-          return next(createError(500));
-      }
-    }
+      const { params, query } = req;
+      const id = params.id ? params.id : null;
 
-    if (!user) {
-      return next(createError(404, 'Not found user'));
+      const user = await this.services.get(id, { query });
+      return res.status(Ok).send(user);
+    } catch (err) {
+      return next(err);
     }
-
-    return res.json({ msg: 'show user detail', data: simpleUser(user) });
   }
 
   /**
@@ -80,19 +128,112 @@ class UserController {
  * @param {object} res response
  * @param {object} next next pointer
  */
-  update(req, res) {
-    res.json({ msg: 'update user detail', id: req.params.id });
+  async update(req, res, next) {
+    try {
+      const { params, query, body: data } = req;
+      const id = params.id ? params.id : null;
+
+      const result = await this.services.update(id, data, { query });
+      return res.status(Ok).send(result);
+    } catch (err) {
+      return next(err);
+    }
   }
 
   /**
- * Controller - Delete User
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next pointer
+ * Controller - Patch User Info
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next pointer
  */
-  destroy(req, res) {
-    res.json({ msg: 'delete user detail', id: req.params.id });
+  async patchUserInfo(req, res, next) {
+    const {
+      params, query, body, user,
+    } = req;
+    const id = params.id ? params.id : null;
+
+    try {
+      const { username } = body;
+      if (Object.keys(body).length === 0) {
+        throw new BadRequest('Donnot have any field is modified');
+      }
+
+      if (username) {
+        if (user.username !== undefined) {
+          throw new BadRequest('Cannot change your username');
+        }
+        const findQuery = {
+          username,
+          $limit: 0,
+          isDeleted: false,
+        };
+        const { total } = await this.services.find({ query: findQuery });
+        if (total !== 0) {
+          throw new BadRequest('username is existed!!');
+        }
+      }
+
+      const data = { ...(user.toObject()), ...body };
+
+      const result = await this.services.update(id, data, { query });
+      return res.send(result);
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  /**
+   * Controller - Patch User Password
+   * @param {Object} req request
+   * @param {Object} res response
+   * @param {Object} next next pointer
+   */
+  async patchPassword(req, res, next) {
+    const {
+      params, query, body, user,
+    } = req;
+    const { oldPassword, newPassword } = body;
+    const { id } = params;
+
+    try {
+      if (!user.validPassword(oldPassword)) {
+        throw new BadRequest('old password donn\'t match');
+      }
+      const data = {
+        password: newPassword,
+      };
+      const result = await this.services.patch(id, data, { query });
+      return res.send(result);
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  /**
+  * Controller - Delete User (Carefully with using it)
+  * @param {object} req request
+  * @param {object} res response
+  * @param {object} next next pointer
+  */
+  async destroy(req, res, next) {
+    const { params } = req;
+    const id = params.id ? params.id : null;
+    const data = {
+      isDeleted: true,
+    };
+
+    try {
+      const result = await this.services.patch(id, data);
+      return res.status(NoContent).send(result);
+    } catch (err) {
+      return next(err);
+    }
   }
 }
 
-export default new UserController();
+function init(options) {
+  return new UserController(options);
+}
+
+export default init;
+export { UserController };
