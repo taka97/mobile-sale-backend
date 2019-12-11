@@ -29,7 +29,7 @@ function setField({ as, from, allowUndefined = false }) {
 
     _.set(req, as, value);
     return next();
-  }
+  };
 }
 
 /* eslint-disable import/prefer-default-export */
