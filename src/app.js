@@ -20,7 +20,7 @@ configCloudinary();
 app.use(helmet());
 app.use(cors());
 app.use(urlencoded({ extended: false }));
-app.use(json());
+app.use(json({ limit: '1mb' }));
 app.use(passport.initialize());
 app.use(compression());
 

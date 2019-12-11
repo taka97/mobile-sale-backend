@@ -27,6 +27,13 @@ export const validateEmail = (user) => {
   return schema.validate(user);
 };
 
+export const validateChangeAvatar = (user) => {
+  const schema = Joi.object({
+    avatarUri: Joi.string().dataUri(),
+  });
+  return schema.validate(user);
+};
+
 export const validateChangeUserInfo = (user) => {
   const schema = Joi.object({
     username: Joi.string().min(5),

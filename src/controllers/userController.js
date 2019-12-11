@@ -7,6 +7,7 @@ import {
 
 import Model from '../models/user';
 import createService from '../services/Services';
+import uploader from './uploadController';
 import {
   Ok,
   Created,
@@ -53,6 +54,7 @@ class UserController {
     this.update = this.update.bind(this);
     this.patchUserInfo = this.patchUserInfo.bind(this);
     this.patchPassword = this.patchPassword.bind(this);
+    this.patchAvatar = this.patchAvatar.bind(this);
     this.destroy = this.destroy.bind(this);
   }
 
@@ -209,6 +211,29 @@ class UserController {
       return next(err);
     }
   }
+
+  /**
+    * Controller - Patch User Avatar
+    * @param {Object} req request
+    * @param {Object} res response
+    * @param {Object} next next pointer
+    */
+  async patchAvatar(req, res, next) {
+    const {
+      params: { id },
+      body: { avatarUri },
+      query,
+    } = req;
+
+    try {
+      const { url } = await uploader.uploadAvatar(avatarUri, { public_id: id });
+      const result = await this.services.patch(id, { avatar: url }, { query });
+      return res.send(result);
+    } catch (err) {
+      return next(err);
+    }
+  }
+
 
   /**
   * Controller - Delete User (Carefully with using it)
