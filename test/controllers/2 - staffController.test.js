@@ -307,4 +307,491 @@ describe('Staff Controller', () => {
       expect(response.body).to.have.property('sex', sampleStaff[5].sex);
     });
   });
+
+  describe('#Update a user detail', () => {
+    const accessToken = {};
+    const userId = {};
+
+    before('Create user account', async () => {
+      await User.deleteMany();
+      await User.create(sampleAdminData);
+      await User.create(sampleStaffData);
+      await User.create(sampleCustomerData);
+      await User.create({ ...sampleStaff[5], roles: 'admin' });
+
+      const data = [sampleAdminData, sampleStaffData, sampleCustomerData];
+      const responseo = await request(app)
+        .post('/api/authentication')
+        .send({
+          email: sampleStaff[5].email,
+          password: sampleStaff[5].password,
+          strategy: 'admin',
+        });
+
+      userId.otherStaff = responseo.body.userId;
+      accessToken.otherStaff = responseo.body.accessToken;
+      await forEachAsync(data, async (current) => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: current.email,
+            password: current.password,
+            strategy: current.roles,
+          });
+        userId[current.roles] = response.body.userId;
+        accessToken[current.roles] = response.body.accessToken;
+      });
+    });
+
+    describe('##Check permission', () => {
+      it('should return Dont have permission - customer', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}`)
+          .set('Authorization', `Bearer ${accessToken.customer}`);
+        expect(response.status).to.equal(401);
+        expect(response.body.message).to.be.a('string')
+          .include('You don\'t have permission to access');
+      });
+
+      it('should return Dont have permission - staff (no owner)', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}`)
+          .set('Authorization', `Bearer ${accessToken.otherStaff}`);
+        expect(response.status).to.equal(401);
+        expect(response.body.message).to.be.a('string')
+          .include('You don\'t have permission to modify');
+      });
+
+      it('should return fail - staff (owner)', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}`)
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(400);
+        expect(response.body.message).to.be.a('string')
+          .include('Donnot have any field is modified');
+      });
+
+      it('should return Dont have permission - admin', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}`)
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(401);
+        expect(response.body.message).to.be.a('string')
+          .include('You don\'t have permission to modify');
+      });
+    });
+
+    describe('##Change user info - staff owner', () => {
+      it('Change user info: email, expect fail', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}`)
+          .send({
+            email: newData.email,
+          })
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(400);
+        expect(response.body.message).to.be.a('string')
+          .include('"email" is not allowed');
+      });
+
+      it('Change user info: username, expect fail - 1', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}`)
+          .send({
+            username: newData.username,
+          })
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(400);
+        expect(response.body.message).to.be.a('string')
+          .include('Cannot change your username');
+      });
+
+      it('Change user info: username, expect fail - 2', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.otherStaff}`)
+          .send({
+            username: sampleStaffData.username,
+          })
+          .set('Authorization', `Bearer ${accessToken.otherStaff}`);
+        expect(response.status).to.equal(400);
+        expect(response.body.message).to.be.a('string')
+          .include('username is existed!!');
+      });
+
+
+      it('Change user info: username, expect success - 3', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.otherStaff}`)
+          .send({
+            username: newData.username,
+          })
+          .set('Authorization', `Bearer ${accessToken.otherStaff}`);
+        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('_id');
+        expect(response.body).to.not.have.property('password');
+        expect(response.body).to.have.property('username', newData.username);
+        expect(response.body).to.have.property('fullname', sampleStaff[5].fullname);
+        expect(response.body).to.have.property('email', sampleStaff[5].email);
+        expect(response.body).to.have.property('birthDate',
+          (new Date(sampleStaff[5].birthDate)).toISOString());
+        expect(response.body).to.have.property('avatar', config.avatar.default);
+        expect(response.body).to.have.property('sex', sampleStaff[5].sex);
+      });
+
+      it('Change user info: fullname, expect fail', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}`)
+          .send({
+            fullname: 'abc',
+          })
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(400);
+        expect(response.body.message).to.be.a('string')
+          .include('"fullname" length must be at least 5 characters long');
+      });
+
+      it('Change user info: fullname, expect success', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}`)
+          .send({
+            fullname: newData.fullname,
+          })
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('_id');
+        expect(response.body).to.not.have.property('password');
+        expect(response.body).to.have.property('username', sampleStaffData.username);
+        expect(response.body).to.have.property('fullname', newData.fullname);
+        expect(response.body).to.have.property('email', sampleStaffData.email);
+        expect(response.body).to.have.property('birthDate',
+          (new Date(sampleStaffData.birthDate)).toISOString());
+        expect(response.body).to.have.property('avatar', config.avatar.default);
+        expect(response.body).to.have.property('sex', sampleStaffData.sex);
+      });
+
+      it('Change user info: phone, expect fail', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}`)
+          .send({
+            phone: 'abc',
+          })
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have
+          .property('message', '"phone" with value "abc" fails to match the numbers pattern');
+      });
+
+      it('Change user info: phone, expect success', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}`)
+          .send({
+            phone: newData.phone,
+          })
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('_id');
+        expect(response.body).to.not.have.property('password');
+        expect(response.body).to.have.property('username', sampleStaffData.username);
+        expect(response.body).to.have.property('fullname', newData.fullname);
+        expect(response.body).to.have.property('email', sampleStaffData.email);
+        expect(response.body).to.have.property('birthDate',
+          (new Date(sampleStaffData.birthDate)).toISOString());
+        expect(response.body).to.have.property('sex', sampleStaffData.sex);
+        expect(response.body).to.have.property('avatar', config.avatar.default);
+        expect(response.body).to.have.property('phone', newData.phone);
+      });
+
+      it('Change user info: birthDate, expect fail', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}`)
+          .send({
+            birthDate: 'abc',
+          })
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message', '"birthDate" must be a valid date');
+      });
+
+      it('Change user info: birthDate, expect success', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}`)
+          .send({
+            birthDate: newData.birthDate,
+          })
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('_id');
+        expect(response.body).to.not.have.property('password');
+        expect(response.body).to.have.property('username', sampleStaffData.username);
+        expect(response.body).to.have.property('fullname', newData.fullname);
+        expect(response.body).to.have.property('email', sampleStaffData.email);
+        expect(response.body).to.have.property('birthDate',
+          (new Date(newData.birthDate)).toISOString());
+        expect(response.body).to.have.property('sex', sampleStaffData.sex);
+        expect(response.body).to.have.property('avatar', config.avatar.default);
+        expect(response.body).to.have.property('phone', newData.phone);
+      });
+
+      it('Change user info: cmnd, expect fail', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}`)
+          .send({
+            cmnd: `${newData.cmnd}a`,
+          })
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have
+          .property('message',
+            `"cmnd" with value "${`${newData.cmnd}a`}" fails to match the numbers pattern`);
+      });
+
+      it('Change user info: cmnd, expect success', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}`)
+          .send({
+            cmnd: newData.cmnd,
+          })
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('_id');
+        expect(response.body).to.not.have.property('password');
+        expect(response.body).to.have.property('username', sampleStaffData.username);
+        expect(response.body).to.have.property('fullname', newData.fullname);
+        expect(response.body).to.have.property('email', sampleStaffData.email);
+        expect(response.body).to.have.property('birthDate',
+          (new Date(newData.birthDate)).toISOString());
+        expect(response.body).to.have.property('cmnd', newData.cmnd);
+        expect(response.body).to.have.property('sex', sampleStaffData.sex);
+        expect(response.body).to.have.property('avatar', config.avatar.default);
+        expect(response.body).to.have.property('phone', newData.phone);
+      });
+
+      it('Change user info: address, expect success', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}`)
+          .send({
+            address: newData.address,
+          })
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('_id');
+        expect(response.body).to.not.have.property('password');
+        expect(response.body).to.have.property('username', sampleStaffData.username);
+        expect(response.body).to.have.property('fullname', newData.fullname);
+        expect(response.body).to.have.property('email', sampleStaffData.email);
+        expect(response.body).to.have.property('birthDate',
+          (new Date(newData.birthDate)).toISOString());
+        expect(response.body).to.have.property('cmnd', newData.cmnd);
+        expect(response.body).to.have.property('sex', sampleStaffData.sex);
+        expect(response.body).to.have.property('phone', newData.phone);
+        expect(response.body).to.have.property('avatar', config.avatar.default);
+        expect(response.body).to.have.property('address', newData.address);
+      });
+
+      // no oldpassword
+      it('Change user info: passsword, expect fail - 1', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}/password`)
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have
+          .property('message', '"oldPassword" is required');
+      });
+
+      // no new password
+      it('Change user info: passsword, expect fail - 2', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}/password`)
+          .send({
+            oldPassword: sampleAdminData.password,
+          })
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have
+          .property('message', '"newPassword" is required');
+      });
+
+      // no repeat password
+      it('Change user info: passsword, expect fail - 3', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}/password`)
+          .send({
+            oldPassword: sampleAdminData.password,
+            newPassword: newData.passsword,
+          })
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have
+          .property('message', '"repeatPassword" is required');
+      });
+
+      // new password and repeat password donnt match
+      it('Change user info: passsword, expect fail - 4', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}/password`)
+          .send({
+            oldPassword: sampleAdminData.password,
+            newPassword: newData.passsword,
+            repeatPassword: `${newData.passsword}a`,
+          })
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have
+          .property('message', 'repeatPassword donnot match newPassword');
+      });
+
+      // old password donnt match
+      it('Change user info: passsword, expect fail - 5', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}/password`)
+          .send({
+            oldPassword: `${sampleAdminData.password}a`,
+            newPassword: newData.passsword,
+            repeatPassword: newData.passsword,
+          })
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have
+          .property('message', 'old password donn\'t match');
+      });
+
+      // new password is so short
+      it('Change user info: passsword, expect fail - 6', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}/password`)
+          .send({
+            oldPassword: sampleAdminData.password,
+            newPassword: 'a',
+            repeatPassword: 'aa',
+          })
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(400);
+        /* eslint-disable max-len */
+        expect(response.body).to.have.property('message',
+          '"newPassword" with value "a" fails to match the required pattern: /^[0-9a-zA-z]{5,128}$/');
+      });
+
+      it('Change user info: passsword, expect success - 7', async () => {
+        const response = await request(app)
+          .patch(`/api/staffs/${userId.staff}/password`)
+          .send({
+            oldPassword: sampleStaffData.password,
+            newPassword: newData.passsword,
+            repeatPassword: newData.passsword,
+          })
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('_id');
+        expect(response.body).to.not.have.property('password');
+        expect(response.body).to.have.property('username', sampleStaffData.username);
+        expect(response.body).to.have.property('fullname', newData.fullname);
+        expect(response.body).to.have.property('email', sampleStaffData.email);
+        expect(response.body).to.have.property('birthDate',
+          (new Date(newData.birthDate)).toISOString());
+        expect(response.body).to.have.property('cmnd', newData.cmnd);
+        expect(response.body).to.have.property('sex', sampleStaffData.sex);
+        expect(response.body).to.have.property('phone', newData.phone);
+        expect(response.body).to.have.property('avatar', config.avatar.default);
+        expect(response.body).to.have.property('address', newData.address);
+
+        const { body } = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaffData.email,
+            password: newData.passsword,
+            strategy: 'staff',
+          });
+        expect(body.userId).to.equal(userId.staff);
+      });
+    });
+  });
+
+  describe('#Delete a user', () => {
+    const accessToken = {};
+    const userId = {};
+
+    before('Create user account', async () => {
+      await User.deleteMany();
+      await User.create(sampleAdminData);
+      await User.create(sampleStaffData);
+      await User.create(sampleCustomerData);
+      await User.create({ ...sampleStaff[5], roles: 'admin' });
+
+      const data = [sampleAdminData, sampleStaffData, sampleCustomerData];
+      const responseo = await request(app)
+        .post('/api/authentication')
+        .send({
+          email: sampleStaff[5].email,
+          password: sampleStaff[5].password,
+          strategy: 'admin',
+        });
+
+      userId.otherStaff = responseo.body.userId;
+      accessToken.otherStaff = responseo.body.accessToken;
+      await forEachAsync(data, async (current) => {
+        const response = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: current.email,
+            password: current.password,
+            strategy: current.roles,
+          });
+        userId[current.roles] = response.body.userId;
+        accessToken[current.roles] = response.body.accessToken;
+      });
+    });
+
+    describe('##Without owner', () => {
+      it('should return Dont have permission - customer', async () => {
+        const response = await request(app)
+          .delete(`/api/staffs/${userId.staff}`)
+          .set('Authorization', `Bearer ${accessToken.customer}`);
+        expect(response.status).to.equal(401);
+        expect(response.body.message).to.be.a('string')
+          .include('You don\'t have permission to access');
+      });
+
+      it('should return Dont have permission - staff (no owner)', async () => {
+        const response = await request(app)
+          .delete(`/api/staffs/${userId.staff}`)
+          .set('Authorization', `Bearer ${accessToken.otherStaff}`);
+        expect(response.status).to.equal(401);
+        expect(response.body.message).to.be.a('string')
+          .include('You don\'t have permission to modify');
+      });
+
+      it('should return Dont have permission - admin', async () => {
+        const response = await request(app)
+          .delete(`/api/staffs/${userId.staff}`)
+          .set('Authorization', `Bearer ${accessToken.admin}`);
+        expect(response.status).to.equal(401);
+        expect(response.body.message).to.be.a('string')
+          .include('You don\'t have permission to modify');
+      });
+    });
+
+    describe('##Owner', () => {
+      it('shound return done', async () => {
+        const response = await request(app)
+          .delete(`/api/staffs/${userId.staff}`)
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(response.status).to.equal(204);
+        expect(response.body).to.be.empty;
+        const authentication = await request(app)
+          .post('/api/authentication')
+          .send({
+            email: sampleStaffData.email,
+            password: sampleStaffData.password,
+            strategy: 'staff'
+          });
+        expect(authentication.status).to.equal(400);
+        expect(authentication.body).to.have.property('message', 'Incorrect email/username or password');
+        const getDetail = await request(app)
+          .get(`/api/staffs/${userId.staff}`)
+          .set('Authorization', `Bearer ${accessToken.staff}`);
+        expect(getDetail.status).to.equal(401);
+        expect(getDetail.body).to.have.property('message', 'Unauthorized');
+      });
+    });
+  });
 });
