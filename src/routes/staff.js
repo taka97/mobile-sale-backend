@@ -4,7 +4,6 @@ import StaffController from '../controllers/staffController';
 import {
   authenticate,
   restrictPermission,
-  setField,
   restrictToOwner,
   validatorData,
 } from '../middlewares';
@@ -14,20 +13,12 @@ import {
   validateChangePassword as changePassword,
 } from '../utils';
 
-const setStoreIdField = setField({
-  as: 'query.storeId',
-  from: 'user.storeId',
-  allowUndefined: true
-});
-
 const middlewareForCreate = [validatorData(validateUser)];
 const middlewareForIndex = [
   restrictPermission('admin', 'staff'),
-  setStoreIdField,
 ];
 const middlewareForShow = [
   restrictPermission('admin', 'staff'),
-  setStoreIdField,
 ];
 // const middlewareForPut = [];
 const middlewareForPatchUserInfo = [

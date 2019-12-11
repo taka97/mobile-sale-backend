@@ -41,6 +41,7 @@ export const validateChangeUserInfo = (user) => {
     createdAt: Joi.any().forbidden(),
     updatedAt: Joi.any().forbidden(),
     password: Joi.any().forbidden(),
+    avatar: Joi.any().forbidden(),
   });
   return schema.validate(user);
 };

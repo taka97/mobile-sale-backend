@@ -27,6 +27,7 @@ class UserController {
       'phone',
       'birthDate',
       'sex',
+      'avatar',
       'cmnd',
       'address',
       'roles',
