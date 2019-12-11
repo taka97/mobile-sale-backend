@@ -9,6 +9,7 @@ import {
 } from '../middlewares';
 import {
   validateUser,
+  validateChangeAvatar as changeAvatar,
   validateChangeUserInfo as changeInfo,
   validateChangePassword as changePassword,
 } from '../utils';
@@ -30,6 +31,11 @@ const middlewareForPatchPassword = [
   restrictPermission('admin', 'customer'),
   restrictToOwner,
   validatorData(changePassword),
+];
+const middlewareForPatchAvatar = [
+  restrictPermission('admin'),
+  restrictToOwner,
+  validatorData(changeAvatar),
 ];
 const middlewareForDetroy = [
   restrictPermission('admin', 'customer'),
@@ -219,6 +225,48 @@ router.patch('/:id', middlewareForPatchUserInfo, CustomerController.patchUserInf
  *        description: 'Invalid data in request'
  */
 router.patch('/:id/password', middlewareForPatchPassword, CustomerController.patchPassword);
+
+/**
+ * @swagger
+ * /admin/{userId}/avatar:
+ *  patch:
+ *    tags:
+ *      - 'admin'
+ *    summary: 'Change avatar of admin'
+ *    description: >
+ *      * Just for admin (owner)
+ *    produces:
+ *      - 'application/json'
+ *    parameters:
+ *      - in: path
+ *        name: userId
+ *        description: 'Id of user'
+ *        required: true
+ *        schema:
+ *          type: byte
+ *      - in: body
+ *        name: body
+ *        description: 'Info that user need change'
+ *        schema:
+ *          type: object
+ *          properties:
+ *            avatarUri:
+ *              type: string
+ *              format: uri
+ *    responses:
+ *      200:
+ *        description: Detail of admin (after updated)
+ *        schema:
+ *          $ref: '#/definitions/User'
+ *      401:
+ *        description: >
+ *          You donn't have permission
+ *            * You donn't have permission to access
+ *            * You donn't have permission to modify
+ *      404:
+ *        description: 'Invalid data in request'
+ */
+router.patch('/:id/avatar', middlewareForPatchAvatar, CustomerController.patchAvatar);
 
 /**
  * @swagger
