@@ -1,4 +1,5 @@
 import request from 'supertest';
+import config from 'config';
 import { expect } from 'chai';
 import app from '../../src/app';
 import User from '../../src/models/user';
@@ -143,6 +144,7 @@ describe('Staff Controller', () => {
       expect(response.body).to.have.property('email', sampleStaff[5].email);
       expect(response.body).to.have.property('birthDate',
         (new Date(sampleStaff[5].birthDate)).toISOString());
+      expect(response.body).to.have.property('avatar', config.avatar.default);
       expect(response.body).to.have.property('sex', sampleStaff[5].sex);
     });
 
@@ -165,17 +167,15 @@ describe('Staff Controller', () => {
       await User.deleteMany();
       await User.deleteMany();
       await User.create(sampleAdminData);
-      await User.create({ ...sampleStaffData, storeId: '507f1f77bcf86cd799439010', });
+      await User.create(sampleStaffData);
       await User.create(sampleCustomerData);
       await User.create({
         ...sampleStaff[5],
         roles: 'staff',
-        storeId: '507f1f77bcf86cd799439011',
       });
       await User.create({
         ...sampleStaff[6],
         roles: 'staff',
-        storeId: '507f1f77bcf86cd799439011',
       });
 
       data = [sampleStaff[5], sampleStaff[6]];
@@ -250,6 +250,7 @@ describe('Staff Controller', () => {
       expect(response.body).to.have.property('email', sampleStaffData.email);
       expect(response.body).to.have.property('birthDate',
         (new Date(sampleStaffData.birthDate)).toISOString());
+      expect(response.body).to.have.property('avatar', config.avatar.default);
       expect(response.body).to.have.property('sex', sampleStaffData.sex);
     });
 
@@ -264,6 +265,7 @@ describe('Staff Controller', () => {
       expect(response.body).to.have.property('email', sampleStaffData.email);
       expect(response.body).to.have.property('birthDate',
         (new Date(sampleStaffData.birthDate)).toISOString());
+      expect(response.body).to.have.property('avatar', config.avatar.default);
       expect(response.body).to.have.property('sex', sampleStaffData.sex);
     });
 
@@ -286,10 +288,11 @@ describe('Staff Controller', () => {
       expect(response.body).to.have.property('email', sampleAdminData.email);
       expect(response.body).to.have.property('birthDate',
         (new Date(sampleAdminData.birthDate)).toISOString());
+      expect(response.body).to.have.property('avatar', config.avatar.default);
       expect(response.body).to.have.property('sex', sampleAdminData.sex);
     });
 
-    it('shound return success with owner as staff same at store', async () => {
+    it('shound return success', async () => {
       const response = await request(app)
         .get(`/api/staffs/${userId.Staff00}`)
         .set('Authorization', `jwt ${accessToken.Staff01}`);
@@ -300,16 +303,8 @@ describe('Staff Controller', () => {
       expect(response.body).to.have.property('email', sampleStaff[5].email);
       expect(response.body).to.have.property('birthDate',
         (new Date(sampleStaff[5].birthDate)).toISOString());
+      expect(response.body).to.have.property('avatar', config.avatar.default);
       expect(response.body).to.have.property('sex', sampleStaff[5].sex);
-    });
-
-    it('shound return not found with staff diff store', async () => {
-      const response = await request(app)
-        .get(`/api/staffs/${userId.Staff00}`)
-        .set('Authorization', `jwt ${accessToken.staff}`);
-      expect(response.status).to.equal(404);
-      expect(response.body).to.have
-        .property('message', `No record found for id '${userId.Staff00}'`);
     });
   });
 });
