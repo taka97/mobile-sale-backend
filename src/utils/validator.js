@@ -15,7 +15,6 @@ export const validateUser = (user) => {
     sex: Joi.string().lowercase().valid('male', 'female').required(),
     cmnd: Joi.string().pattern(/^[0-9]+$/, 'numbers'),
     address: Joi.string(),
-    storeId: Joi.objectId(),
   });
   return schema.validate(user);
 };
@@ -42,7 +41,6 @@ export const validateChangeUserInfo = (user) => {
     createdAt: Joi.any().forbidden(),
     updatedAt: Joi.any().forbidden(),
     password: Joi.any().forbidden(),
-    storeId: Joi.any().forbidden(),
   });
   return schema.validate(user);
 };
