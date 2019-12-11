@@ -8,12 +8,14 @@ import { serve, setup } from 'swagger-ui-express';
 
 import swaggerSpecs from './services/swagger-specs';
 import configDB from './mongoose';
+import configCloudinary from './cloudinary';
 import passport from './authentication';
 import apiRouter from './routes';
 
 const app = express();
 
 configDB();
+configCloudinary();
 
 app.use(helmet());
 app.use(cors());
