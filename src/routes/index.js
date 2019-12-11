@@ -36,9 +36,6 @@ const router = Router();
  *        type: string
  *      accessToken:
  *        type: string
- *      storeId:
- *        type: string
- *        description: returned if user is staff
  *    required:
  *      - userId
  *      - accessToken
@@ -64,6 +61,8 @@ const router = Router();
  *        type: string
  *      fullname:
  *        type: string
+ *      avatar:
+ *        type: string
  *      cmnd:
  *        type: string
  *      address:
@@ -88,6 +87,8 @@ const router = Router();
  *      email:
  *        type: string
  *      username:
+ *        type: string
+ *      avatar:
  *        type: string
  *      fullname:
  *        type: string
