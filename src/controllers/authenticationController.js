@@ -22,7 +22,7 @@ class AuthenticationController {
         return next(createError(400, info.message));
       }
 
-      const { _id: userId, roles } = user;
+      const { _id: userId } = user;
       // eslint-disable-next-line no-underscore-dangle
       const accessToken = jwtSign({ id: userId });
       const respData = {
