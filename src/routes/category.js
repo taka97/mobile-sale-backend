@@ -7,11 +7,13 @@ import {
   validatorData,
 } from '../middlewares';
 import {
-
+  validateCategory,
 } from '../utils';
 
 const middlewareForCreate = [
-  // validatorData(validateUser)
+  authenticate('jwt'),
+  restrictPermission('admin'),
+  validatorData(validateCategory),
 ];
 const middlewareForIndex = [
   // restrictPermission('admin')

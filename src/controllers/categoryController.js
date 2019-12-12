@@ -5,7 +5,7 @@ import {
   Forbidden,
 } from 'http-errors';
 
-import Model from '../models/user';
+import Model from '../models/category';
 import createService from '../services/Services';
 import {
   Ok,
@@ -32,7 +32,7 @@ class CategoryController {
     this.create = this.create.bind(this);
     this.show = this.show.bind(this);
     this.update = this.update.bind(this);
-    this.patch = this.patchUserInfo.bind(this);
+    this.patch = this.patch.bind(this);
     this.destroy = this.destroy.bind(this);
   }
 
@@ -42,7 +42,7 @@ class CategoryController {
  * @param {object} res response
  */
   async index(req, res) {
-    let { query } = req;
+    const { query } = req;
     const result = await this.services.find({ query });
     res.send(result);
   }
@@ -58,24 +58,17 @@ class CategoryController {
       const { query, body } = req;
 
       const findQuery = {
-        $or: [{ email: body.email }],
+        name: body.name,
         $limit: 0,
-        isDeleted: false,
       };
-
-      if (body.username) {
-        findQuery.$or.push({ username: body.username });
-      }
 
       const { total } = await this.services.find({ query: findQuery });
 
       if (total !== 0) {
-        throw new Forbidden('That user already exists!');
+        throw new Forbidden('That name is already used!!!');
       }
 
-      const data = this.requiredField ? ({ ...body, ...this.requiredField }) : body;
-
-      const result = await this.services.create(data, { query });
+      const result = await this.services.create(body, { query });
       return res.status(Created).send(result);
     } catch (err) {
       return next(err);
@@ -182,9 +175,4 @@ class CategoryController {
   }
 }
 
-function init(options) {
-  return new CategoryController(options);
-}
-
-export default init;
-export { CategoryController as UserController };
+export default new CategoryController();
