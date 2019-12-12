@@ -8,6 +8,7 @@ import {
 } from '../middlewares';
 import {
   validateCategory,
+  validateChangeCategory as changeInfo,
 } from '../utils';
 
 const middlewareForCreate = [
@@ -16,20 +17,17 @@ const middlewareForCreate = [
   validatorData(validateCategory),
 ];
 const middlewareForIndex = [
-  // restrictPermission('admin')
 ];
 const middlewareForShow = [
-  // restrictPermission('admin')
 ];
-// const middlewareForPut = [];
 const middlewareForPatch = [
-  // restrictPermission('admin'),
-  // restrictToOwner,
-  // validatorData(changeInfo),
+  authenticate('jwt'),
+  restrictPermission('admin'),
+  validatorData(changeInfo),
 ];
 const middlewareForDetroy = [
-  // restrictPermission('admin'),
-  // restrictToOwner,
+  authenticate('jwt'),
+  restrictPermission('admin'),
 ];
 
 const router = Router();
@@ -162,7 +160,6 @@ router.get('/:id', middlewareForShow, CategoryController.show);
  *        description: >
  *          You donn't have permission
  *            * You donn't have permission to access
- *            * You donn't have permission to modify
  *      404:
  *        description: 'Invalid data in request'
  */
@@ -193,7 +190,8 @@ router.patch('/:id', middlewareForPatch, CategoryController.patch);
  *        description: >
  *          You donn't have permission
  *            * You donn't have permission to access
- *            * You donn't have permission to modify
+ *      403:
+ *        description: Current category is be using
  */
 router.delete('/:id', middlewareForDetroy, CategoryController.destroy);
 
