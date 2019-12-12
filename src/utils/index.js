@@ -1,4 +1,4 @@
-export * from './validatorForUser';
 export * from './utils';
 export * from './jwtFunc';
-// export * from './userFunc';
+export * from './validatorForUser';
+export * from './validatorForCategory';
