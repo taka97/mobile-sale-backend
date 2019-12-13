@@ -763,13 +763,14 @@ describe('Admin Controller', () => {
           .delete(`/api/admin/${userId.admin}`)
           .set('Authorization', `Bearer ${accessToken.admin}`);
         expect(response.status).to.equal(204);
+        /* eslint-disable no-unused-expressions */
         expect(response.body).to.be.empty;
         const authentication = await request(app)
           .post('/api/authentication')
           .send({
             email: sampleAdminData.email,
             password: sampleAdminData.password,
-            strategy: 'admin'
+            strategy: 'admin',
           });
         expect(authentication.status).to.equal(400);
         expect(authentication.body).to.have.property('message', 'Incorrect email/username or password');

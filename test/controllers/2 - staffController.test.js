@@ -776,13 +776,14 @@ describe('Staff Controller', () => {
           .delete(`/api/staffs/${userId.staff}`)
           .set('Authorization', `Bearer ${accessToken.staff}`);
         expect(response.status).to.equal(204);
+        /* eslint-disable no-unused-expressions */
         expect(response.body).to.be.empty;
         const authentication = await request(app)
           .post('/api/authentication')
           .send({
             email: sampleStaffData.email,
             password: sampleStaffData.password,
-            strategy: 'staff'
+            strategy: 'staff',
           });
         expect(authentication.status).to.equal(400);
         expect(authentication.body).to.have.property('message', 'Incorrect email/username or password');

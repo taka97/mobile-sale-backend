@@ -81,9 +81,6 @@ const newData = {
 };
 
 describe('Customer Controller', () => {
-  let accessToken;
-  let userId;
-
   before('***Cleaning user collection', async () => {
     await User.deleteMany();
   });
@@ -155,6 +152,8 @@ describe('Customer Controller', () => {
 
   describe('#Get a user detail', () => {
     const noExistId = '5de25b1504da0435c8e714ad';
+    let accessToken;
+    let userId;
 
     before(async () => {
       await User.deleteMany();
@@ -703,13 +702,14 @@ describe('Customer Controller', () => {
           .delete(`/api/customers/${userId.customer}`)
           .set('Authorization', `Bearer ${accessToken.customer}`);
         expect(response.status).to.equal(204);
+        /* eslint-disable no-unused-expressions */
         expect(response.body).to.be.empty;
         const authentication = await request(app)
           .post('/api/authentication')
           .send({
             email: sampleCustomerData.email,
             password: sampleCustomerData.password,
-            strategy: 'customer'
+            strategy: 'customer',
           });
         expect(authentication.status).to.equal(400);
         expect(authentication.body).to.have.property('message', 'Incorrect email/username or password');
