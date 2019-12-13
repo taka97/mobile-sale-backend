@@ -4,7 +4,7 @@ import authenticationRouter from './authentication';
 import adminRouter from './admin';
 import staffRouter from './staff';
 import customerRouter from './customer';
-// import userRouter from './users';
+import categoryRouter from './category';
 import seederRouter from './seeder';
 
 const router = Router();
@@ -125,13 +125,33 @@ const router = Router();
  *        type: array
  *        items:
  *          type: object
+ *  Category:
+ *    type: object
+ *    properties:
+ *      name:
+ *        type: string
+ *    required:
+ *      - name
+ *  CategoryResponse:
+ *    type: object
+ *    properties:
+ *      _id:
+ *        type: string
+ *      name:
+ *        type: string
+ *      createdAt:
+ *        type: string
+ *      updatedAt:
+ *        type: string
+ *    required:
+ *      - _id
  */
 
 router.use('/authentication', authenticationRouter);
 router.use('/admin', adminRouter);
 router.use('/staffs', staffRouter);
 router.use('/customers', customerRouter);
-// router.use('/users', userRouter);
+router.use('/categories', categoryRouter);
 
 router.use('/seeder', seederRouter);
 
