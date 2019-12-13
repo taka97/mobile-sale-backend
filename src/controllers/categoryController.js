@@ -162,12 +162,9 @@ class CategoryController {
   async destroy(req, res, next) {
     const { params } = req;
     const id = params.id ? params.id : null;
-    const data = {
-      isDeleted: true,
-    };
 
     try {
-      const result = await this.services.patch(id, data);
+      const result = await this.services.remove(id, params);
       return res.status(NoContent).send(result);
     } catch (err) {
       return next(err);
