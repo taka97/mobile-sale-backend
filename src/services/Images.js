@@ -28,6 +28,13 @@ class Images {
       folder: this.folder.avatar || 'avatar',
     });
   }
+
+  uploadProductImage(uri, uploadOption) {
+    return this.upload(uri, {
+      ...uploadOption,
+      folder: this.folder.image || 'images',
+    });
+  }
 }
 
 function init(options) {
