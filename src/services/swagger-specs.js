@@ -35,6 +35,10 @@ const swaggerDefinition = {
       name: 'category',
       description: 'Operations abount Category',
     },
+    {
+      name: 'product',
+      description: 'Operations abount Category',
+    },
   ],
   schemes: [
     'https',

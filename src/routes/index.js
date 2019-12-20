@@ -5,6 +5,7 @@ import adminRouter from './admin';
 import staffRouter from './staff';
 import customerRouter from './customer';
 import categoryRouter from './category';
+import productRouter from './product';
 import seederRouter from './seeder';
 
 const router = Router();
@@ -145,6 +146,73 @@ const router = Router();
  *        type: string
  *    required:
  *      - _id
+ *  Product:
+ *    type: object
+ *    properties:
+ *      name:
+ *        type: string
+ *      category:
+ *        type: string
+ *      details:
+ *        type: array
+ *        items:
+ *          type: object
+ *          properties:
+ *            name:
+ *              type: string
+ *            value:
+ *              type: string
+ *          required:
+ *            - name
+ *            - value
+ *      prices:
+ *        type: array
+ *        items:
+ *          type: object
+ *          properties:
+ *            image:
+ *              type: string
+ *            color:
+ *              type: string
+ *            memory:
+ *              type: string
+ *            warranty:
+ *              type: string
+ *            price:
+ *              type: number
+ *            quantity:
+ *              type: number
+ *          required:
+ *            - image
+ *            - color
+ *            - memory
+ *            - warranty
+ *            - price
+ *            - quantity
+ *    required:
+ *      - name
+ *      - category
+ *  ProductResponse:
+ *    type: object
+ *    properties:
+ *      _id:
+ *        type: string
+ *      name:
+ *        type: string
+ *      category:
+ *        type: string
+ *      details:
+ *        type: object
+ *      prices:
+ *        type: object
+ *      createdAt:
+ *        type: string
+ *      updatedAt:
+ *        type: string
+ *    required:
+ *      - _id
+ *      - name
+ *      - category
  */
 
 router.use('/authentication', authenticationRouter);
@@ -152,6 +220,7 @@ router.use('/admin', adminRouter);
 router.use('/staffs', staffRouter);
 router.use('/customers', customerRouter);
 router.use('/categories', categoryRouter);
+router.use('/products', productRouter);
 
 router.use('/seeder', seederRouter);
 

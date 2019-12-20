@@ -5,7 +5,7 @@ class UploadController {
     const options = {
       folder: {
         avatar: 'avatars',
-        image: 'asserts',
+        image: 'assets',
       },
     };
 
@@ -16,6 +16,11 @@ class UploadController {
 
   async uploadAvatar(uri, options) {
     const result = await this.services.uploadAvatar(uri, options);
+    return result;
+  }
+
+  async uploadProductImage(uri, options) {
+    const result = await this.services.uploadProductImage(uri, options);
     return result;
   }
 }
