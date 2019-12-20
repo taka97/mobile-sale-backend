@@ -139,8 +139,7 @@ const noExistCustomer = [
 
 describe('Authentication Controller', () => {
   // eslint-disable-next-line func-names
-  before('*** Create user before testing', async function () {
-    this.timeout(5000);
+  before('*** Create user before testing', async () => {
     await User.deleteMany();
     await User.create(sampleCustomer);
     await User.create(sampleStaff);
