@@ -1,7 +1,7 @@
 {
   "recursive": true,
-  "timeout": 5000,
+  "timeout": 10000,
   "require": ["@babel/register"],
-  "slow": 200,
+  "slow": 300,
   "exit": true
 }
