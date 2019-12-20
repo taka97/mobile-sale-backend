@@ -20,7 +20,6 @@ class Services {
     }
 
     this.options = options || {};
-    this.requiredField = options.requiredField || {};
     this.lean = options.lean === undefined ? true : options.lean;
     this.useEstimatedDocumentCount = !!options.useEstimatedDocumentCount;
     this.allowField = options.allowField;
