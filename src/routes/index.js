@@ -5,6 +5,7 @@ import adminRouter from './admin';
 import staffRouter from './staff';
 import customerRouter from './customer';
 import categoryRouter from './category';
+import productRouter from './product';
 import seederRouter from './seeder';
 
 const router = Router();
@@ -152,6 +153,7 @@ router.use('/admin', adminRouter);
 router.use('/staffs', staffRouter);
 router.use('/customers', customerRouter);
 router.use('/categories', categoryRouter);
+router.use('/products', productRouter);
 
 router.use('/seeder', seederRouter);
 
