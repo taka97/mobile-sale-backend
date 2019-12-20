@@ -1,6 +1,5 @@
 import debug from 'debug';
 import _ from 'lodash';
-import { Forbidden } from 'http-errors';
 
 const dg = debug('MS::middleware::removeField');
 
