@@ -166,7 +166,7 @@ class ProductController {
 
 const options = {
   requiredField: {
-    isDeleted: false
+    isDeleted: false,
   },
   allowField: [
     'name',
