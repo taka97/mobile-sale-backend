@@ -146,9 +146,12 @@ class ProductController {
   async destroy(req, res, next) {
     const { params } = req;
     const id = params.id ? params.id : null;
+    const data = {
+      isDeleted: true,
+    };
 
     try {
-      const result = await this.services.remove(id, params);
+      const result = await this.services.patch(id, data);
       return res.status(NoContent).send(result);
     } catch (err) {
       return next(err);

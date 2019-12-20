@@ -73,8 +73,8 @@ const middlewareForDeletePrice = [
   wrapBodyWith('$pull'),
 ];
 const middlewareForDetroy = [
-  // authenticate('jwt'),
-  // restrictPermission('admin'),
+  authenticate('jwt'),
+  restrictPermission('admin'),
 ];
 
 const router = Router();
