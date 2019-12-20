@@ -26,6 +26,7 @@ class ProductController {
       Model,
     };
 
+    this.requiredField = options.requiredField;
     this.services = createService(options);
 
     this.index = this.index.bind(this);
@@ -42,7 +43,10 @@ class ProductController {
  * @param {object} res response
  */
   async index(req, res) {
-    const { query } = req;
+    let { query } = req;
+    if (this.requiredField) {
+      query = { ...query, ...this.requiredField };
+    }
     const result = await this.services.find({ query });
     res.send(result);
   }
@@ -60,6 +64,7 @@ class ProductController {
       const findQuery = {
         name: body.name,
         $limit: 0,
+        isDeleted: false,
       };
 
       const { total } = await this.services.find({ query: findQuery });
@@ -160,6 +165,9 @@ class ProductController {
 }
 
 const options = {
+  requiredField: {
+    isDeleted: false
+  },
   allowField: [
     'name',
     'category',
