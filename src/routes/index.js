@@ -6,6 +6,7 @@ import staffRouter from './staff';
 import customerRouter from './customer';
 import categoryRouter from './category';
 import productRouter from './product';
+import commentRouter from './comment';
 import seederRouter from './seeder';
 
 const router = Router();
@@ -221,6 +222,7 @@ router.use('/staffs', staffRouter);
 router.use('/customers', customerRouter);
 router.use('/categories', categoryRouter);
 router.use('/products', productRouter);
+router.use('/comments', commentRouter);
 
 router.use('/seeder', seederRouter);
 
