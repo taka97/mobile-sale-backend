@@ -214,6 +214,40 @@ const router = Router();
  *      - _id
  *      - name
  *      - category
+ *  Comment:
+ *    type: object
+ *    properties:
+ *      productId:
+ *        type: string
+ *      parentId:
+ *        type: string
+ *      text:
+ *        type: string
+ *    required:
+ *      - productId
+ *      - text
+ *  CommentResponse:
+ *    type: object
+ *    properties:
+ *      _id:
+ *        type: string
+ *      productId:
+ *        type: string
+ *      parentId:
+ *        type: string
+ *      text:
+ *        type: string
+ *      author:
+ *        type: string
+ *      createdAt:
+ *        type: string
+ *      updatedAt:
+ *        type: string
+ *    required:
+ *      - _id
+ *      - productId
+ *      - text
+ *      - author
  */
 
 router.use('/authentication', authenticationRouter);
