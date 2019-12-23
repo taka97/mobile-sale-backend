@@ -6,6 +6,7 @@ import staffRouter from './staff';
 import customerRouter from './customer';
 import categoryRouter from './category';
 import productRouter from './product';
+import commentRouter from './comment';
 import seederRouter from './seeder';
 
 const router = Router();
@@ -213,6 +214,40 @@ const router = Router();
  *      - _id
  *      - name
  *      - category
+ *  Comment:
+ *    type: object
+ *    properties:
+ *      productId:
+ *        type: string
+ *      parentId:
+ *        type: string
+ *      text:
+ *        type: string
+ *    required:
+ *      - productId
+ *      - text
+ *  CommentResponse:
+ *    type: object
+ *    properties:
+ *      _id:
+ *        type: string
+ *      productId:
+ *        type: string
+ *      parentId:
+ *        type: string
+ *      text:
+ *        type: string
+ *      author:
+ *        type: string
+ *      createdAt:
+ *        type: string
+ *      updatedAt:
+ *        type: string
+ *    required:
+ *      - _id
+ *      - productId
+ *      - text
+ *      - author
  */
 
 router.use('/authentication', authenticationRouter);
@@ -221,6 +256,7 @@ router.use('/staffs', staffRouter);
 router.use('/customers', customerRouter);
 router.use('/categories', categoryRouter);
 router.use('/products', productRouter);
+router.use('/comments', commentRouter);
 
 router.use('/seeder', seederRouter);
 
