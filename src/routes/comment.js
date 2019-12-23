@@ -19,10 +19,12 @@ const middlewareForCreate = [
   setField({ as: 'body.author', from: 'user._id' }),
 ];
 const middlewareForIndex = [
+  authenticate('jwt'),
   validatorQuery(getList),
   setValue({ field: 'query.parentId', value: undefined, isDefault: true }),
 ];
 const middlewareForShow = [
+  authenticate('jwt'),
   validatorQuery(getList),
 ];
 // const middlewareForPatch = [
