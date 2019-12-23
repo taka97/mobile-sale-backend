@@ -18,4 +18,4 @@ export const validateCommentGetList = (comment) => {
     parentId: Joi.objectId(),
   });
   return schema.validate(comment);
-}
+};
