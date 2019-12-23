@@ -43,6 +43,10 @@ const swaggerDefinition = {
       name: 'comment',
       description: 'Operations abount Comment',
     },
+    {
+      name: 'productSeen',
+      description: 'Operations abount Product that customer saw',
+    },
   ],
   schemes: [
     'https',

@@ -7,6 +7,7 @@ import customerRouter from './customer';
 import categoryRouter from './category';
 import productRouter from './product';
 import commentRouter from './comment';
+import productSeenRouter from './product-seen';
 import seederRouter from './seeder';
 
 const router = Router();
@@ -248,6 +249,30 @@ const router = Router();
  *      - productId
  *      - text
  *      - author
+ *  ProductSeen:
+ *    type: object
+ *    properties:
+ *      productId:
+ *        type: string
+ *    required:
+ *      - productId
+ *  ProductSeenResponse:
+ *    type: object
+ *    properties:
+ *      _id:
+ *        type: string
+ *      productId:
+ *        type: string
+ *      userId:
+ *        type: string
+ *      createdAt:
+ *        type: string
+ *      updatedAt:
+ *        type: string
+ *    required:
+ *      _ _id
+ *      - productId
+ *      - userId
  */
 
 router.use('/authentication', authenticationRouter);
@@ -257,6 +282,7 @@ router.use('/customers', customerRouter);
 router.use('/categories', categoryRouter);
 router.use('/products', productRouter);
 router.use('/comments', commentRouter);
+router.use('/productSeen', productSeenRouter);
 
 router.use('/seeder', seederRouter);
 

@@ -4,3 +4,4 @@ export * from './validatorForUser';
 export * from './validatorForCategory';
 export * from './validatorForProduct';
 export * from './validatorForComment';
+export * from './validatorForProductSeen';
