@@ -32,6 +32,10 @@ class CartController {
     this.removeItemFromCart = this.removeItemFromCart.bind(this);
   }
 
+  get Services() {
+    return this.services;
+  }
+
   createNewCart(userId) {
     return this.services.create({ userId }, {});
   }
