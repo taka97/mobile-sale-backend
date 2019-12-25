@@ -1,8 +1,19 @@
+import CheckoutController from '../controllers/checkoutController';
+
 function setComplete() {
-  return (req, res, next) => {
+  const services = CheckoutController.services;
+
+  return async (req, res, next) => {
+    const { params: { id } } = req;
+
+    const { totalItemsPrice, totalTax } = await services.get(id);
+
     const data = {
       isCompleted: true,
+      totalPrice: totalItemsPrice + totalTax,
     };
+
+
 
     req.body = data;
 

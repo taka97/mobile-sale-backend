@@ -68,6 +68,6 @@ router.patch('/:id/shipping', middlewareForPatchShipping, CheckoutController.upd
 
 router.patch('/:id/payment', middlewareForPatchPayment, CheckoutController.update);
 
-router.patch('/:id/complete', middlewareForPatchComplete, CheckoutController.update);
+router.patch('/:id/complete', middlewareForPatchComplete, CheckoutController.updateWithCompleted);
 
 export default router;

@@ -34,6 +34,7 @@ class CheckoutController {
     this.update = this.update.bind(this);
     this.patch = this.patch.bind(this);
     this.destroy = this.destroy.bind(this);
+    this.updateWithCompleted = this.updateWithCompleted.bind(this);
   }
 
   get Services() {
@@ -95,6 +96,18 @@ class CheckoutController {
  * @param {object} next next pointer
  */
   async update(req, res, next) {
+    try {
+      const { params, query, body: data } = req;
+      const id = params.id ? params.id : null;
+
+      const result = await this.services.update(id, data, { query });
+      return res.status(Ok).send(result);
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  async updateWithCompleted(req, res, next) {
     try {
       const { params, query, body: data } = req;
       const id = params.id ? params.id : null;
