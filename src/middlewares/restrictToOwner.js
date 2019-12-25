@@ -1,7 +1,7 @@
 import { Unauthorized } from 'http-errors';
 
 function restrictToOwner() {
-  return function (req, res, next) {
+  return (req, res, next) => {
     const { _id: userId } = req.user;
 
     if (req.params.id !== userId.toString()) {
