@@ -39,12 +39,116 @@ const middlewareForDestroy = [
 
 const router = Router();
 
+/**
+ * @swagger
+ * /cart:
+ *  post:
+ *    tags:
+ *      - 'cart'
+ *    summary: 'Add item to cart'
+ *    produces:
+ *      - 'application/json'
+ *    parameters:
+ *      - in: body
+ *        name: body
+ *        description: 'Data for sign up'
+ *        required: true
+ *        schema:
+ *          type: object
+ *          properties:
+ *            productId:
+ *              type: string
+ *            priceId:
+ *              type: string
+ *            qty:
+ *              type: number
+ *    responses:
+ *      201:
+ *        description: Add item to cart is success
+ *        schema:
+ *          $ref: '#/definitions/CartResponse'
+ *      400:
+ *        description: Missing field
+ */
 router.post('/', middlewareForCreate, CartController.addItemToCart);
 
+/**
+* @swagger
+* /cart:
+*  get:
+*    tags:
+*      - 'cart'
+*    summary: 'Get item in cart'
+*    responses:
+*      201:
+*        description: Item in cart
+*        schema:
+*          $ref: '#/definitions/CartResponse'
+*/
 router.get('/', middlewareForIndex, CartController.getItemInCart);
 
+/**
+ * @swagger
+ * /cart:
+ *  patch:
+ *    tags:
+ *      - 'cart'
+ *    summary: 'Add item to cart'
+ *    produces:
+ *      - 'application/json'
+ *    parameters:
+ *      - in: body
+ *        name: body
+ *        description: 'Data for update'
+ *        required: true
+ *        schema:
+ *          type: object
+ *          properties:
+ *            productId:
+ *              type: string
+ *            priceId:
+ *              type: string
+ *            qty:
+ *              type: number
+ *    responses:
+ *      201:
+ *        description: Update item is success
+ *        schema:
+ *          $ref: '#/definitions/CartResponse'
+ *      400:
+ *        description: Missing field
+ */
 router.patch('/', middlewareForPatch, CartController.updateItemInCart);
 
+/**
+ * @swagger
+ * /cart:
+ *  delete:
+ *    tags:
+ *      - 'cart'
+ *    summary: 'Remove item from cart'
+ *    produces:
+ *      - 'application/json'
+ *    parameters:
+ *      - in: body
+ *        name: body
+ *        description: 'Data for update'
+ *        required: true
+ *        schema:
+ *          type: object
+ *          properties:
+ *            productId:
+ *              type: string
+ *            priceId:
+ *              type: string
+ *    responses:
+ *      201:
+ *        description: Update item is success
+ *        schema:
+ *          $ref: '#/definitions/CartResponse'
+ *      400:
+ *        description: Missing field
+ */
 router.delete('/', middlewareForDestroy, CartController.removeItemFromCart);
 
 export default router;
