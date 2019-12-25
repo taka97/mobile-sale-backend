@@ -9,6 +9,7 @@ import productRouter from './product';
 import commentRouter from './comment';
 import productSeenRouter from './product-seen';
 import cartRouter from './cart';
+import checkoutRouter from './checkout';
 import seederRouter from './seeder';
 
 const router = Router();
@@ -319,6 +320,7 @@ router.use('/products', productRouter);
 router.use('/comments', commentRouter);
 router.use('/productSeen', productSeenRouter);
 router.use('/cart', cartRouter);
+router.use('/checkouts', checkoutRouter);
 
 router.use('/seeder', seederRouter);
 
