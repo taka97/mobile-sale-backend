@@ -8,6 +8,7 @@ import categoryRouter from './category';
 import productRouter from './product';
 import commentRouter from './comment';
 import productSeenRouter from './product-seen';
+import cartRouter from './cart';
 import seederRouter from './seeder';
 
 const router = Router();
@@ -283,6 +284,7 @@ router.use('/categories', categoryRouter);
 router.use('/products', productRouter);
 router.use('/comments', commentRouter);
 router.use('/productSeen', productSeenRouter);
+router.use('/cart', cartRouter);
 
 router.use('/seeder', seederRouter);
 
