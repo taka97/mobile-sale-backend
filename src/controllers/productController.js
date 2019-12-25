@@ -37,6 +37,10 @@ class ProductController {
     this.destroy = this.destroy.bind(this);
   }
 
+  get Services() {
+    return this.services;
+  }
+
   /**
  * Controller - Get list all of Category
  * @param {object} req request
