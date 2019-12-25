@@ -224,6 +224,7 @@ class Services {
 
     const { query, filters } = this.filterQuery(params);
     const options = {
+      ...params.mongoose,
       new: true,
       overwrite: this.overwrite,
       runValidators: true,

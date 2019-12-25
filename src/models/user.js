@@ -53,6 +53,10 @@ const UserSchema = new Schema(
       type: String,
       default: config.avatar.default,
     },
+    cartId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Cart',
+    },
     roles: {
       type: String,
       enum: ['admin', 'staff', 'customer'],

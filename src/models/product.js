@@ -27,7 +27,8 @@ const ProductSchema = new Schema(
       memory: { type: String, required: true },
       warranty: { type: String, required: true },
       price: { type: Number, required: true },
-      quantity: { type: Number, required: true, default: 0 },
+      currentQty: { type: Number, required: true, default: 0 },
+      totalQty: { type: Number, required: true, default: 0 },
     }],
     isDeleted: {
       type: Boolean,

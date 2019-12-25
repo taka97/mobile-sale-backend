@@ -315,7 +315,9 @@ router.delete('/:id/details/:detailId', middlewareForDeleteDetail, ProductContro
  *                    type: string
  *                  price:
  *                    type: number
- *                  quantity:
+ *                  curentQty:
+ *                    type: number
+ *                  totalQty:
  *                    type: number
  *                required:
  *                  - image

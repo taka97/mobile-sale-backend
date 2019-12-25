@@ -8,6 +8,7 @@ import categoryRouter from './category';
 import productRouter from './product';
 import commentRouter from './comment';
 import productSeenRouter from './product-seen';
+import cartRouter from './cart';
 import seederRouter from './seeder';
 
 const router = Router();
@@ -273,6 +274,40 @@ const router = Router();
  *      _ _id
  *      - productId
  *      - userId
+ *  CartResponse:
+ *    type: object
+ *    properties:
+ *      _id:
+ *        type: string
+ *      totalQty:
+ *        type: number
+ *      totalPrice:
+ *        type: number
+ *      userId:
+ *        type: string
+ *      item:
+ *        type: array
+ *        items:
+ *          type: object
+ *          properties:
+ *            item:
+ *              type: object
+ *            productId:
+ *              type: string
+ *            priceId:
+ *              type: string
+ *            price:
+ *              type: number
+ *            qty:
+ *              type: number
+ *      createdAt:
+ *        type: string
+ *      updatedAt:
+ *        type: string
+ *    required:
+ *      _ _id
+ *      - productId
+ *      - userId
  */
 
 router.use('/authentication', authenticationRouter);
@@ -283,6 +318,7 @@ router.use('/categories', categoryRouter);
 router.use('/products', productRouter);
 router.use('/comments', commentRouter);
 router.use('/productSeen', productSeenRouter);
+router.use('/cart', cartRouter);
 
 router.use('/seeder', seederRouter);
 

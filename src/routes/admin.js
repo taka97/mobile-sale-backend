@@ -20,22 +20,22 @@ const middlewareForShow = [restrictPermission('admin')];
 // const middlewareForPut = [];
 const middlewareForPatchUserInfo = [
   restrictPermission('admin'),
-  restrictToOwner,
+  restrictToOwner(),
   validatorData(changeInfo),
 ];
 const middlewareForPatchPassword = [
   restrictPermission('admin'),
-  restrictToOwner,
+  restrictToOwner(),
   validatorData(changePassword),
 ];
 const middlewareForPatchAvatar = [
   restrictPermission('admin'),
-  restrictToOwner,
+  restrictToOwner(),
   validatorData(changeAvatar),
 ];
 const middlewareForDetroy = [
   restrictPermission('admin'),
-  restrictToOwner,
+  restrictToOwner(),
 ];
 
 const router = Router();
