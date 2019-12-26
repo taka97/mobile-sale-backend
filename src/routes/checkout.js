@@ -110,6 +110,15 @@ router.get('/:id', middlewareForShow, CheckoutController.show);
  *        required: true
  *        schema:
  *          type: byte
+ *      - in: body
+ *        name: body
+ *        description: 'data'
+ *        schema:
+ *          type: object
+ *          properties:
+ *            addressIndex:
+ *              type: number
+ *              enum: [0]
  *    responses:
  *      200:
  *        description: Detail of checkout
@@ -132,6 +141,15 @@ router.patch('/:id/address', middlewareForPatchAddress, CheckoutController.updat
  *        required: true
  *        schema:
  *          type: byte
+ *      - in: body
+ *        name: body
+ *        description: 'data'
+ *        schema:
+ *          type: object
+ *          properties:
+ *            shippingMethod:
+ *              type: string
+ *              enum: ['standard','fast']
  *    responses:
  *      200:
  *        description: Detail of checkout
@@ -154,6 +172,15 @@ router.patch('/:id/shipping', middlewareForPatchShipping, CheckoutController.upd
  *        required: true
  *        schema:
  *          type: byte
+ *      - in: body
+ *        name: body
+ *        description: 'data'
+ *        schema:
+ *          type: object
+ *          properties:
+ *            paymentMethod:
+ *              type: string
+ *              enum: ['cod']
  *    responses:
  *      200:
  *        description: Detail of checkout
