@@ -55,6 +55,10 @@ const swaggerDefinition = {
       name: 'checkout',
       description: 'Operations abount Checkout from cart',
     },
+    {
+      name: 'order',
+      description: 'Operations abount Order',
+    },
   ],
   schemes: [
     'https',
