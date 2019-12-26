@@ -15,7 +15,6 @@ export const validateUser = (user) => {
     sex: Joi.string().lowercase().valid('male', 'female').required(),
     cmnd: Joi.string().pattern(/^[0-9]+$/, 'numbers'),
     address: Joi.string(),
-    storeId: Joi.objectId(),
   });
   return schema.validate(user);
 };
@@ -24,6 +23,13 @@ export const validateEmail = (user) => {
   const schema = Joi.object({
     email: Joi.string().min(5).max(255).required()
       .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+  });
+  return schema.validate(user);
+};
+
+export const validateChangeAvatar = (user) => {
+  const schema = Joi.object({
+    avatarUri: Joi.string().dataUri(),
   });
   return schema.validate(user);
 };
@@ -42,7 +48,7 @@ export const validateChangeUserInfo = (user) => {
     createdAt: Joi.any().forbidden(),
     updatedAt: Joi.any().forbidden(),
     password: Joi.any().forbidden(),
-    storeId: Joi.any().forbidden(),
+    avatar: Joi.any().forbidden(),
   });
   return schema.validate(user);
 };

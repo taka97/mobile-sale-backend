@@ -1,4 +1,5 @@
 import request from 'supertest';
+import config from 'config';
 import { expect } from 'chai';
 import app from '../../src/app';
 import User from '../../src/models/user';
@@ -214,6 +215,7 @@ describe('Admin Controller', () => {
       expect(response.body).to.have.property('birthDate',
         (new Date(sampleAdminData.birthDate)).toISOString());
       expect(response.body).to.have.property('sex', sampleAdminData.sex);
+      expect(response.body).to.have.property('avatar', config.avatar.default);
     });
 
     it('should return user data with Token in Authorization header', async () => {
@@ -228,6 +230,7 @@ describe('Admin Controller', () => {
       expect(response.body).to.have.property('birthDate',
         (new Date(sampleAdminData.birthDate)).toISOString());
       expect(response.body).to.have.property('sex', sampleAdminData.sex);
+      expect(response.body).to.have.property('avatar', config.avatar.default);
     });
   });
 
@@ -271,6 +274,7 @@ describe('Admin Controller', () => {
       expect(response.body.data[0]).to.have.property('email', sampleAdminData.email);
       expect(response.body.data[0]).to.have.property('birthDate',
         (new Date(sampleAdminData.birthDate)).toISOString());
+      expect(response.body.data[0]).to.have.property('avatar', config.avatar.default);
       expect(response.body.data[0]).to.have.property('sex', sampleAdminData.sex);
     });
 
@@ -417,6 +421,7 @@ describe('Admin Controller', () => {
         expect(response.body).to.have.property('email', sampleAdmin[5].email);
         expect(response.body).to.have.property('birthDate',
           (new Date(sampleAdmin[5].birthDate)).toISOString());
+        expect(response.body).to.have.property('avatar', config.avatar.default);
         expect(response.body).to.have.property('sex', sampleAdmin[5].sex);
       });
 
@@ -447,6 +452,7 @@ describe('Admin Controller', () => {
         expect(response.body).to.have.property('email', sampleAdminData.email);
         expect(response.body).to.have.property('birthDate',
           (new Date(sampleAdminData.birthDate)).toISOString());
+        expect(response.body).to.have.property('avatar', config.avatar.default);
         expect(response.body).to.have.property('sex', sampleAdminData.sex);
       });
 
@@ -478,6 +484,7 @@ describe('Admin Controller', () => {
         expect(response.body).to.have.property('birthDate',
           (new Date(sampleAdminData.birthDate)).toISOString());
         expect(response.body).to.have.property('sex', sampleAdminData.sex);
+        expect(response.body).to.have.property('avatar', config.avatar.default);
         expect(response.body).to.have.property('phone', newData.phone);
       });
 
@@ -508,6 +515,7 @@ describe('Admin Controller', () => {
         expect(response.body).to.have.property('birthDate',
           (new Date(newData.birthDate)).toISOString());
         expect(response.body).to.have.property('sex', sampleAdminData.sex);
+        expect(response.body).to.have.property('avatar', config.avatar.default);
         expect(response.body).to.have.property('phone', newData.phone);
       });
 
@@ -541,6 +549,7 @@ describe('Admin Controller', () => {
           (new Date(newData.birthDate)).toISOString());
         expect(response.body).to.have.property('cmnd', newData.cmnd);
         expect(response.body).to.have.property('sex', sampleAdminData.sex);
+        expect(response.body).to.have.property('avatar', config.avatar.default);
         expect(response.body).to.have.property('phone', newData.phone);
       });
 
@@ -562,6 +571,7 @@ describe('Admin Controller', () => {
         expect(response.body).to.have.property('cmnd', newData.cmnd);
         expect(response.body).to.have.property('sex', sampleAdminData.sex);
         expect(response.body).to.have.property('phone', newData.phone);
+        expect(response.body).to.have.property('avatar', config.avatar.default);
         expect(response.body).to.have.property('address', newData.address);
       });
 
@@ -668,6 +678,7 @@ describe('Admin Controller', () => {
         expect(response.body).to.have.property('cmnd', newData.cmnd);
         expect(response.body).to.have.property('sex', sampleAdminData.sex);
         expect(response.body).to.have.property('phone', newData.phone);
+        expect(response.body).to.have.property('avatar', config.avatar.default);
         expect(response.body).to.have.property('address', newData.address);
 
         const { body } = await request(app)
@@ -752,13 +763,14 @@ describe('Admin Controller', () => {
           .delete(`/api/admin/${userId.admin}`)
           .set('Authorization', `Bearer ${accessToken.admin}`);
         expect(response.status).to.equal(204);
+        /* eslint-disable no-unused-expressions */
         expect(response.body).to.be.empty;
         const authentication = await request(app)
           .post('/api/authentication')
           .send({
             email: sampleAdminData.email,
             password: sampleAdminData.password,
-            strategy: 'admin'
+            strategy: 'admin',
           });
         expect(authentication.status).to.equal(400);
         expect(authentication.body).to.have.property('message', 'Incorrect email/username or password');

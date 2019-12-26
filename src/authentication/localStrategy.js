@@ -3,7 +3,7 @@ import passportLocal from 'passport-local';
 
 import User from '../models/user';
 
-import { validateEmail } from '../utils/validator';
+import { validateEmail } from '../utils';
 
 const authentication = config.get('authentication');
 

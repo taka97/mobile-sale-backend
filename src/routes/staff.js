@@ -4,45 +4,42 @@ import StaffController from '../controllers/staffController';
 import {
   authenticate,
   restrictPermission,
-  setField,
   restrictToOwner,
   validatorData,
 } from '../middlewares';
 import {
   validateUser,
+  validateChangeAvatar as changeAvatar,
   validateChangeUserInfo as changeInfo,
   validateChangePassword as changePassword,
 } from '../utils';
 
-const setStoreIdField = setField({
-  as: 'query.storeId',
-  from: 'user.storeId',
-  allowUndefined: true
-});
-
 const middlewareForCreate = [validatorData(validateUser)];
 const middlewareForIndex = [
   restrictPermission('admin', 'staff'),
-  setStoreIdField,
 ];
 const middlewareForShow = [
   restrictPermission('admin', 'staff'),
-  setStoreIdField,
 ];
 // const middlewareForPut = [];
 const middlewareForPatchUserInfo = [
   restrictPermission('admin', 'staff'),
-  restrictToOwner,
+  restrictToOwner(),
   validatorData(changeInfo),
 ];
 const middlewareForPatchPassword = [
   restrictPermission('admin', 'staff'),
-  restrictToOwner,
+  restrictToOwner(),
   validatorData(changePassword),
+];
+const middlewareForPatchAvatar = [
+  restrictPermission('admin'),
+  restrictToOwner(),
+  validatorData(changeAvatar),
 ];
 const middlewareForDetroy = [
   restrictPermission('admin', 'staff'),
-  restrictToOwner,
+  restrictToOwner(),
 ];
 
 const router = Router();
@@ -230,6 +227,48 @@ router.patch('/:id', middlewareForPatchUserInfo, StaffController.patchUserInfo);
  *        description: 'Invalid data in request'
  */
 router.patch('/:id/password', middlewareForPatchPassword, StaffController.patchPassword);
+
+/**
+ * @swagger
+ * /admin/{userId}/avatar:
+ *  patch:
+ *    tags:
+ *      - 'admin'
+ *    summary: 'Change avatar of admin'
+ *    description: >
+ *      * Just for admin (owner)
+ *    produces:
+ *      - 'application/json'
+ *    parameters:
+ *      - in: path
+ *        name: userId
+ *        description: 'Id of user'
+ *        required: true
+ *        schema:
+ *          type: byte
+ *      - in: body
+ *        name: body
+ *        description: 'Info that user need change'
+ *        schema:
+ *          type: object
+ *          properties:
+ *            avatarUri:
+ *              type: string
+ *              format: uri
+ *    responses:
+ *      200:
+ *        description: Detail of admin (after updated)
+ *        schema:
+ *          $ref: '#/definitions/User'
+ *      401:
+ *        description: >
+ *          You donn't have permission
+ *            * You donn't have permission to access
+ *            * You donn't have permission to modify
+ *      404:
+ *        description: 'Invalid data in request'
+ */
+router.patch('/:id/avatar', middlewareForPatchAvatar, StaffController.patchAvatar);
 
 /**
  * @swagger

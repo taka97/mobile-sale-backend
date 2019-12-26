@@ -6,8 +6,17 @@
     "default": 10,
     "max": 50
   },
+  "avatar": {
+    "default": "https://res.cloudinary.com/nineteen-ms/image/upload/v1557316639/default-avatar.png"
+  },
   "mongodb": "mongodb+srv://admin:Abc12345@cluster0-4bixm.mongodb.net/MobileSaleDB-Production?retryWrites=true&w=majority",
   "authentication": {
+    "strategies": [
+      "jwt",
+      "admin",
+      "staff",
+      "customer"
+    ],
     "secret": "5970337336763979244226452948404d635166546a576e5a7134743777217a25432a462d4a614e645267556b58703273357538782f413f4428472b4b6250655368566d5971337436773979244226452948404d635166546a576e5a7234753778214125432a462d4a614e645267556b58703273357638792f423f4528482b4b6250655368566d597133743677397a24432646294a404e635166546a576e5a7234753778214125442a472d4b6150645367556b58703273357638792f423f4528482b4d6251655468576d597133743677397a24432646294a404e635266556a586e327234753778214125442a472d4b6150645367566b59703373367638792f423f",
     "jwt": {
       "header": {
@@ -23,5 +32,10 @@
       "usernameField": "email",
       "passwordField": "password"
     }
+  },
+  "cloudinary": {
+    "cloud_name": "nineteen-ms",
+    "api_key": "752583168456318",
+    "api_secret": "Flq4hEfdZZhomGzwK8FmOtn_hug"
   }
 }

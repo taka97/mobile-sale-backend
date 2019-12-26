@@ -1,3 +1,4 @@
+import config from 'config';
 import { model, Schema } from 'mongoose';
 import { compareSync, hashSync } from 'bcryptjs';
 
@@ -48,9 +49,13 @@ const UserSchema = new Schema(
       enum: ['male', 'female'],
       required: true,
     },
-    storeId: {
+    avatar: {
+      type: String,
+      default: config.avatar.default,
+    },
+    cartId: {
       type: Schema.Types.ObjectId,
-      ref: 'Store',
+      ref: 'Cart',
     },
     roles: {
       type: String,

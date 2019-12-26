@@ -8,17 +8,19 @@ import { serve, setup } from 'swagger-ui-express';
 
 import swaggerSpecs from './services/swagger-specs';
 import configDB from './mongoose';
+import configCloudinary from './cloudinary';
 import passport from './authentication';
 import apiRouter from './routes';
 
 const app = express();
 
 configDB();
+configCloudinary();
 
 app.use(helmet());
 app.use(cors());
 app.use(urlencoded({ extended: false }));
-app.use(json());
+app.use(json({ limit: '1mb' }));
 app.use(passport.initialize());
 app.use(compression());
 

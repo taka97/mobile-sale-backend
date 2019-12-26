@@ -59,7 +59,6 @@ const sampleStaff = [
     birthDate: '10/06/1997',
     roles: 'staff',
     sex: 'male',
-    storeId: '5ddd3d236f02f3381c484bce',
   },
   {
     email: 'staff02@store.com',
@@ -70,7 +69,6 @@ const sampleStaff = [
     birthDate: '10/06/1997',
     roles: 'staff',
     sex: 'male',
-    storeId: '5ddd3d236f02f3381c484bce',
   },
 ];
 
@@ -84,7 +82,6 @@ const noExistStaff = [
     birthDate: '10/06/1997',
     roles: 'staff',
     sex: 'male',
-    storeId: '5ddd3d236f02f3381c484bce',
   },
   {
     email: 'staff04@store.com',
@@ -95,7 +92,6 @@ const noExistStaff = [
     birthDate: '10/06/1997',
     roles: 'staff',
     sex: 'male',
-    storeId: '5ddd3d236f02f3381c484bce',
   },
 ];
 
@@ -143,8 +139,7 @@ const noExistCustomer = [
 
 describe('Authentication Controller', () => {
   // eslint-disable-next-line func-names
-  before('*** Create user before testing', async function () {
-    this.timeout(5000);
+  before('*** Create user before testing', async () => {
     await User.deleteMany();
     await User.create(sampleCustomer);
     await User.create(sampleStaff);
@@ -828,7 +823,6 @@ describe('Authentication Controller', () => {
         expect(response.status).to.equal(201);
         expect(response.body).to.have.property('accessToken').lengthOf(260);
         expect(response.body).to.have.property('userId').lengthOf(24);
-        expect(response.body).to.have.property('storeId').lengthOf(24);
       });
 
       it('Sign in with user is right both email and password - 2', async () => {
@@ -842,7 +836,6 @@ describe('Authentication Controller', () => {
         expect(response.status).to.equal(201);
         expect(response.body).to.have.property('accessToken').lengthOf(260);
         expect(response.body).to.have.property('userId').lengthOf(24);
-        expect(response.body).to.have.property('storeId').lengthOf(24);
       });
 
       it('Sign in with user is right both username and password - 1', async () => {
@@ -856,7 +849,6 @@ describe('Authentication Controller', () => {
         expect(response.status).to.equal(201);
         expect(response.body).to.have.property('accessToken').lengthOf(260);
         expect(response.body).to.have.property('userId').lengthOf(24);
-        expect(response.body).to.have.property('storeId').lengthOf(24);
       });
 
       it('Sign in with user is right both username and password - 2', async () => {
@@ -870,7 +862,6 @@ describe('Authentication Controller', () => {
         expect(response.status).to.equal(201);
         expect(response.body).to.have.property('accessToken').lengthOf(260);
         expect(response.body).to.have.property('userId').lengthOf(24);
-        expect(response.body).to.have.property('storeId').lengthOf(24);
       });
     });
 
