@@ -1,21 +1,21 @@
 // import debug from 'debug';
 import config from 'config';
+import _ from 'lodash';
 import {
   BadRequest,
 } from 'http-errors';
 
-import Model from '../models/checkout';
+import Model from '../models/order';
 import createService from '../services/Services';
 import {
   Ok,
   Created,
   NoContent,
 } from '../helpers/http-code';
-import OrderController from './orderController';
-import CartController from './cartController';
+
 // const dg = debug('MS:controllers:product');
 
-class CheckoutController {
+class OrderController {
   constructor(options = {}) {
     const paginate = config.get('paginate');
 
@@ -34,11 +34,19 @@ class CheckoutController {
     this.update = this.update.bind(this);
     this.patch = this.patch.bind(this);
     this.destroy = this.destroy.bind(this);
-    this.updateWithCompleted = this.updateWithCompleted.bind(this);
+    this.createOrderFromCheckout = this.createOrderFromCheckout.bind(this);
   }
 
   get Services() {
     return this.services;
+  }
+
+  async createOrderFromCheckout(checkoutDetail) {
+    const withoutField = ['_id', 'createdAt', 'updatedAt'];
+    const data = _.omit(checkoutDetail, withoutField);
+    const result = await this.services.create(data);
+
+    return result;
   }
 
   /**
@@ -107,20 +115,6 @@ class CheckoutController {
     }
   }
 
-  async updateWithCompleted(req, res, next) {
-    try {
-      const { params, query, body: data } = req;
-      const id = params.id ? params.id : null;
-
-      const checkoutDetail = await this.services.update(id, data, { query });
-      const result = await OrderController.createOrderFromCheckout(checkoutDetail);
-      await CartController.cleanCart(params.cartId);
-      return res.status(Ok).send(result);
-    } catch (err) {
-      return next(err);
-    }
-  }
-
   /**
  * Controller - Patch Category
  * @param {Object} req request
@@ -169,4 +163,4 @@ class CheckoutController {
   }
 }
 
-export default new CheckoutController();
+export default new OrderController();

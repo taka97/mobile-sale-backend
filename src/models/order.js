@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
 
-const CheckoutSchema = new Schema(
+const OrderSchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
@@ -76,9 +76,10 @@ const CheckoutSchema = new Schema(
       min: 0,
       default: 0,
     },
-    isCompleted: {
-      type: Boolean,
-      default: false,
+    status: {
+      type: String,
+      default: 'pending',
+      required: true,
     },
   },
   {
@@ -86,22 +87,4 @@ const CheckoutSchema = new Schema(
   },
 );
 
-CheckoutSchema.index({ updatedAt: 1 }, { expires: '5m' });
-
-// eslint-disable-next-line func-names
-CheckoutSchema.pre('findOneAndUpdate', function (next) {
-  const update = this.getUpdate();
-  if (update.shippingTax) {
-    update.totalTax = update.shippingTax;
-  }
-
-  next();
-});
-
-// eslint-disable-next-line func-names
-CheckoutSchema.pre('save', function (next) {
-  this.totalPrice = this.totalItemsPrice + this.totalTax;
-  next();
-});
-
-export default model('Checkout', CheckoutSchema);
+export default model('Order', OrderSchema);

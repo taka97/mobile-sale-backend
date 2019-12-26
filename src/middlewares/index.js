@@ -10,7 +10,7 @@ export * from './uploadImage';
 export * from './wrapBodyWith';
 export * from './addPrefix2PropertyName';
 export * from './toObjectId';
-export * from './convertCartToBody'
+export * from './convertCartToBody';
 export * from './setAddress';
 export * from './setShipping';
 export * from './setPayment';

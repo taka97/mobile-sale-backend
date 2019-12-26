@@ -8,7 +8,7 @@ function setAddress() {
         phone: user.phone || '',
         address: user.address || '',
         company: user.address || '',
-      }
+      };
       req.body = {
         shippingAddress: add,
         billingAddress: add,

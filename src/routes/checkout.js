@@ -49,6 +49,7 @@ const middlewareForPatchComplete = [
   authenticate('jwt'),
   restrictPermission('customer'),
   removeField('body'),
+  setField({ as: 'params.cartId', from: 'user.cartId' }),
   setComplete(),
 ];
 const middlewareForShow = [
@@ -62,7 +63,7 @@ router.post('/', middlewareForCreate, CheckoutController.create);
 
 router.get('/:id', middlewareForShow, CheckoutController.show);
 
-router.patch('/:id/address', middlewareForPatchAddress, CheckoutController.update)
+router.patch('/:id/address', middlewareForPatchAddress, CheckoutController.update);
 
 router.patch('/:id/shipping', middlewareForPatchShipping, CheckoutController.update);
 
