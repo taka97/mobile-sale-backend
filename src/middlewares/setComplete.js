@@ -13,8 +13,6 @@ function setComplete() {
       totalPrice: totalItemsPrice + totalTax,
     };
 
-
-
     req.body = data;
 
     return next();

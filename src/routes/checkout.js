@@ -48,7 +48,7 @@ const middlewareForPatchPayment = [
 const middlewareForPatchComplete = [
   authenticate('jwt'),
   restrictPermission('customer'),
-  validatorData(changePayment),
+  removeField('body'),
   setComplete(),
 ];
 const middlewareForShow = [
