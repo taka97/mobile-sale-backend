@@ -47,6 +47,14 @@ const swaggerDefinition = {
       name: 'productSeen',
       description: 'Operations abount Product that customer saw',
     },
+    {
+      name: 'cart',
+      description: 'Operations abount Cart that customer saw',
+    },
+    {
+      name: 'checkout',
+      description: 'Operations abount Checkout from cart',
+    },
   ],
   schemes: [
     'https',

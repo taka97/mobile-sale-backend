@@ -59,16 +59,129 @@ const middlewareForShow = [
 
 const router = Router();
 
+/**
+ * @swagger
+ * /checkouts:
+ *  post:
+ *    tags:
+ *      - 'checkout'
+ *    summary: 'Step 01 - Create checkout request'
+ *    responses:
+ *      201:
+ *        description: Checkout is created
+ *        schema:
+ *          $ref: '#/definitions/CheckoutResponse'
+ */
 router.post('/', middlewareForCreate, CheckoutController.create);
 
+/**
+ * @swagger
+ * /checkouts/{checkoutId}:
+ *  get:
+ *    tags:
+ *      - 'checkout'
+ *    summary: 'Get checkout request'
+ *    parameters:
+ *      - in: path
+ *        name: checkoutId
+ *        description: 'Id of checkout'
+ *        required: true
+ *        schema:
+ *          type: byte
+ *    responses:
+ *      200:
+ *        description: Detail of checkout
+ *        schema:
+ *          $ref: '#/definitions/CheckoutResponse'
+ */
 router.get('/:id', middlewareForShow, CheckoutController.show);
 
+/**
+ * @swagger
+ * /checkouts/{checkoutId}/address:
+ *  patch:
+ *    tags:
+ *      - 'checkout'
+ *    summary: 'Step 02 - Add address'
+ *    parameters:
+ *      - in: path
+ *        name: checkoutId
+ *        description: 'Id of checkout'
+ *        required: true
+ *        schema:
+ *          type: byte
+ *    responses:
+ *      200:
+ *        description: Detail of checkout
+ *        schema:
+ *          $ref: '#/definitions/CheckoutResponse'
+ */
 router.patch('/:id/address', middlewareForPatchAddress, CheckoutController.update);
 
+/**
+ * @swagger
+ * /checkouts/{checkoutId}/shipping:
+ *  patch:
+ *    tags:
+ *      - 'checkout'
+ *    summary: 'Step 03 - Add shipping method'
+ *    parameters:
+ *      - in: path
+ *        name: checkoutId
+ *        description: 'Id of checkout'
+ *        required: true
+ *        schema:
+ *          type: byte
+ *    responses:
+ *      200:
+ *        description: Detail of checkout
+ *        schema:
+ *          $ref: '#/definitions/CheckoutResponse'
+ */
 router.patch('/:id/shipping', middlewareForPatchShipping, CheckoutController.update);
 
+/**
+ * @swagger
+ * /checkouts/{checkoutId}/payment:
+ *  patch:
+ *    tags:
+ *      - 'checkout'
+ *    summary: 'Step 04 - Add payment method'
+ *    parameters:
+ *      - in: path
+ *        name: checkoutId
+ *        description: 'Id of checkout'
+ *        required: true
+ *        schema:
+ *          type: byte
+ *    responses:
+ *      200:
+ *        description: Detail of checkout
+ *        schema:
+ *          $ref: '#/definitions/CheckoutResponse'
+ */
 router.patch('/:id/payment', middlewareForPatchPayment, CheckoutController.update);
 
+/**
+ * @swagger
+ * /checkouts/{checkoutId}/complete:
+ *  patch:
+ *    tags:
+ *      - 'checkout'
+ *    summary: 'Step 05 - Completed checkout'
+ *    parameters:
+ *      - in: path
+ *        name: checkoutId
+ *        description: 'Id of checkout'
+ *        required: true
+ *        schema:
+ *          type: byte
+ *    responses:
+ *      200:
+ *        description: Detail of order
+ *        schema:
+ *          $ref: '#/definitions/OrderResponse'
+ */
 router.patch('/:id/complete', middlewareForPatchComplete, CheckoutController.updateWithCompleted);
 
 export default router;

@@ -310,6 +310,62 @@ const router = Router();
  *      _ _id
  *      - productId
  *      - userId
+ *  CheckoutResponse:
+ *    type: object
+ *    properties:
+ *      userId:
+ *        type: string
+ *      items:
+ *        type: array
+ *        items:
+ *          type: object
+ *      currency:
+ *        type: string
+ *      email:
+ *        type: string
+ *      shippingAddress:
+ *        type: object
+ *        properties:
+ *          fullname:
+ *            type: string
+ *          phone:
+ *            type: string
+ *          address:
+ *            type: string
+ *          company:
+ *            type: string
+ *      billingAddress:
+ *        type: object
+ *        properties:
+ *          fullname:
+ *            type: string
+ *          phone:
+ *            type: string
+ *          address:
+ *            type: string
+ *          company:
+ *            type: string
+ *      shippingMethod:
+ *        type: string
+ *      shippingTax:
+ *        type: number
+ *      paymentMethod:
+ *        type: string
+ *      totalQty:
+ *        type: number
+ *      totalItemsPrice:
+ *        type: number
+ *      totalTax:
+ *        type: number
+ *      totalPrice:
+ *        type: number
+ *      isCompleted:
+ *        type: boolean
+ *  OrderResponse:
+ *    type: object
+ *    properties:
+ *      _id:
+ *        type: string
  */
 
 router.use('/authentication', authenticationRouter);
