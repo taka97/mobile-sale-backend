@@ -2,7 +2,6 @@
 import config from 'config';
 import {
   BadRequest,
-  Forbidden,
 } from 'http-errors';
 
 import Model from '../models/checkout';
@@ -12,7 +11,8 @@ import {
   Created,
   NoContent,
 } from '../helpers/http-code';
-
+import OrderController from './orderController';
+import CartController from './cartController';
 // const dg = debug('MS:controllers:product');
 
 class CheckoutController {
@@ -112,7 +112,9 @@ class CheckoutController {
       const { params, query, body: data } = req;
       const id = params.id ? params.id : null;
 
-      const result = await this.services.update(id, data, { query });
+      const checkoutDetail = await this.services.update(id, data, { query });
+      const result = await OrderController.createOrderFromCheckout(checkoutDetail);
+      await CartController.cleanCart(params.cartId);
       return res.status(Ok).send(result);
     } catch (err) {
       return next(err);

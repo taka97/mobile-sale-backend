@@ -1,8 +1,8 @@
 // import debug from 'debug';
 import config from 'config';
+import _ from 'lodash';
 import {
   BadRequest,
-  Forbidden,
 } from 'http-errors';
 
 import Model from '../models/order';
@@ -34,10 +34,20 @@ class OrderController {
     this.update = this.update.bind(this);
     this.patch = this.patch.bind(this);
     this.destroy = this.destroy.bind(this);
+    this.createOrderFromCheckout = this.createOrderFromCheckout.bind(this);
   }
 
   get Services() {
     return this.services;
+  }
+
+  async createOrderFromCheckout(checkoutDetail) {
+    const withoutField = ['_id', 'createdAt', 'updatedAt'];
+    const data = _.omit(checkoutDetail, withoutField);
+    const result = await this.services.create(data);
+
+    console.log(result);
+    return result;
   }
 
   /**

@@ -10,6 +10,7 @@ import commentRouter from './comment';
 import productSeenRouter from './product-seen';
 import cartRouter from './cart';
 import checkoutRouter from './checkout';
+import orderRouter from './order';
 import seederRouter from './seeder';
 
 const router = Router();
@@ -321,6 +322,7 @@ router.use('/comments', commentRouter);
 router.use('/productSeen', productSeenRouter);
 router.use('/cart', cartRouter);
 router.use('/checkouts', checkoutRouter);
+router.use('/orders', orderRouter);
 
 router.use('/seeder', seederRouter);
 

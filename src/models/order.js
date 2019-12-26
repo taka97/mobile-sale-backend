@@ -87,4 +87,4 @@ const OrderSchema = new Schema(
   },
 );
 
-export default model('Checkout', OrderSchema);
+export default model('Order', OrderSchema);

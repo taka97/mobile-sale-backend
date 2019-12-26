@@ -36,6 +36,11 @@ class CartController {
     return this.services;
   }
 
+  cleanCart(cartId) {
+    const data = { totalQty: 0, totalPrice: 0, items: [] };
+    return this.services.update(cartId, data, {});
+  }
+
   createNewCart(userId) {
     return this.services.create({ userId }, {});
   }
@@ -86,7 +91,7 @@ class CartController {
       const cartDetail = await this.services.get(id, {});
 
       const cart = new CartManager(cartDetail);
-      cart.update(itemDetail, productId, priceId, qty);
+      cart.add(itemDetail, productId, priceId, qty);
 
       const data = cart.toObject();
       const result = await this.services.update(id, data, query);

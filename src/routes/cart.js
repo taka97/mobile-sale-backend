@@ -17,11 +17,13 @@ const middlewareForCreate = [
   authenticate('jwt'),
   restrictPermission('customer'),
   validatorData(addItem),
+  setField({ as: 'params.userId', from: 'user._id' }),
   setField({ as: 'params.id', from: 'user.cartId', allowUndefined: true }),
 ];
 const middlewareForIndex = [
   authenticate('jwt'),
   restrictPermission('customer'),
+  setField({ as: 'params.userId', from: 'user._id' }),
   setField({ as: 'params.id', from: 'user.cartId', allowUndefined: true }),
 ];
 const middlewareForPatch = [

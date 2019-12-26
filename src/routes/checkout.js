@@ -49,6 +49,7 @@ const middlewareForPatchComplete = [
   authenticate('jwt'),
   restrictPermission('customer'),
   removeField('body'),
+  setField({ as: 'params.cartId', from: 'user.cartId' }),
   setComplete(),
 ];
 const middlewareForShow = [
