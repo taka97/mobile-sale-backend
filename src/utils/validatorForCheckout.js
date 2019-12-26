@@ -15,11 +15,11 @@ export const validateCheckoutShipping = (checkout) => {
     shippingMethod: Joi.string().valid('standard', 'fast').required(),
   });
   return schema.validate(checkout);
-}
+};
 
 export const validateCheckoutPayment = (checkout) => {
   const schema = Joi.object({
     paymentMethod: Joi.string().valid('cod').required(),
   });
   return schema.validate(checkout);
-}
+};

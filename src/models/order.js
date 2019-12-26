@@ -33,7 +33,7 @@ const OrderSchema = new Schema(
     },
     billingAddress: {
       fullname: {
-        type: String
+        type: String,
       },
       phone: {
         type: String,
@@ -43,7 +43,7 @@ const OrderSchema = new Schema(
       },
       company: {
         type: String,
-      }
+      },
     },
     shippingMethod: {
       type: String,

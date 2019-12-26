@@ -1,7 +1,7 @@
 import CheckoutController from '../controllers/checkoutController';
 
 function setComplete() {
-  const services = CheckoutController.services;
+  const { services } = CheckoutController;
 
   return async (req, res, next) => {
     const { params: { id } } = req;

@@ -46,7 +46,6 @@ class OrderController {
     const data = _.omit(checkoutDetail, withoutField);
     const result = await this.services.create(data);
 
-    console.log(result);
     return result;
   }
 

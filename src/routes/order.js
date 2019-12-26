@@ -6,6 +6,7 @@ import {
   restrictPermission,
   setField,
 } from '../middlewares';
+
 const middlewareForIndex = [
   authenticate('jwt'),
   restrictPermission('customer'),

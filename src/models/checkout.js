@@ -33,7 +33,7 @@ const CheckoutSchema = new Schema(
     },
     billingAddress: {
       fullname: {
-        type: String
+        type: String,
       },
       phone: {
         type: String,
@@ -43,7 +43,7 @@ const CheckoutSchema = new Schema(
       },
       company: {
         type: String,
-      }
+      },
     },
     shippingMethod: {
       type: String,
@@ -86,7 +86,7 @@ const CheckoutSchema = new Schema(
   },
 );
 
-CheckoutSchema.index({ 'updatedAt': 1 }, { expires: '5m' });
+CheckoutSchema.index({ updatedAt: 1 }, { expires: '5m' });
 
 // eslint-disable-next-line func-names
 CheckoutSchema.pre('findOneAndUpdate', function (next) {

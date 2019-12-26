@@ -63,7 +63,7 @@ router.post('/', middlewareForCreate, CheckoutController.create);
 
 router.get('/:id', middlewareForShow, CheckoutController.show);
 
-router.patch('/:id/address', middlewareForPatchAddress, CheckoutController.update)
+router.patch('/:id/address', middlewareForPatchAddress, CheckoutController.update);
 
 router.patch('/:id/shipping', middlewareForPatchShipping, CheckoutController.update);
 
