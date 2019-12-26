@@ -48,7 +48,7 @@ const middlewareForPatchPayment = [
 const middlewareForPatchComplete = [
   authenticate('jwt'),
   restrictPermission('customer'),
-  validatorData(changePayment),
+  removeField('body'),
   setComplete(),
 ];
 const middlewareForShow = [
@@ -68,6 +68,6 @@ router.patch('/:id/shipping', middlewareForPatchShipping, CheckoutController.upd
 
 router.patch('/:id/payment', middlewareForPatchPayment, CheckoutController.update);
 
-router.patch('/:id/complete', middlewareForPatchComplete, CheckoutController.update);
+router.patch('/:id/complete', middlewareForPatchComplete, CheckoutController.updateWithCompleted);
 
 export default router;
