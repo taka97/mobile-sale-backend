@@ -158,6 +158,10 @@ const router = Router();
  *        type: string
  *      category:
  *        type: string
+ *      review:
+ *        type: string
+ *      shortReview:
+ *        type: string
  *      details:
  *        type: array
  *        items:

@@ -177,6 +177,8 @@ const options = {
     'category',
     'details',
     'prices',
+    'review',
+    'shortReview',
     'createdAt',
     'updatedAt',
   ],

@@ -7,6 +7,8 @@ export const validateProductCreate = (product) => {
   const schema = Joi.object({
     name: Joi.string().min(5).max(255).required(),
     category: Joi.objectId().required(),
+    review: Joi.string().required(),
+    shortReview: Joi.string().required(),
   });
   return schema.validate(product);
 };
@@ -15,6 +17,8 @@ export const validateProductUpdate = (product) => {
   const schema = Joi.object({
     name: Joi.string().min(5).max(255).required(),
     category: Joi.objectId().required(),
+    review: Joi.string().required(),
+    shortReview: Joi.string().required(),
   });
   return schema.validate(product);
 };
