@@ -1,5 +1,8 @@
 import User from '../models/user';
 import Category from '../models/category';
+import Product from '../models/product';
+
+import * as seeder from '../seederData';
 
 class SeederController {
   constructor() {
@@ -29,20 +32,18 @@ class SeederController {
   }
 
   generatorCategory(data, numberRecord) {
-    const results = [];
-    for (let i = 0; i < numberRecord; i += 1) {
-      const tmp = {
-        name: `${data}${i}`,
-      };
-      results.push(tmp);
-    }
-    return results;
+    return seeder.categories;
+  }
+
+  generatorProduct() {
+    return seeder.products;
   }
 
   async index(req, res) {
     const { action, numberRecord = 10 } = req.params;
     let accounts;
     let categories;
+    let products;
 
     switch (action) {
       case 'admin':
@@ -55,6 +56,10 @@ class SeederController {
         categories = this.generatorCategory(action, numberRecord);
         await Category.create(categories);
         return res.send({ status: 'Created category', category: categories });
+      case 'product':
+        products = this.generatorProduct();
+        await Product.create(products);
+        return res.send({ status: 'Created product', product: products });
       case 'removeAllCategory':
         await Category.deleteMany();
         return res.send({ status: 'Removed all category' });
