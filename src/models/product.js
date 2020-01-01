@@ -21,6 +21,12 @@ const ProductSchema = new Schema(
       name: { type: String, required: true },
       value: { type: String, required: true },
     }],
+    review: {
+      type: String,
+    },
+    shortReview: {
+      type: String,
+    },
     prices: [{
       image: { type: String, required: true },
       color: { type: String, required: true },
