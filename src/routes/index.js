@@ -158,6 +158,17 @@ const router = Router();
  *        type: string
  *      category:
  *        type: string
+ *      price:
+ *        type: string
+ *      images:
+ *        type: array
+ *        items:
+ *          type: object
+ *          properties:
+ *            url:
+ *              type: string
+ *            caption:
+ *              type: string
  *      review:
  *        type: string
  *      shortReview:
@@ -174,33 +185,25 @@ const router = Router();
  *          required:
  *            - name
  *            - value
- *      prices:
+ *      options:
  *        type: array
  *        items:
  *          type: object
  *          properties:
- *            image:
+ *            group:
  *              type: string
- *            color:
+ *            name:
  *              type: string
- *            memory:
+ *            value:
  *              type: string
- *            warranty:
- *              type: string
- *            price:
- *              type: number
- *            quantity:
- *              type: number
  *          required:
- *            - image
- *            - color
- *            - memory
- *            - warranty
- *            - price
- *            - quantity
+ *            - group
+ *            - name
+ *            - value
  *    required:
  *      - name
  *      - category
+ *      - price
  *  ProductResponse:
  *    type: object
  *    properties:
@@ -210,9 +213,13 @@ const router = Router();
  *        type: string
  *      category:
  *        type: string
+ *      price:
+ *        type: string
+ *      images:
+ *        type: object
  *      details:
  *        type: object
- *      prices:
+ *      options:
  *        type: object
  *      createdAt:
  *        type: string
