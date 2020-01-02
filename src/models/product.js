@@ -29,7 +29,8 @@ const ProductSchema = new Schema(
       value: { type: String, required: true },
     }],
     images: [{
-      type: String, required: true,
+      url: { type: String, required: true },
+      caption: { type: String },
     }],
     review: {
       type: String,

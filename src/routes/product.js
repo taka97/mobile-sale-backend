@@ -15,11 +15,9 @@ import {
 import {
   validateProductCreate as createProduct,
   validateProductUpdate as changeInfo,
-  validateProductAddPrice as addPrice,
-  // validateProductUpdatePrice as changePrice,
+  validateProductAddOption as addOption,
   validateProductCreateDetail as addDetail,
-  // validateCategory,
-  // validateChangeCategory as changeInfo,
+  validateProductCreateImage as addImage,
 } from '../utils';
 
 const middlewareForCreate = [
@@ -49,27 +47,31 @@ const middlewareForDeleteDetail = [
   setField({ as: 'body.details._id', from: 'params.detailId' }),
   wrapBodyWith('$pull'),
 ];
-const middlewareForPostPrice = [
+const middlewareForPostOption = [
   authenticate('jwt'),
   restrictPermission('admin', 'staff'),
-  validatorData(addPrice),
-  uploadImage('prices', 'image'),
+  validatorData(addOption),
   wrapBodyWith('$addToSet'),
 ];
-// const middlewareForPatchPrice = [
-//   authenticate('jwt'),
-//   restrictPermission('admin', 'staff'),
-//   validatorData(changePrice),
-//   uploadImage('image'),
-//   // addPrefix2PropertyName('prices.$.'),
-//   // setField({ as: 'query.prices._id', from: 'params.priceId' }),
-//   wrapBodyWith('$addToSet'),
-// ];
-const middlewareForDeletePrice = [
+const middlewareForDeleteOption = [
   authenticate('jwt'),
   restrictPermission('admin', 'staff'),
   removeField('body'),
-  setField({ as: 'body.prices._id', from: 'params.priceId' }),
+  setField({ as: 'body.options._id', from: 'params.optionId' }),
+  wrapBodyWith('$pull'),
+];
+const middlewareForPostImage = [
+  authenticate('jwt'),
+  restrictPermission('admin', 'staff'),
+  validatorData(addImage),
+  uploadImage('images', 'url'),
+  wrapBodyWith('$addToSet'),
+];
+const middlewareForDeleteImage = [
+  authenticate('jwt'),
+  restrictPermission('admin', 'staff'),
+  removeField('body'),
+  setField({ as: 'body.images._id', from: 'params.imageId' }),
   wrapBodyWith('$pull'),
 ];
 const middlewareForDetroy = [
@@ -181,6 +183,8 @@ router.get('/:id', middlewareForShow, ProductController.show);
  *              type: string
  *            category:
  *              type: string
+ *            price:
+ *              type: number
  *    responses:
  *      200:
  *        description: Detail of product (after updated)
@@ -277,11 +281,11 @@ router.delete('/:id/details/:detailId', middlewareForDeleteDetail, ProductContro
 
 /**
  * @swagger
- * /products/{productId}/prices:
+ * /products/{productId}/options:
  *  post:
  *    tags:
  *      - 'product'
- *    summary: 'Create new price for a product'
+ *    summary: 'Create new option for a product'
  *    description: >
  *      * Just for admin
  *      * Just for staff
@@ -295,56 +299,43 @@ router.delete('/:id/details/:detailId', middlewareForDeleteDetail, ProductContro
  *          type: byte
  *      - in: body
  *        name: body
- *        description: 'Data of price'
+ *        description: 'Data of option'
  *        required: true
  *        schema:
  *          type: object
  *          properties:
- *            prices:
+ *            options:
  *              type: array
  *              items:
  *                type: object
  *                properties:
- *                  image:
+ *                  group:
  *                    type: string
- *                  color:
+ *                  name:
  *                    type: string
- *                  memory:
+ *                  value:
  *                    type: string
- *                  warranty:
- *                    type: string
- *                  price:
- *                    type: number
- *                  curentQty:
- *                    type: number
- *                  totalQty:
- *                    type: number
  *                required:
- *                  - image
- *                  - color
- *                  - memory
- *                  - warranty
- *                  - price
- *                  - quantity
+ *                  - group
+ *                  - name
+ *                  - value
  *    responses:
  *      200:
- *        description: Create product prices is success
+ *        description: Create product option is success
  *        schema:
  *          $ref: '#/definitions/Product'
  *      400:
  *        description: Missing field
  */
-router.post('/:id/prices', middlewareForPostPrice, ProductController.patch);
-
-// router.patch('/:id/prices/:priceId', middlewareForPatchPrice, ProductController.patch);
+router.post('/:id/options', middlewareForPostOption, ProductController.patch);
 
 /**
  * @swagger
- * /products/{productId}/details/{priceId}:
+ * /products/{productId}/options/{optionId}:
  *  delete:
  *    tags:
  *      - 'product'
- *    summary: 'Delete detail for a product'
+ *    summary: 'Delete option for a product'
  *    description: >
  *      * Just for admin
  *      * Just for staff
@@ -353,23 +344,103 @@ router.post('/:id/prices', middlewareForPostPrice, ProductController.patch);
  *    parameters:
  *      - in: path
  *        name: productId
- *        description: 'Id of product'
+ *        description: 'Id of option'
  *        required: true
  *        schema:
  *          type: byte
  *      - in: path
- *        name: priceId
- *        description: 'Id of price inside product'
+ *        name: optionId
+ *        description: 'Id of option inside product'
  *        required: true
  *        schema:
  *          type: byte
  *    responses:
  *      200:
- *        description: Delete product detail is success
+ *        description: Delete product option is success
  *        schema:
  *          $ref: '#/definitions/Product'
  */
-router.delete('/:id/prices/:priceId', middlewareForDeletePrice, ProductController.patch);
+router.delete('/:id/options/:optionId', middlewareForDeleteOption, ProductController.patch);
+
+/**
+ * @swagger
+ * /products/{productId}/images:
+ *  post:
+ *    tags:
+ *      - 'product'
+ *    summary: 'Create new image for a product'
+ *    description: >
+ *      * Just for admin
+ *      * Just for staff
+ *    produces:
+ *      - 'application/json'
+ *    parameters:
+ *      - in: path
+ *        name: productId
+ *        required: true
+ *        schema:
+ *          type: byte
+ *      - in: body
+ *        name: body
+ *        description: 'Data of image'
+ *        required: true
+ *        schema:
+ *          type: object
+ *          properties:
+ *            images:
+ *              type: array
+ *              items:
+ *                type: object
+ *                properties:
+ *                  url:
+ *                    type: string
+ *                  caption:
+ *                    type: string
+ *                required:
+ *                  - url
+ *    responses:
+ *      200:
+ *        description: Create product option is success
+ *        schema:
+ *          $ref: '#/definitions/Product'
+ *      400:
+ *        description: Missing field
+ */
+router.post('/:id/images', middlewareForPostImage, ProductController.patch);
+
+/**
+ * @swagger
+ * /products/{productId}/images/{imageId}:
+ *  delete:
+ *    tags:
+ *      - 'product'
+ *    summary: 'Delete image for a product'
+ *    description: >
+ *      * Just for admin
+ *      * Just for staff
+ *    produces:
+ *      - 'application/json'
+ *    parameters:
+ *      - in: path
+ *        name: productId
+ *        description: 'Id of image'
+ *        required: true
+ *        schema:
+ *          type: byte
+ *      - in: path
+ *        name: imageId
+ *        description: 'Id of image inside product'
+ *        required: true
+ *        schema:
+ *          type: byte
+ *    responses:
+ *      200:
+ *        description: Delete product image is success
+ *        schema:
+ *          $ref: '#/definitions/Product'
+ */
+router.delete('/:id/images/:imageId', middlewareForDeleteImage, ProductController.patch);
+
 
 /**
  * @swagger
