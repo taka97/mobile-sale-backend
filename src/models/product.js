@@ -7,7 +7,6 @@ const ProductSchema = new Schema(
       required: true,
       minlength: 5,
       maxlength: 255,
-      // unique: true,
       index: true,
       trim: true,
     },
@@ -21,21 +20,29 @@ const ProductSchema = new Schema(
       name: { type: String, required: true },
       value: { type: String, required: true },
     }],
+    price: {
+      type: Number, required: true,
+    },
+    options: [{
+      group: { type: String, required: true },
+      name: { type: String, required: true },
+      value: { type: String, required: true },
+    }],
+    images: [{
+      type: String, required: true,
+    }],
     review: {
       type: String,
     },
     shortReview: {
       type: String,
     },
-    prices: [{
-      image: { type: String, required: true },
-      color: { type: String, required: true },
-      memory: { type: String, required: true },
-      warranty: { type: String, required: true },
-      price: { type: Number, required: true },
-      currentQty: { type: Number, required: true, default: 0 },
-      totalQty: { type: Number, required: true, default: 0 },
-    }],
+    status: {
+      type: String,
+      required: true,
+      enum: ['available', 'out of stock'],
+      default: 'available',
+    },
     isDeleted: {
       type: Boolean,
       default: false,
