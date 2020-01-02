@@ -116,7 +116,6 @@ class CartController {
       const result = await this.services.update(id, data, query);
       return res.status(Ok).send(result);
     } catch (err) {
-      console.trace(err);
       return next(err);
     }
   }
@@ -144,7 +143,6 @@ class CartController {
       const result = await this.services.update(id, data, query);
       return res.status(Ok).send(result);
     } catch (err) {
-      console.trace(err);
       return next(err);
     }
   }

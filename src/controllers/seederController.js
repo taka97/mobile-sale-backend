@@ -31,6 +31,7 @@ class SeederController {
     return results;
   }
 
+  /* eslint-disable  no-unused-vars */
   generatorCategory(data, numberRecord) {
     return seeder.categories;
   }

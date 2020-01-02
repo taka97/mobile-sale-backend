@@ -1,1 +1,1 @@
-export * from  './productSeeder';
+export * from './productSeeder';
