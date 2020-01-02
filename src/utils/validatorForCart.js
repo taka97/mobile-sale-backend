@@ -6,7 +6,7 @@ Joi.objectId = joiObjectId(Joi);
 export const validateCartAddItem = (cart) => {
   const schema = Joi.object({
     productId: Joi.objectId().required(),
-    priceId: Joi.objectId().required(),
+    optionId: Joi.objectId().required(),
     qty: Joi.number().min(1).required(),
   });
   return schema.validate(cart);
@@ -15,7 +15,7 @@ export const validateCartAddItem = (cart) => {
 export const validateCartUpdateItem = (cart) => {
   const schema = Joi.object({
     productId: Joi.objectId().required(),
-    priceId: Joi.objectId().required(),
+    optionId: Joi.objectId().required(),
     qty: Joi.number().min(1).required(),
   });
   return schema.validate(cart);
@@ -24,7 +24,7 @@ export const validateCartUpdateItem = (cart) => {
 export const validateCartRemoveItem = (cart) => {
   const schema = Joi.object({
     productId: Joi.objectId().required(),
-    priceId: Joi.objectId().required(),
+    optionId: Joi.objectId().required(),
   });
   return schema.validate(cart);
 };

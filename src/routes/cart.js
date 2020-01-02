@@ -53,7 +53,7 @@ const router = Router();
  *    parameters:
  *      - in: body
  *        name: body
- *        description: 'Data for sign up'
+ *        description: 'Item id to add to cart'
  *        required: true
  *        schema:
  *          type: object

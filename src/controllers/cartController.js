@@ -76,22 +76,22 @@ class CartController {
 
   async addItemToCart(req, res, next) {
     try {
-      const { params, query, body: { productId, priceId, qty } } = req;
+      const { params, query, body: { productId, optionId, qty } } = req;
 
       const id = params.id ? params.id : await this.createCartAndSave(req.user, params.userId);
       const productDetail = await ProductController.services.get(productId, {
         query: {
-          $select: 'prices',
+          $select: 'options',
         },
       });
-      const itemDetail = productDetail.prices
+      const itemDetail = productDetail.options
         /* eslint-disable no-underscore-dangle */
-        .filter((item) => item._id.toString() === priceId)[0];
+        .filter((item) => item._id.toString() === optionId)[0];
 
       const cartDetail = await this.services.get(id, {});
 
       const cart = new CartManager(cartDetail);
-      cart.add(itemDetail, productId, priceId, qty);
+      cart.add(itemDetail, productId, optionId, qty);
 
       const data = cart.toObject();
       const result = await this.services.update(id, data, query);
@@ -103,46 +103,48 @@ class CartController {
 
   async removeItemFromCart(req, res, next) {
     try {
-      const { params, query, body: { productId, priceId } } = req;
+      const { params, query, body: { productId, optionId } } = req;
 
       const id = params.id ? params.id : await this.createCartAndSave(req.user, params.userId);
 
       const cartDetail = await this.services.get(id, {});
 
       const cart = new CartManager(cartDetail);
-      cart.remove(undefined, productId, priceId);
+      cart.remove(undefined, productId, optionId);
 
       const data = cart.toObject();
       const result = await this.services.update(id, data, query);
       return res.status(Ok).send(result);
     } catch (err) {
+      console.trace(err);
       return next(err);
     }
   }
 
   async updateItemInCart(req, res, next) {
     try {
-      const { params, query, body: { productId, priceId, qty } } = req;
+      const { params, query, body: { productId, optionId, qty } } = req;
 
       const id = params.id ? params.id : await this.createCartAndSave(req.user, params.userId);
       const productDetail = await ProductController.services.get(productId, {
         query: {
-          $select: 'prices',
+          $select: 'options',
         },
       });
-      const itemDetail = productDetail.prices
+      const itemDetail = productDetail.options
         /* eslint-disable no-underscore-dangle */
-        .filter((item) => item._id.toString() === priceId)[0];
+        .filter((item) => item._id.toString() === optionId)[0];
 
       const cartDetail = await this.services.get(id, {});
 
       const cart = new CartManager(cartDetail);
-      cart.update(itemDetail, productId, priceId, qty);
+      cart.update(itemDetail, productId, optionId, qty);
 
       const data = cart.toObject();
       const result = await this.services.update(id, data, query);
       return res.status(Ok).send(result);
     } catch (err) {
+      console.trace(err);
       return next(err);
     }
   }

@@ -1,3 +1,6 @@
+import config from 'config';
+const MAXITEMS = config.get('maxItems');
+
 class Cart {
   constructor(oldCart) {
     this.items = oldCart.items || [];
@@ -5,28 +8,28 @@ class Cart {
     this.totalPrice = oldCart.totalPrice || 0;
   }
 
-  add(item, productId, priceId) {
+  add(item, productId, optionId) {
     let storedItem;
     for (let i = 0; i < this.items.length; i += 1) {
       if (this.items[i].productId.toString() === productId
-        && this.items[i].priceId.toString() === priceId) {
+        && this.items[i].optionId.toString() === optionId) {
         storedItem = this.items[i];
         break;
       }
     }
     if (!storedItem) {
       storedItem = {
-        item, productId, priceId, qty: 0, price: 0,
+        item, productId, optionId, qty: 0, price: 0,
       };
       this.items.push(storedItem);
     }
-    if (storedItem.qty >= storedItem.item.currentQty) {
+    if (storedItem.qty >= MAXITEMS) {
       return;
     }
     storedItem.qty += 1;
-    storedItem.price = storedItem.item.price * storedItem.qty;
+    storedItem.price = storedItem.item.value * storedItem.qty;
     this.totalQty += 1;
-    this.totalPrice += storedItem.item.price;
+    this.totalPrice += parseInt(storedItem.item.value);
   }
 
   sub(item, id) {
@@ -41,16 +44,16 @@ class Cart {
       return;
     }
     storedItem.qty -= 1;
-    storedItem.price = storedItem.item.one.currentPrice * storedItem.qty;
+    storedItem.price = parseInt(storedItem.item.value) * storedItem.qty;
     this.totalQty -= 1;
-    this.totalPrice -= storedItem.item.one.currentPrice;
+    this.totalPrice -= parseInt(storedItem.item.value);
   }
 
-  remove(item, productId, priceId) {
+  remove(item, productId, optionId) {
     let storedItem; let index;
     for (let i = 0; i < this.items.length; i += 1) {
       if (this.items[i].productId.toString() === productId
-        && this.items[i].priceId.toString() === priceId) {
+        && this.items[i].optionId.toString() === optionId) {
         storedItem = this.items[i];
         index = i;
         break;
@@ -64,30 +67,30 @@ class Cart {
     this.items.splice(index, 1);
   }
 
-  update(item, productId, priceId, quantity) {
+  update(item, productId, optionId, quantity) {
     let storedItem;
     for (let i = 0; i < this.items.length; i += 1) {
       if (this.items[i].productId.toString() === productId
-        && this.items[i].priceId.toString() === priceId) {
+        && this.items[i].optionId.toString() === optionId) {
         storedItem = this.items[i];
         break;
       }
     }
     if (!storedItem) {
       storedItem = {
-        item, productId, priceId, qty: 0, price: 0,
+        item, productId, optionId, qty: 0, price: 0,
       };
       this.items.push(storedItem);
     }
-    if (quantity >= storedItem.item.currentQty) {
+    if (quantity >= MAXITEMS) {
       /* eslint-disable no-param-reassign */
-      quantity = storedItem.item.currentQty;
+      quantity = MAXITEMS;
     }
     const diff = quantity - storedItem.qty;
     storedItem.qty = quantity;
-    storedItem.price = storedItem.item.price * storedItem.qty;
+    storedItem.price = storedItem.item.value * storedItem.qty;
     this.totalQty += diff;
-    this.totalPrice += storedItem.item.price * diff;
+    this.totalPrice += storedItem.item.value * diff;
   }
 
   toObject() {
