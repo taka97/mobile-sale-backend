@@ -17,7 +17,7 @@ const CartSchema = new Schema(
         type: Schema.Types.ObjectId,
         ref: 'Product',
       },
-      priceId: {
+      optionId: {
         type: Schema.Types.ObjectId,
       },
       price: {
