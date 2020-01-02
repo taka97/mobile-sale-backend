@@ -16,7 +16,8 @@ export const products = [
     ],
     prices: [
       {
-        image: 'https://res.cloudinary.com/nineteen-ms/image/upload/v1577371326/assets/sdhdu5mgefxkjrd5vlfh.jpg',
+        image: 'https://res.cloudinary.com/nineteen-ms/image/upload/'
+          + 'v1577371326/assets/sdhdu5mgefxkjrd5vlfh.jpg',
         color: 'pink',
         memory: '16GB',
         warranty: 'Bảo hành mặc định',
@@ -25,7 +26,8 @@ export const products = [
         totalQty: 5,
       },
       {
-        image: 'https://res.cloudinary.com/nineteen-ms/image/upload/v1577371326/assets/sdhdu5mgefxkjrd5vlfh.jpg',
+        image: 'https://res.cloudinary.com/nineteen-ms/image/upload/'
+          + 'v1577371326/assets/sdhdu5mgefxkjrd5vlfh.jpg',
         color: 'pink',
         memory: '16GB',
         warranty: 'BHV 6 tháng',
@@ -34,7 +36,8 @@ export const products = [
         totalQty: 5,
       },
       {
-        image: 'https://res.cloudinary.com/nineteen-ms/image/upload/v1577371345/assets/vox4scnoffeyjb6ktgg1.jpg',
+        image: 'https://res.cloudinary.com/nineteen-ms/image/upload/'
+          + 'v1577371345/assets/vox4scnoffeyjb6ktgg1.jpg',
         color: 'white',
         memory: '16GB',
         warranty: 'Bảo hành mặc định',
@@ -43,7 +46,8 @@ export const products = [
         totalQty: 5,
       },
       {
-        image: 'https://res.cloudinary.com/nineteen-ms/image/upload/v1577371334/assets/k07kccmrb5hhwet9upxm.jpg',
+        image: 'https://res.cloudinary.com/nineteen-ms/image/upload/'
+          + 'v1577371334/assets/k07kccmrb5hhwet9upxm.jpg',
         color: 'white',
         memory: '16GB',
         warranty: 'Bảo hành mặc định',
@@ -52,7 +56,8 @@ export const products = [
         totalQty: 5,
       },
       {
-        image: 'https://res.cloudinary.com/nineteen-ms/image/upload/v1577371326/assets/sdhdu5mgefxkjrd5vlfh.jpg',
+        image: 'https://res.cloudinary.com/nineteen-ms/image/upload/'
+          + 'v1577371326/assets/sdhdu5mgefxkjrd5vlfh.jpg',
         color: 'black',
         memory: '16GB',
         warranty: 'Bảo hành mặc định',

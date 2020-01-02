@@ -1,4 +1,5 @@
 import config from 'config';
+
 const MAXITEMS = config.get('maxItems');
 
 class Cart {
@@ -29,7 +30,7 @@ class Cart {
     storedItem.qty += 1;
     storedItem.price = storedItem.item.value * storedItem.qty;
     this.totalQty += 1;
-    this.totalPrice += parseInt(storedItem.item.value);
+    this.totalPrice += Number(storedItem.item.value);
   }
 
   sub(item, id) {
@@ -44,9 +45,9 @@ class Cart {
       return;
     }
     storedItem.qty -= 1;
-    storedItem.price = parseInt(storedItem.item.value) * storedItem.qty;
+    storedItem.price = Number(storedItem.item.value) * storedItem.qty;
     this.totalQty -= 1;
-    this.totalPrice -= parseInt(storedItem.item.value);
+    this.totalPrice -= Number(storedItem.item.value);
   }
 
   remove(item, productId, optionId) {
